@@ -61,9 +61,30 @@ def submituser():
     email = request.form["email"]
     date = request.form["startdate"]
     role = request.form["role"]
-    sql = "INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role) VALUES (:lastname, :firstname, :email, :startdate, :role)"
-    db.session.execute(sql, {"lastname": lastname, "firstname":firstname, "email":email, "startdate":date, "role":role})
-    db.session.commit()
+    username = request.form["username"]
+    password = request.form["password"]
+    password2 = request.form["password2"]
+        #Password validation => Move to another module
+    if len(password) < 8:
+        return render_template("addnew.html", show=True, message="Password must be atleast 8 characters long.")
+    if password != password2: 
+        return render_template("addnew.html", show=True, message="Passwords do not match, try again.")
+    hash_value = generate_password_hash(password)
+    try:
+        sql = "INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username) VALUES (:lastname, :firstname, :email, :startdate, :role, :username) RETURNING user_id"
+        result = db.session.execute(sql, {"lastname": lastname, "firstname":firstname, "email":email, "startdate":date, "role":role, "username":username})
+        user_id = result.fetchone()[0]
+        qualifications = request.form.getlist("qualification")
+        print(qualifications)
+        for task_id in qualifications:
+            if task_id != "":
+                sql = "INSERT INTO tsohaproject.volunteerqualification (task_id, user_id) VALUES (:task_id, :user_id)"
+                db.session.execute(sql, {"task_id":task_id, "user_id":user_id})
+        sqlpassword = "INSERT INTO tsohaproject.password (user_id, password) VALUES (:user_id, :password)"
+        db.session.execute(sqlpassword, {"user_id":user_id, "password":hash_value})
+        db.session.commit()
+    except:
+        return render_template("register.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
     return redirect("/users")
 
 @app.route("/view-user/<int:id>")
@@ -83,12 +104,18 @@ def edituser(id):
     if request.method == "POST":
         id = id
         # Get basic information
-        sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id;"
+        sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
+        result1 = db.session.execute(sql1, {"id":id})
+        user = result1.fetchone()[0]
         # Get qualifications
-        sql2 = "SELECT tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
+        sql2 = "SELECT tasks.task_id  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
+        result2 = db.session.execute(sql2, {"id":id})
+        qualifications = result2.fetchall()
         # Get activityinformation
-        sql3 = "SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id"
-        return render_template("edit-user.html")
+        sql3 = "SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id ORDER BY currentactivity.date DESC"
+        result3 = db.session.execute(sql3, {"id":id})
+        activity = result3.fetchall
+        return render_template("edit-user.html", user=user,  qualifications=qualifications, activity=activity)
     if request.method == "GET":
         return render_template("edit-user.html")
 
@@ -111,14 +138,44 @@ def authlogin():
                 session["user_id"] = user.user_id
             else:
                 error = True
-
     if error:
             return render_template("login.html", show=True, message="Username or password is incorrect. Please try again.")
     
-    return redirect("/users")
+    
+    # A view for volunteers to post volunteer activities
+    role = user_role()
+    if role =='admin' or role == 'coordinator':
+        return redirect("/users")
+    else: 
+        return redirect("/volunteer-view")
+
+def user_id():
+    id = session.get("user_id", 0)
+    # print(f"user-id: {id}")
+    return id
+
+def user_role():
+    id = user_id()
+    if (id != 0):
+        sql = "SELECT role FROM tsohaproject.users WHERE user_id =:id"
+        result = db.session.execute(sql, {"id":id})
+        return result.fetchone()[0]
+    else: 
+        return id
 
 
-            
+def logout():
+    del session["user_id"]            
+
+
+@app.route("/volunteer-view")
+def volunteerview():
+    id = user_id()
+    # Get basic information
+    sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
+    result = db.session.execute(sql, {"id":id})
+    user = result.fetchone()[0]
+    return render_template("volunteer-view.html", user=user)
 
 
 #This method receives a new registration and coordinates/handles validation, saving to database and possible errors. 
@@ -127,7 +184,6 @@ def createadmin():
     username = request.form["username"]
     password = request.form["password1"]
     password2 = request.form["password2"]
-    hash_value = generate_password_hash(password)
     print(f"Hashvalue: {hash_value}")
     role = "admin"
     isactive = True
@@ -136,6 +192,7 @@ def createadmin():
         return render_template("register.html", show=True, message="Password must be atleast 8 characters long.")
     if password != password2: 
         return render_template("register.html", show=True, message="Passwords do not match, try again.")
+    hash_value = generate_password_hash(password)
     #Try to commit given information to the database
     try:
         sqlusers = "INSERT INTO tsohaproject.users (username,role,isactive) VALUES (:username, :role, :isactive) RETURNING user_id"
@@ -148,6 +205,12 @@ def createadmin():
         return render_template("register.html", show=True, message="Something bad has happened, but I do not specifically know what. Try again.")
     
     return render_template("login.html", show=True, message="Registeration completed. Please login with your account.")
+
+
+
+
+
+    
 
 
 # @app.route("/send", methods=["POST"])

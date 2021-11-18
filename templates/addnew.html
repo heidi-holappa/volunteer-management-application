@@ -25,6 +25,12 @@
             <div class="container" style="margin-top:30px">
                 <div class="row">
                     <div class="col-sm-8">
+                        <div>
+                            {% if show is sameas true %}
+                                Error: {{ message }}
+                            {% else %}
+                            {% endif %}
+                        </div>
 
                         <form action="/submituser" method="POST">
                             <table>
@@ -71,25 +77,25 @@
                                     <td>Qualifications: </td>
                                     <td>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="childphone">
+                                            <input class="form-check-input" type="checkbox" value="1" name="qualification">
                                             <label class="form-check-label" for="childphone">
                                               Child helpline phone
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="childchat">
+                                            <input class="form-check-input" type="checkbox" value="2" name="qualification">
                                             <label class="form-check-label" for="childchat">
                                               Child helpline chat
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="parentphone">
+                                            <input class="form-check-input" type="checkbox" value="3" name="qualification">
                                             <label class="form-check-label" for="parentphone">
                                               Parent helpline phone
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="parentchat">
+                                            <input class="form-check-input" type="checkbox" value="4" name="qualification">
                                             <label class="form-check-label" for="parentchat">
                                               Parent helpline chat
                                             </label>
