@@ -36,14 +36,8 @@ INSERT INTO tsohaproject.volunteerqualification (user_id, task_id) VALUES (3,3);
 INSERT INTO tsohaproject.currentactivity (user_id, activity_id, date) VALUES (1,4,11-11-2021);
 INSERT INTO tsohaproject.currentactivity (user_id, activity_id, date) VALUES (2,4,12-7-2021);
 
-
-
-
-
-
-
-/* To delete the database: DROP SCHEMA IF EXISTS tsohaproject CASCADE; */
-
+/* To delete the tsohaproject from database: */
+DROP SCHEMA IF EXISTS tsohaproject CASCADE;
 
 /* Add strings as a list. NOTE: only works on strings */
 
@@ -57,39 +51,18 @@ FROM tsohaproject.users, tsohaproject.volunteerqualification, tsohaproject.tasks
 WHERE users.user_id = volunteerqualification.user_id AND tasks.task_id = volunteerqualification.task_id
 GROUP BY users.lastname, users.firstname, users.role, users.user_id, users.email;
 
-
-
-
-    ON volunteerqualification.user_id = users.user_id;
-
-
 SELECT string_agg(task_id, ',')
 FROM tsohaproject.volunteerqualification
 GROUP BY user_id;
 
+/* Herokuapp URL  */
+https://helpline-management.herokuapp.com/ | https://git.heroku.com/helpline-management.git
 
-
-
+/*Testing different ways to use returning*/
 with rows as (INSERT INTO tsohaproject.users (username, role, isactive) VALUES ('peruna', 'admin', TRUE) RETURNING user_id)
 INSERT INTO tsohaproject.password (password, user_id) VALUES ('salasana', (SELECT user_id FROM rows);
-
 INSERT INTO tsohaproject.password (password, user_id) VALUES ('salasana', (INSERT INTO tsohaproject.users (username, role, isactive) VALUES ('peruna', 'admin', TRUE) RETURNING user_id));
 
-
-
-
-SELECT users.user_id, users.username, password.password FROM tsohaproject.users, tsohaproject.password WHERE users.username='majuriperuna';
-SELECT users.username, password.password FROM tsohaproject.users, tsohaproject.password WHERE users.username='majuriperuna';
-
-
-Terminal:
-postgres
-psql
-venv
-
-
-
+/* For testing LEFT JOIN with the demo data */
 SELECT tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id = 3;
-
-
 SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=3;
