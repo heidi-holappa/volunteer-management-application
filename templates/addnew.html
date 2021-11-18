@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Volunteer Management App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <style></style>
+    </head>
+    
+    <body>
+        
+        <header class="infinitehead">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12 text-center">
+                        <h1 class="font-weight-light">Volunteer Management Application</h1>
+                        <p class="lead">Inspirational slogan here.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="flex-wrapper">
+            <div class="container" style="margin-top:30px">
+                <div class="row">
+                    <div class="col-sm-8">
+
+                        <form action="/submituser" method="POST">
+                            <table>
+                                <tr>
+                                    <td>Last name:</td>
+                                    <td><input  class="form-control" id='lastname' placeholder="Enter last name" type='text' name='lastname' value=''></td>
+                                </tr>
+                                <tr>
+                                    <td>First name:</td>
+                                    <td><input class="form-control" id="firstname" placeholder="Enter first name" type='text' name='firstname' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Email:</td>
+                                    <td><input class="form-control" id="email" placeholder="Enter e-mail address" type='text' name='email' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Start date:</td>
+                                    <td><input class="form-control" id="startdate" placeholder="Enter start date" type='date' name='startdate' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Username: </td>
+                                    <td><input class="form-control" id="username" placeholder="Enter username" type='text' name='username' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Password: </td>
+                                    <td><input class="form-control" id="password1" placeholder="Enter password" type='password' name='password' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Re-type password: </td>
+                                    <td><input class="form-control" id="password2" placeholder="Enter password" type='password' name='password2' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Select role:</td>
+                                    <td>
+                                        <select class="form-control form-control-sm" name='role'>
+                                            <option value="" selected disabled>Choose role</option>
+                                            <option value="admin">Administrator</option>
+                                            <option value="coordinator">Coordinator</option>
+                                            <option value="volunteer">Volunteer</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Qualifications: </td>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="childphone">
+                                            <label class="form-check-label" for="childphone">
+                                              Child helpline phone
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="childchat">
+                                            <label class="form-check-label" for="childchat">
+                                              Child helpline chat
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="parentphone">
+                                            <label class="form-check-label" for="parentphone">
+                                              Parent helpline phone
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="parentchat">
+                                            <label class="form-check-label" for="parentchat">
+                                              Parent helpline chat
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
+                                </tr>
+                            </table>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="jumbotron text-center" style="margin-bottom:0">
+            <footer>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h4>Site information</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p><a href="https://github.com/heidi-holappa/volunteer-management-application/tree/main/Documentation" target="_blank">Project documentation</a></p>
+                        </div>
+                        <div class="col">
+                            <p><a href="/docs/feedback">Feedback</a></p>
+                        </div>
+                         <div class="col">
+                            <p><a href="/docs/aboutus">About Us</a></p>
+                        </div> 
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+    </body>
+</html>
