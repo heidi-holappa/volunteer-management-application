@@ -106,7 +106,8 @@ def edituser(id):
         # Get basic information
         sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
         result1 = db.session.execute(sql1, {"id":id})
-        user = result1.fetchone()[0]
+        user = result1.fetchone()
+        print(user)
         # Get qualifications
         sql2 = "SELECT tasks.task_id  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
         result2 = db.session.execute(sql2, {"id":id})
@@ -174,8 +175,12 @@ def volunteerview():
     # Get basic information
     sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
     result = db.session.execute(sql, {"id":id})
-    user = result.fetchone()[0]
-    return render_template("volunteer-view.html", user=user)
+    user = result.fetchone()
+    # Get volunteer's activities - volunteer can participate in activities they are qualified in
+    sql2 = "SELECT tasks.task_id, tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
+    result2 = db.session.execute(sql2, {"id":id})
+    activities = result2.fetchall()
+    return render_template("volunteer-view.html", user=user, activities=activities)
 
 
 #This method receives a new registration and coordinates/handles validation, saving to database and possible errors. 
@@ -184,7 +189,6 @@ def createadmin():
     username = request.form["username"]
     password = request.form["password1"]
     password2 = request.form["password2"]
-    print(f"Hashvalue: {hash_value}")
     role = "admin"
     isactive = True
     #Password validation => Move to another module
@@ -193,6 +197,7 @@ def createadmin():
     if password != password2: 
         return render_template("register.html", show=True, message="Passwords do not match, try again.")
     hash_value = generate_password_hash(password)
+    # print(f"Hashvalue: {hash_value}")
     #Try to commit given information to the database
     try:
         sqlusers = "INSERT INTO tsohaproject.users (username,role,isactive) VALUES (:username, :role, :isactive) RETURNING user_id"
