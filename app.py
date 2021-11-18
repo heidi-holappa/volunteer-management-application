@@ -6,6 +6,9 @@ from flask import session
 from sqlalchemy.sql.elements import False_
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
+import os
+import re
+
 
 app = Flask(__name__)
 # from dotenv import load_dotenv
@@ -13,7 +16,13 @@ app = Flask(__name__)
 # load_dotenv()
 app.secret_key = getenv("SECRET_KEY")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+uri = os.getenv("DATABASE_URL")  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+# rest of connection code using the connection string `uri`
+
+#app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = uri
 db = SQLAlchemy(app)
 
 @app.route("/")
