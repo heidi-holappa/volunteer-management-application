@@ -33,7 +33,7 @@ CREATE TABLE "tsohaproject".ADDITIONALTRAININGS (
 CREATE TABLE "tsohaproject".TRAININGPARTICIPATION (
   "training_id" integer,
   "user_id" integer,
-  "date", date
+  "date" date
 );
 
 CREATE TABLE "tsohaproject".TASKS (
@@ -95,7 +95,7 @@ CREATE TABLE "tsohaproject".APPLOG (
 
 ALTER TABLE "tsohaproject".CURRENTACTIVITY ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
 
-ALTER TABLE "tsohaproject".CURRENTACTIVITY ADD FOREIGN KEY ("acitivy_id") REFERENCES "tsohaproject".ACTIVITYLEVEL ("activity_id");
+ALTER TABLE "tsohaproject".CURRENTACTIVITY ADD FOREIGN KEY ("activity_id") REFERENCES "tsohaproject".ACTIVITYLEVEL ("activity_id");
 
 ALTER TABLE "tsohaproject".VOLUNTEERQUALIFICATION ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
 
@@ -109,7 +109,7 @@ ALTER TABLE "tsohaproject".LOANEDTOOLS ADD FOREIGN KEY ("user_id") REFERENCES "t
 
 ALTER TABLE "tsohaproject".LOANEDTOOLS ADD FOREIGN KEY ("tool_id") REFERENCES "tsohaproject".TOOLS ("tool_id");
 
-ALTER TABLE "tsohaproject".TRAININGPARTICIPATION ADD FOREIGN KEY ("user_id) REFERENCES "tsohaproject".USERS ("user_id);
+ALTER TABLE "tsohaproject".TRAININGPARTICIPATION ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
 
 ALTER TABLE "tsohaproject".TRAININGPARTICIPATION ADD FOREIGN KEY ("training_id) REFERENCES "tsohaproject".ADDITIONALTRAININGS ("training_id");
 
