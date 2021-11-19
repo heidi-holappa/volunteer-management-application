@@ -56,22 +56,34 @@
                                 </tr>
                                 <tr>
                                     <td>Role: </td>
-                                    <td>{{ user.role }}</td>
-                                </tr>
-                                {% if qualifications is defined %}
+                                    <td>{{ user.role }}</td>
                                     <tr>
                                         <td>Qualifications:</td>
-                                        <td></td>
-                                    </tr>
+                                        <td>
+                                            <tr>
+                                                <td>Qualifications: </td>
+                                                <td>
+                                                    {% for qualification in qualifications %}    
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}" name="qualification" {% if qualification.isqualified is sameas true %} checked {% else %} {% endif %} disabled>
+                                                            <label class="form-check-label" for="{{ qualification.task }}" class="text-info">
+                                                            {{ qualification.task }}
+                                                            </label>
+                                                        </div>
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                        </td>
+                                    <!-- </tr>
                                     {% for qualification in qualifications %}
+                                        {% if qualification.isqualified is sameas true %}   
                                         <tr>
                                             <td></td>
-                                            <td>{{ qualification.task }}</td>
+                                            <td>{{ qualification.task }}</td>    
                                         </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    
-                                {% endif %}
+                                        {% else %}
+                                        {% endif %}
+                                    {% endfor %} -->
                             </tbody>
                         </table>
                 

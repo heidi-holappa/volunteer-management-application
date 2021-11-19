@@ -87,15 +87,27 @@ def submituser():
         return render_template("register.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
     return redirect("/users")
 
+@app.route("/submit-message-volunteer/<int:id>", methods=["POST"])
+def submit_message_volunteer(id):
+    date = request.form["description"]
+    id = id
+    content = request.form["doneactivity"]
+    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): id: {id}, date: {date}, activity: {doneactivity}")
+    try:
+        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, content) VALUES (:id, :id, :content)"
+        db.session.execute(sql, {"id":id, "id":id, "content":content})
+        db.session.commit()
+    except:
+        return render_template("volunteer-view", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
+
+
+    return redirect("/volunteer-view")
+
 @app.route("/view-user/<int:id>")
 def viewuser(id):
     id = id
-    sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id;"
-    result1 = db.session.execute(sql1, {"id":id})
-    user = result1.fetchone()
-    sql2 = "SELECT tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
-    result2 = db.session.execute(sql2, {"id":id})
-    qualifications = result2.fetchall()
+    user = get_userinfo(id)
+    qualifications = get_qualifiations(id)
     print(qualifications)
     return render_template("view-user.html", user=user, qualifications=qualifications)
 
@@ -103,33 +115,50 @@ def viewuser(id):
 def edituser(id):
     if request.method == "POST":
         id = id
-        # Get basic information
-        sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
-        result1 = db.session.execute(sql1, {"id":id})
-        user = result1.fetchone()
-        print(user)
-        # Get qualifications
-        sql2 = "SELECT tasks.task_id  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
-        result2 = db.session.execute(sql2, {"id":id})
-        qualifications = result2.fetchall()
-        # Get activityinformation
-        sql3 = "SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id ORDER BY currentactivity.date DESC"
-        result3 = db.session.execute(sql3, {"id":id})
-        activity = result3.fetchall
+        user = get_userinfo(id)
+        qualifications = get_qualifiations(id)
+        activity = get_activityinformation(id)
         return render_template("edit-user.html", user=user,  qualifications=qualifications, activity=activity)
     if request.method == "GET":
         return render_template("edit-user.html")
 
+
+
+# Get qualifications
+def get_qualifiations(id):
+    # sql = "SELECT tasks.task_id, tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
+    sql = "SELECT tasks.task, tasks.task_id, CASE WHEN tasks.task_id IN (SELECT tasks.task_id FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON (users.user_id = volunteerqualification.user_id) LEFT JOIN tsohaproject.tasks ON (volunteerqualification.task_id = tasks.task_id) WHERE users.user_id =:id) THEN true ELSE false END AS isqualified FROM tsohaproject.tasks"
+    result = db.session.execute(sql, {"id":id})
+    qualifications = result.fetchall()
+    print(qualifications)
+    return qualifications 
+
+# Get basic userinformation from table users
+def get_userinfo(id):
+    sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
+    result1 = db.session.execute(sql1, {"id":id})
+    user = result1.fetchone()
+    return user
+
+# Get activityinformation
+def get_activityinformation(id):
+    sql3 = "SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id ORDER BY currentactivity.date DESC"
+    result3 = db.session.execute(sql3, {"id":id})
+    activity = result3.fetchall
+    return activity
+
+
 #This method validates an login attempt
 @app.route("/auth/login", methods=["POST", "GET"])
 def authlogin():
+    # print("Hello world!")
     error = False
     if request.method == "GET":
         return render_template("login.html")
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        sql = "SELECT users.user_id, password.password FROM tsohaproject.users, tsohaproject.password WHERE users.username=:username"
+        sql = "SELECT users.user_id, users.role, password.password FROM tsohaproject.users, tsohaproject.password WHERE users.username=:username"
         result = db.session.execute(sql, {"username":username})
         user = result.fetchone()
         if not user:
@@ -137,6 +166,7 @@ def authlogin():
         else:
             if check_password_hash(user.password, password):
                 session["user_id"] = user.user_id
+                session["role"] = user.role
             else:
                 error = True
     if error:
@@ -154,6 +184,11 @@ def user_id():
     id = session.get("user_id", 0)
     # print(f"user-id: {id}")
     return id
+
+def role():
+    role = session.get("role", 0)
+    return role
+
 
 def user_role():
     id = user_id()

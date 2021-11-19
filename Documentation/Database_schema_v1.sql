@@ -20,7 +20,7 @@ CREATE TABLE "tsohaproject".ACTIVITYLEVEL (
 );
 
 CREATE TABLE "tsohaproject".CURRENTACTIVITY (
-  "date" date,
+  "level_date" date,
   "user_id" integer,
   "activity_id" integer
 );
@@ -33,7 +33,7 @@ CREATE TABLE "tsohaproject".ADDITIONALTRAININGS (
 CREATE TABLE "tsohaproject".TRAININGPARTICIPATION (
   "training_id" integer,
   "user_id" integer,
-  "date" date
+  "training_date" date
 );
 
 CREATE TABLE "tsohaproject".TASKS (
@@ -69,7 +69,7 @@ CREATE TABLE "tsohaproject".LOANEDTOOLS (
 );
 
 CREATE TABLE "tsohaproject".DEVELOPMENTDISCUSSION (
-  "date" date,
+  "discussion_date" date,
   "volunteer_id" integer,
   "coordinator_id" integer
 );
@@ -78,7 +78,8 @@ CREATE TABLE "tsohaproject".MESSAGES (
   "msg_id" SERIAL PRIMARY KEY,
   "volunteer_id" integer,
   "sender_id" integer,
-  "timestamp" timestamp,
+  "task_id" integer,
+  "activity_date" date,
   "content" varchar
 );
 
@@ -111,7 +112,7 @@ ALTER TABLE "tsohaproject".LOANEDTOOLS ADD FOREIGN KEY ("tool_id") REFERENCES "t
 
 ALTER TABLE "tsohaproject".TRAININGPARTICIPATION ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
 
-ALTER TABLE "tsohaproject".TRAININGPARTICIPATION ADD FOREIGN KEY ("training_id) REFERENCES "tsohaproject".ADDITIONALTRAININGS ("training_id");
+ALTER TABLE "tsohaproject".TRAININGPARTICIPATION ADD FOREIGN KEY ("training_id") REFERENCES "tsohaproject".ADDITIONALTRAININGS ("training_id");
 
 ALTER TABLE "tsohaproject".DEVELOPMENTDISCUSSION ADD FOREIGN KEY ("volunteer_id") REFERENCES "tsohaproject".USERS ("user_id");
 
@@ -124,3 +125,5 @@ ALTER TABLE "tsohaproject".MESSAGES ADD FOREIGN KEY ("sender_id") REFERENCES "ts
 ALTER TABLE "tsohaproject".PASSWORD ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
 
 ALTER TABLE "tsohaproject".APPLOG ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
+
+ALTER TABLE "tsohaproject".MESSAGES ADD FOREIGN KEY ("task_id") REFERENCES "tsohaproject".tasks ("task_id");

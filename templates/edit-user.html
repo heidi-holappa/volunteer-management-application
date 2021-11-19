@@ -66,30 +66,14 @@
                                 <tr>
                                     <td>Qualifications: </td>
                                     <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="1" name="qualification">
-                                            <label class="form-check-label" for="childphone">
-                                              Child helpline phone
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="2" name="qualification">
-                                            <label class="form-check-label" for="childchat">
-                                              Child helpline chat
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="3" name="qualification">
-                                            <label class="form-check-label" for="parentphone">
-                                              Parent helpline phone
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="4" name="qualification">
-                                            <label class="form-check-label" for="parentchat">
-                                              Parent helpline chat
-                                            </label>
-                                        </div>
+                                        {% for qualification in qualifications %}    
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}" name="qualification" {% if qualification.isqualified is sameas true %} checked {% else %} {% endif %} >
+                                                <label class="form-check-label" for="{{ qualification.task }}">
+                                                {{ qualification.task }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
                                     </td>
                                 </tr>
                                 <tr>
