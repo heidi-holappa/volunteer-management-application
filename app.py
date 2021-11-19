@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 import os
 import re
+import datetime
 
 
 app = Flask(__name__)
@@ -89,13 +90,14 @@ def submituser():
 
 @app.route("/submit-message-volunteer/<int:id>", methods=["POST"])
 def submit_message_volunteer(id):
-    date = request.form["description"]
+    date = request.form["date"]
     id = id
-    content = request.form["doneactivity"]
-    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): id: {id}, date: {date}, activity: {doneactivity}")
+    activity = request.form["doneactivity"]
+    content = request.form["content"] 
+    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): id: {id}, date: {date}, activity-id: {activity} content: {content}")
     try:
-        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, content) VALUES (:id, :id, :content)"
-        db.session.execute(sql, {"id":id, "id":id, "content":content})
+        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, content) VALUES (:id, :id, :activity, :content)"
+        db.session.execute(sql, {"id":id, "id":id, "task_id":activity, "content":content})
         db.session.commit()
     except:
         return render_template("volunteer-view", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
@@ -142,7 +144,7 @@ def get_userinfo(id):
 
 # Get activityinformation
 def get_activityinformation(id):
-    sql3 = "SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id ORDER BY currentactivity.date DESC"
+    sql3 = "SELECT activitylevel.level, currentactivity.level_date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id ORDER BY currentactivity.level_date DESC"
     result3 = db.session.execute(sql3, {"id":id})
     activity = result3.fetchall
     return activity
@@ -199,10 +201,16 @@ def user_role():
     else: 
         return id
 
+@app.route("/logout")
+def logout_and_redirect():
+    logout()
+    return redirect("/")
+
 
 def logout():
-    del session["user_id"]            
-
+    del session["user_id"]
+    del session["role"]
+    return
 
 @app.route("/volunteer-view")
 def volunteerview():
@@ -246,9 +254,30 @@ def createadmin():
     
     return render_template("login.html", show=True, message="Registeration completed. Please login with your account.")
 
+@app.route("/docs/aboutus")
+def about_us():
+    id = user_id()
+    print(id)
+    logged = False
+    if id != 0:
+        logged = True
+    return render_template("docs/aboutus.html", logged=logged)
 
+@app.route("/docs/feedback")
+def feedback():
+    id = user_id()
+    print(id)
+    logged = False
+    if id != 0:
+        logged = True
+    return render_template("docs/feedback.html", logged=logged)
 
-
+@app.route("/submit-feedback", methods=["POST"])
+def submit_feedback():
+    content = request.form["content"]
+    now = datetime.date.today()
+    print(now)
+    return render_template("/docs/thank-you.html")
 
     
 
