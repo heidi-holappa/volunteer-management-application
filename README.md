@@ -10,10 +10,10 @@ The helpline staff needs to store information on the volunteer workers to mainta
 ## PHASE 2
 For easier reading experience you can view what's happening with the app in phase 2 from this section. To see the initial project plan from phase 1 please review sections Featuers and Datamodel. 
 
-** Web-version at Heroku **
+**Web-version at Heroku**
 The project is up and running in Heroku. You can find the project from https://helpline-management.herokuapp.com
 
-**State of the project **
+**State of the project**
  - You can create an admin account and login into the application
  - You can sign in into the account
  - You can logout once logged in. 
