@@ -22,7 +22,7 @@ https://helpline-management.herokuapp.com
  - As an admin you can create accounts for roles 'volunteer' and 'coordinator'
  - As an admin you can view created volunteers and view detailed information from a selected volunteer. Note: Editing volunteer information does not yet work. 
  - With an account with role 'volunteer' you can login into the volunteer view and post messages. 
- - As an admin you can view messages posted by volunteers
+ - As an admin you can view messages posted by volunteers. You can search messages based on content. 
  - Userlist shows how many tasks each volunteer user has carried out
  - Different pages have been initially authorized (only authorized users can view selected pages). Authorization needs to be improved.
 
@@ -30,7 +30,7 @@ https://helpline-management.herokuapp.com
 - Information validation: At the least it should be checked that all needed information is set. If not, user should receive an informative error message.
 - Usability: Update instructive texts
 - Messages can be replied by coordinators and admins
-- Search functions for messages and userlist
+- Search functions for userlist
 - Filters for userlist
 - Admin can delete users (note: soft delete at this point. Users state is set to not active. In a real PROD-app personal information would be purged/pseudonymized, but all relevant information would be kept - activities performed, training-participations, loan history, etc.)
 - Volunteer information can be edited. 

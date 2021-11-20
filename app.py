@@ -345,6 +345,22 @@ def supervisor_view_activities():
     print(nomessages)
     return render_template("message-view.html", messages=messages, nomessages=nomessages)
 
+@app.route("/search-activities")
+def supervisor_search_activities():
+    role = user_role()
+    if not role == 'admin' or role == 'coordinator':
+        return error("notauthorized")
+    query = request.args["query"]
+    sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE messages.content LIKE :query ORDER BY messages.activity_date DESC" 
+    result = db.session.execute(sql, {"query":"%"+query+"%"})
+    messages = result.fetchall()
+    if len(messages) == 0:
+        nomessages = True
+    else:
+        nomessages = False
+    print(nomessages)
+    return render_template("message-view.html", messages=messages, nomessages=nomessages)
+
 
 # TO-DO: CLEAN THIS AWAY
 # @app.route("/send", methods=["POST"])

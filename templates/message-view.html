@@ -38,8 +38,18 @@
                         <li>Optional if time: Admin has rights to delete messages</li>
                     </ul>
                     <h2>Submissions: </h2>
+                    <form action="/search-activities" method="GET">
+                        <table class="table">
+                            <tr>
+                                <td><input class="form-control" autocomplete="off" type="text" name="query" placeholder="Search by content"></td>
+                                <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+                            </tr>
+                        </table>
+                    </form>
+
+
                     {% if nomessages is sameas false %} 
-                        <table>
+                        <table class="table">
                             <tr>
                                 <th>Date</th>
                                 <th>Volunteer task</th>
