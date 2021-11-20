@@ -75,14 +75,31 @@ SELECT tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerquali
 SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=3;
 
 
+/* select users and count number of activities for each user */
+SELECT user_id, (SELECT COUNT(*) FROM tsohaproject.messages LEFT JOIN tsohaproject.users ON (messages.volunteer_id = users.user_id) GROUP BY users.user_id) FROM tsohaproject.users;
+
+SELECT users.*, COUNT(messages.volunteer_id) AS activitycounter FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) WHERE role='volunteer' GROUP BY users.user_id;
+
 /* Testing returning True/False based on whether volunteer has a certain qualification. In Postgres this is done with a CASE WHEN... THEN.... END */
-
-
 SELECT tasks.task, tasks.task_id, CASE WHEN tasks.task_id IN (SELECT tasks.task_id FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON (users.user_id = volunteerqualification.user_id) LEFT JOIN tsohaproject.tasks ON (volunteerqualification.task_id = tasks.task_id) WHERE users.user_id = 9) THEN true ELSE false END AS isqualified FROM tsohaproject.tasks;
 
-/* Get all messages in order */
+/* Get all messages in order  version 1 */
 
-SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC
+SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname 
+FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+ORDER BY messages.activity_date DESC
+
+/* Get all messages in order - versio 2 (problem: version 1 shows users with no messages) */
+
+SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname 
+FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+ORDER BY messages.activity_date DESC
+
+/* Option two thanks to a friendly tip on Telegram :) */
+SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname 
+FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+WHERE messages.content IS NOT NULL
+ORDER BY messages.activity_date DESC
 
 /* To run Flask in development server mode */
 export FLASK_ENV=development && flask run

@@ -76,10 +76,12 @@ CREATE TABLE "tsohaproject".DEVELOPMENTDISCUSSION (
 
 CREATE TABLE "tsohaproject".MESSAGES (
   "msg_id" SERIAL PRIMARY KEY,
-  "volunteer_id" integer,
+  "thread_id" integer,
   "sender_id" integer,
+  "volunteer_id" integer,
   "task_id" integer,
   "activity_date" date,
+  "send_date" timestamp,
   "content" varchar
 );
 

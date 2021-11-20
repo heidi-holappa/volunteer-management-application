@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 import os
 import re
-import datetime
+from datetime import datetime, timezone
 
 # TO-DO
 # SPLIT INTO MULTIPLE FILES
@@ -64,7 +64,7 @@ def users():
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     #Info: craft and execute SQL query
-    result = db.session.execute("SELECT users.*, COUNT(messages.volunteer_id) AS activitycounter FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) WHERE role='volunteer' GROUP BY users.user_id;")
+    result = db.session.execute("SELECT users.*, COUNT(messages.sender_id) AS activitycounter FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) WHERE role='volunteer' GROUP BY users.user_id;")
     users = result.fetchall()
     print(users)
     return render_template("users.html", count=len(users), users=users)
@@ -126,14 +126,16 @@ def submit_message_volunteer(id):
     if role != 'volunteer':
         return error("notauthorized")
     date = request.form["date"]
-    volunteer_id = id
     sender_id = id
+    volunteer_id = id
     task_id = int(request.form["doneactivity"])
     content = request.form["content"] 
-    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): volunteer_id: {volunteer_id}, sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}")
+    msg_sent = datetime.now(timezone.utc)
+    print(msg_sent)
+    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}, msg_sent: {msg_sent}")
     try:
-        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, content) VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :content)"
-        db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "activity_date":date, "content":content})
+        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, send_date, content) VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content)"
+        db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "activity_date":date, "send_date":msg_sent, "content":content})
         db.session.commit()
     except:
         return render_template("volunteer-view", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
