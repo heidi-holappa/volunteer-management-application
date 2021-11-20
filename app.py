@@ -45,24 +45,45 @@ def login():
 def register():
     return render_template("register.html", show=False)
 
+# TO-DO: CLEAN THIS AWAY
 @app.route("/new")
 def new():
     return render_template("new.html")
 
+# TO-DO: CLEAN THIS AWAY
 @app.route("/addnew", methods=["POST"])
 def addnew():
     return render_template("addnew.html")
 
 @app.route("/users")
 def users():
-    result = db.session.execute("SELECT * FROM tsohaproject.users WHERE role='volunteer'")
     # result = db.session.execute("SELECT users.lastname, users.role, users.firstname, users.user_id, users.email, string_agg(tasks.task, ', ') FROM tsohaproject.users, tsohaproject.volunteerqualification, tsohaproject.tasks WHERE users.user_id = volunteerqualification.user_id AND tasks.task_id = volunteerqualification.task_id GROUP BY users.lastname, users.firstname, users.role, users.user_id, users.email;")
+    # Info: check that user is authorized
+    # TO-DO: CAN THIS BE MOVED TO A FUNCTION?
+    role = user_role()
+    if role != 'admin' or role != 'coordinator':
+        return error("notauthorized")
+    #Info: craft and execute SQL query
+    result = db.session.execute("SELECT users.*, COUNT(messages.volunteer_id) AS activitycounter FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) WHERE role='volunteer' GROUP BY users.user_id;")
     users = result.fetchall()
     print(users)
     return render_template("users.html", count=len(users), users=users)
 
+def error(description):
+    id = user_id()
+    logged = False
+    if id != 0:
+        logged = True
+    if description == 'notauthorized':
+        message = "You have tried to access a page that you are not authorized to view. Please make sure you are logged in. If the problem continues, please leave feedback on the issue. Feedback form can be found in the footer"
+    return render_template("error.html", error=message, logged=logged)
+
+
 @app.route("/submituser", methods=["POST"])
 def submituser():
+    role = user_role()
+    if role != 'admin' or role != 'coordinator':
+        return error("notauthorized")
     lastname = request.form["lastname"]
     firstname = request.form["firstname"]
     email = request.form["email"]
@@ -96,6 +117,9 @@ def submituser():
 
 @app.route("/submit-message-volunteer/<int:id>", methods=["POST"])
 def submit_message_volunteer(id):
+    role = user_role()
+    if role != 'volunteer':
+        return error("notauthorized")
     date = request.form["date"]
     volunteer_id = id
     sender_id = id
@@ -114,6 +138,9 @@ def submit_message_volunteer(id):
 
 @app.route("/view-user/<int:id>")
 def viewuser(id):
+    role = user_role()
+    if role != 'admin' or role != 'coordinator':
+        return error("notauthorized")
     id = id
     user = get_userinfo(id)
     qualifications = get_qualifiations(id)
@@ -122,6 +149,9 @@ def viewuser(id):
 
 @app.route("/edit-user/<int:id>", methods=["GET", "POST"])
 def edituser(id):
+    role = user_role()
+    if role != 'admin' or role != 'coordinator':
+        return error("notauthorized")
     if request.method == "POST":
         id = id
         user = get_userinfo(id)
@@ -221,6 +251,9 @@ def logout():
 
 @app.route("/volunteer-view")
 def volunteerview():
+    role = user_role()
+    if role != 'volunteer':
+        return error("notauthorized")
     id = user_id()
     # Get basic information
     sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
@@ -298,6 +331,9 @@ def submit_feedback():
     
 @app.route("/view-activities")
 def supervisor_view_activities():
+    role = user_role()
+    if role != 'admin' or role != 'coordinator':
+        return error("notauthorized")
     sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC" 
     result = db.session.execute(sql)
     messages = result.fetchall()
@@ -310,6 +346,7 @@ def supervisor_view_activities():
     return render_template("message-view.html", messages=messages, nomessages=nomessages)
 
 
+# TO-DO: CLEAN THIS AWAY
 # @app.route("/send", methods=["POST"])
 # def send():
 #     content = request.form["content"]

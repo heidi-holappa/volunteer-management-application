@@ -17,7 +17,11 @@
                     <div class="col-12 text-center">
                         <h1 class="font-weight-light">Volunteer Management Application</h1>
                         <p class="lead">Inspirational slogan here.</p>
+                        {% if logged is sameas true %}  
                         <form action="/logout" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Logout"/></form>
+                        {% else %} 
+                        <form action="/login" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Login"/></form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -26,61 +30,24 @@
         <div class="container" style="margin-top:30px">
             <div class="row">
                 <div class="col-sm-8">
-                    <h1>TITLE HERE</h1>
+                    <h1>General Error page</h1>
+                    <br>    
+                    <p>Dear user, <br><br> you have landed here because of an error. Below you see details of the error encountered and instructions on how to proceed. We apologize for the inconvenience.</p>
+
+                    <div class="alert alert-danger" role="alert">{{ error }}</div>
                     <br>
-                    <h2>To-do</h2>
+                    <br>
+
+                    <h2>To-Do: </h2>
                     <ul>
-                        <li>Add search feature</li>
-                        <li>Add filter based on activity</li>
-                        <li>Build authorization (only roles coordinator and admin can view this page and subpages)</li>
+                        <li>If time: log errors</li>
                     </ul>
-
-                    
-                    <div>Number of users: {{ count }}</div>
-                    <br>
-
-                    <form action="/addnew" method='POST'><input class="btn btn-primary" id="addnew" name="addnew" type="submit" value="Create new user"/></form>
-                    <br>
-                    <form action="/view-activities" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="View completed activities"/></form>
-                    <br>
-                    
-
-                    
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>User-ID</th>
-                                <th>Lastname</th>
-                                <th>Firstname</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <!-- <th>Qualifications</th> -->
-                                <th>Activites done</th>
-                                <th>Modify</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                                <tr>
-                                    <td>{{ user.user_id }}</td>
-                                    <td>{{ user.lastname }}</td>
-                                    <td>{{ user.firstname }}</td>
-                                    <td>{{ user.email }}</td>
-                                    <td>{{user.role}}</td>
-                                    <td>{{ user.activitycounter }}</td>
-                                    <!-- <td>{{ user.string_agg }}</td> -->
-                                    <td><a href="view-user/{{ user.user_id }}">View details</a></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
-                    <a href="/">Palaa takaisin</a>
                 </div>
             </div>
         </div>
-        
-        
+
+
+
         <div class="jumbotron text-center" style="margin-bottom:0">
             <footer>
                 <div class="container">
