@@ -7,6 +7,23 @@ The demonstration setting is a fictional helpline service that provides counseli
 
 The helpline staff needs to store information on the volunteer workers to maintain the helpline activities. The basic principle is to store only information that is necessary and relevant for the helpline activity. A detailed list of information is described later on. Because the nature of this project is educational, some information requiring the storing of more sensitive content has been opted out to make sure that not in any point of development and testing such information would be submitted into this application and stored in its database (for instance a background check done to volunteers working with children and adolescents). Additionally because of the scope of the course the focus is on the most relevant basic features. 
 
+## PHASE 2
+For easier reading experience you can view what's happening with the app in phase 2 from this section. To see the initial project plan from phase 1 please review sections Featuers and Datamodel. 
+
+** Web-version at Heroku **
+The project is up and running in Heroku. You can find the project from https://helpline-management.herokuapp.com
+
+**State of the project **
+ - You can create an admin account and login into the application
+ - You can sign in into the account
+ - You can logout once logged in. 
+ - The site has two pages that can be viewed without logging in. They are located in the footer (About us, Feedback). If user is logged in, these pages have a button to logout. Otherwise these pages have a button for logging in. 
+ - As an admin you can create accounts for roles 'volunteer' and 'coordinator'
+ - As an admin you can view created volunteers and view detailed information from a selected volunteer. Note: Editing volunteer information does not yet work. 
+ - With an account with role 'volunteer' you can login into the volunteer view and post messages. 
+ - As an admin you can view messages posted by volunteers
+
+
 ## FEATURES
 This application can be used in different roles. Helpline coordinators manage personal information stored about volunteers. Coordinators also create accounts for volunteers. Volunteers use this application to report on volunteer activities they perform. Volunteers have an access to review what information has been stored about them. The application also has an administrator who has access to some additional features in the application (detailed below).  The helpline staff can send messages to a volunteer and a volunteer can send messages to the helpline staff. 
 
