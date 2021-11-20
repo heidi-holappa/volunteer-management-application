@@ -61,7 +61,7 @@ def users():
     # Info: check that user is authorized
     # TO-DO: CAN THIS BE MOVED TO A FUNCTION?
     role = user_role()
-    if role != 'admin' or role != 'coordinator':
+    if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     #Info: craft and execute SQL query
     result = db.session.execute("SELECT users.*, COUNT(messages.volunteer_id) AS activitycounter FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) WHERE role='volunteer' GROUP BY users.user_id;")
@@ -82,7 +82,7 @@ def error(description):
 @app.route("/submituser", methods=["POST"])
 def submituser():
     role = user_role()
-    if role != 'admin' or role != 'coordinator':
+    if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     lastname = request.form["lastname"]
     firstname = request.form["firstname"]
@@ -139,7 +139,7 @@ def submit_message_volunteer(id):
 @app.route("/view-user/<int:id>")
 def viewuser(id):
     role = user_role()
-    if role != 'admin' or role != 'coordinator':
+    if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     id = id
     user = get_userinfo(id)
@@ -150,7 +150,7 @@ def viewuser(id):
 @app.route("/edit-user/<int:id>", methods=["GET", "POST"])
 def edituser(id):
     role = user_role()
-    if role != 'admin' or role != 'coordinator':
+    if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     if request.method == "POST":
         id = id
@@ -332,7 +332,7 @@ def submit_feedback():
 @app.route("/view-activities")
 def supervisor_view_activities():
     role = user_role()
-    if role != 'admin' or role != 'coordinator':
+    if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC" 
     result = db.session.execute(sql)
