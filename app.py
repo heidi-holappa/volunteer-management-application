@@ -3,7 +3,7 @@ from flask import redirect, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from random import randrange
 from flask import session
-from sqlalchemy.sql.elements import False_
+from sqlalchemy.sql.elements import False_, Null
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 import os
@@ -92,15 +92,18 @@ def submituser():
     username = request.form["username"]
     password = request.form["password"]
     password2 = request.form["password2"]
-        #Password validation => Move to another module
+    # Create default values for a new user
+    isactive = True
+    activitylevel = 4
+    #Password validation => Move to another module
     if len(password) < 8:
         return render_template("addnew.html", show=True, message="Password must be atleast 8 characters long.")
     if password != password2: 
         return render_template("addnew.html", show=True, message="Passwords do not match, try again.")
     hash_value = generate_password_hash(password)
     try:
-        sql = "INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username) VALUES (:lastname, :firstname, :email, :startdate, :role, :username) RETURNING user_id"
-        result = db.session.execute(sql, {"lastname": lastname, "firstname":firstname, "email":email, "startdate":date, "role":role, "username":username})
+        sql = "INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username, isactive) VALUES (:lastname, :firstname, :email, :startdate, :role, :username, :isactive) RETURNING user_id"
+        result = db.session.execute(sql, {"lastname": lastname, "firstname":firstname, "email":email, "startdate":date, "role":role, "username":username, "isactive":isactive})
         user_id = result.fetchone()[0]
         qualifications = request.form.getlist("qualification")
         print(qualifications)
@@ -110,6 +113,8 @@ def submituser():
                 db.session.execute(sql, {"task_id":task_id, "user_id":user_id})
         sqlpassword = "INSERT INTO tsohaproject.password (user_id, password) VALUES (:user_id, :password)"
         db.session.execute(sqlpassword, {"user_id":user_id, "password":hash_value})
+        sqlactivity = "INSERT INTO tsohaproject.currentactivity (level_date, user_id, activity_id) VALUES (:level_date, :user_id, :activitylevel)" 
+        db.session.execute(sqlactivity, {"level_date":date, "user_id":user_id, "activitylevel":activitylevel})
         db.session.commit()
     except:
         return render_template("register.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
@@ -135,6 +140,43 @@ def submit_message_volunteer(id):
 
 
     return redirect("/volunteer-view")
+
+# Old userinfo is fetched from database and updated for those fields that can be updated. 
+@app.route("/update-user/<int:id>", methods=["POST"])
+def update_user(id):
+    user_id = id
+    sql = "SELECT * FROM tsohaproject.users WHERE user_id=:id"
+    result = db.session.execute(sql, {"id":id})
+    oldinfo = result.fetchone()
+    oldqualifications = get_qualifiations(id)
+    lastname = request.form["lastname"]
+    firstname = request.form["firstname"]
+    email = request.form["email"]
+    phone = request.form["phone"]
+    startdate = request.form["startdate"]
+    role = request.form["role"]
+    username = request.form["username"]
+    isactive = True
+    if request.form.get("terminate") != None:
+        isactive = False
+    if not isactive:
+        enddate = datetime.date.today()
+        print(enddate)
+    else: 
+        enddate = None
+    newinfo = [oldinfo[0], role, lastname, firstname, username, email, phone, startdate, enddate, oldinfo[9], isactive ]
+    # for i in oldinfo:
+    #     print(i)
+    # for j in newinfo:
+    #     print(j)
+    try:
+        sql = "UPDATE tsohaproject.users SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, basictraining=:basictraning, isactive=:isactive WHERE user_id=:user_id"
+        db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], "firstname":newinfo[3], "username":newinfo[4], "email":newinfo[5], "phone":newinfo[6], "startdate":newinfo[7], "enddate":newinfo[8], "basictraning":newinfo[9], "isactive":newinfo[10], "user_id":user_id})
+        db.session.commit()
+    except:
+        return render_template("error.html", logged=True, error="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
+    return redirect("view-user.html", user=oldinfo, qualifications=oldqualifications)
+    
 
 @app.route("/view-user/<int:id>")
 def viewuser(id):
@@ -174,9 +216,9 @@ def get_qualifiations(id):
 
 # Get basic userinformation from table users
 def get_userinfo(id):
-    sql1 = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
-    result1 = db.session.execute(sql1, {"id":id})
-    user = result1.fetchone()
+    sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
+    result = db.session.execute(sql, {"id":id})
+    user = result.fetchone()
     return user
 
 # Get activityinformation

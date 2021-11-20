@@ -27,11 +27,7 @@
             <div class="row">
                 <div class="col-sm-8">
                     <h1>Volunteer view</h1>
-                    <h2>To-Do: </h2>
-                    <ul>
-                        <li>Volunteers have an opportunity to click a checkbox indicating they want a reply to a sent message.</li>
-                        <li>Admins and coordinators can reply to messages. Replies show next to the message they are related to. </li>
-                    </ul>
+
 
                     <br>
                     <p>Hello {{ user.firstname }}, welcome to the volunteer app!.</p>
@@ -84,6 +80,15 @@
                     {% else %}
                     {% endif %}
 
+
+                    <div class="alert alert-warning" role="alert">
+                        <b>To-Do: </b>
+                        <ul>
+                            <li>Volunteers have an opportunity to click a checkbox indicating they want a reply to a sent message.</li>
+                            <li>Admins and coordinators can reply to messages. Replies show next to the message they are related to. </li>
+                            <li><b>Fix bug: </b>User can have no qualifications and still post a message. Fix user creation (can't create users with no qualifications)</li>
+                        </ul>
+                    </div>
     
 
                 </div>

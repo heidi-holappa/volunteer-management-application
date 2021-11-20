@@ -25,10 +25,7 @@
             <div class="container" style="margin-top:30px">
                 <div class="row">
                     <div class="col-sm-8">
-                        <h2>To-do:</h2>
-                        <ul>
-                            <li>Add activity to SQL-query</li>
-                        </ul>
+
                         <div>
                             {% if show is sameas true %}
                                 Error: {{ message }}
@@ -115,6 +112,12 @@
                         <br>
                         <form action="/users" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Cancel"/></form>    
                         <br>
+                        <div class="alert alert-warning" role="alert">
+                            <b>To-Do: </b>
+                            <ul>
+                                <li>Add activity to SQL-query</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -30,13 +30,7 @@
                     <br>
                     <form action="/users" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Back"/></form>    
                     <br>
-                    To-do: 
-                    <ul>
-                        <li>Add dropdown for choosing volunteers to filter on one volunteer</li>
-                        <li>Add search feature</li>
-                        <li>Roles admin and coordinator can reply to messages. To think about: Can there be only one reply, or can there be correspondence?</li>
-                        <li>Optional if time: Admin has rights to delete messages</li>
-                    </ul>
+
                     <h2>Submissions: </h2>
                     <form action="/search-activities" method="GET">
                         <table class="table">
@@ -67,6 +61,16 @@
                         </table>
                     {% else %}
                     {% endif %}
+
+                    <div class="alert alert-warning" role="alert">
+                        <b>To-Do: </b>
+                        <ul>
+                            <li>Add dropdown for choosing volunteers to filter on one volunteer</li>
+                            <li>Add search feature</li>
+                            <li>Roles admin and coordinator can reply to messages. To think about: Can there be only one reply, or can there be correspondence?</li>
+                            <li>Optional if time: Admin has rights to delete messages</li>
+                        </ul>
+                    </div>
     
 
                 </div>

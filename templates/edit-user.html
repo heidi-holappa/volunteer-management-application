@@ -29,12 +29,6 @@
                         <h1>Edit user information</h1>
                         <br>
                         <p>The plan is for the coordinators to be able to edit volunteer information. This page is not yet finished. Later on this will have an option to change activitylevel, mark loaned tools and input additional trainings. Perhaps this page will also show user activity? </p>
-                        <h2>To-Do: </h2>
-                        <ul>
-                            <li>Editing user information does not yet work. Build function and query.</li>
-                            <li>Add update change activity (or maybe in 'view-user.html' view?) </li>
-                            <li>Add additional training (or maybe in 'view-user.html' view)? </li>
-                        </ul>
                         
                         <form action="/update-user/{{ user.user_id }}" method="POST">
                             <table>
@@ -49,6 +43,10 @@
                                 <tr>
                                     <td>Email:</td>
                                     <td><input class="form-control" id="email" type='text' name='email' value= '{{ user.email }}' /></td>
+                                </tr>
+                                <tr>
+                                    <td>Phone:</td>
+                                    <td><input class="form-control" id="phone" type='text' name='phone' value= '{{ user.phone }}' /></td>
                                 </tr>
                                 <tr>
                                     <td>Start date:</td>
@@ -83,11 +81,25 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td></td>
+                                    <td>
+                                        <input class="form-check-input" type="checkbox" value="true" name="terminate"> 
+                                        <label class="form-check-label" for="terminate">Terminate account</label>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
                                 </tr>
                             </table>
                         </form>
-                                
+                        <form action="/view-user" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Cancel"/></form>    
+                        <div class="alert alert-warning" role="alert">
+                            <b>To-Do: </b>
+                            <ul>
+                                <li>Add update change activity (or maybe in 'view-user.html' view?) </li>
+                                <li>Add additional training (or maybe in 'view-user.html' view)? </li>
+                            </ul>
+                        </div>
         
 
                     </div>

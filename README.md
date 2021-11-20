@@ -25,6 +25,7 @@ https://helpline-management.herokuapp.com
  - As an admin you can view messages posted by volunteers. You can search messages based on content. 
  - Userlist shows how many tasks each volunteer user has carried out
  - Different pages have been initially authorized (only authorized users can view selected pages). Authorization needs to be improved.
+ - Volunteer information can be edited. 
 
 **Missing features (to be built for phase 3)**
 - Information validation: At the least it should be checked that all needed information is set. If not, user should receive an informative error message.
@@ -33,10 +34,10 @@ https://helpline-management.herokuapp.com
 - Search functions for userlist
 - Filters for userlist
 - Admin can delete users (note: soft delete at this point. Users state is set to not active. In a real PROD-app personal information would be purged/pseudonymized, but all relevant information would be kept - activities performed, training-participations, loan history, etc.)
-- Volunteer information can be edited. 
 - Volunteers can be loaned tools, activity level can be changed and additional trainings can be added to their information. 
 - Authorization is improved.
 - The overall look of the user interface needs to be polished. Some initial accessibility testing should also be performed (can this site be used well in a text based browser for instance)
+- code is separated into multiple files. Flask extends is introduced to make managing repeating HTML elements easier. 
 
 **If there is time, these'd be nice to add (but are not a top priority):**
 - Some simple report data (training participations, performed activities per year and month)
