@@ -8,21 +8,38 @@ The demonstration setting is a fictional helpline service that provides counseli
 The helpline staff needs to store information on the volunteer workers to maintain the helpline activities. The basic principle is to store only information that is necessary and relevant for the helpline activity. A detailed list of information is described later on. Because the nature of this project is educational, some information requiring the storing of more sensitive content has been opted out to make sure that not in any point of development and testing such information would be submitted into this application and stored in its database (for instance a background check done to volunteers working with children and adolescents). Additionally because of the scope of the course the focus is on the most relevant basic features. 
 
 ## PHASE 2
-For easier reading experience you can view what's happening with the app in phase 2 from this section. To see the initial project plan from phase 1 please review sections Featuers and Datamodel. 
+For easier reading experience you can view what's happening with the app in phase 2 from this section. To see the initial project plan from phase 1 please review sections Featuers and Datamodel. All feedback is very welcome. I would especially appreciate feedback on 'Missing features.' Is there something I have overlooked that I should add to the list?
 
-**Web-version at Heroku**
-The project is up and running in Heroku. You can find the project from https://helpline-management.herokuapp.com
+**Web-version at Heroku:** The project is up and running in Heroku. You can find the project from 
+
+https://helpline-management.herokuapp.com
 
 **State of the project**
  - You can create an admin account and login into the application
  - You can sign in into the account
  - You can logout once logged in. 
- - The site has two pages that can be viewed without logging in. They are located in the footer (About us, Feedback). If user is logged in, these pages have a button to logout. Otherwise these pages have a button for logging in. 
+ - The site has two pages that can be viewed without logging in. They are located in the footer (About us, Feedback). If user is logged in, these pages have a button to logout. Otherwise these pages have a button for logging in. Please note that as of now the feedback form does not actually submit feedback. That function is still to be built. 
  - As an admin you can create accounts for roles 'volunteer' and 'coordinator'
  - As an admin you can view created volunteers and view detailed information from a selected volunteer. Note: Editing volunteer information does not yet work. 
  - With an account with role 'volunteer' you can login into the volunteer view and post messages. 
  - As an admin you can view messages posted by volunteers
 
+**Missing features (to be built for phase 3)**
+- Messages can be replied by coordinators and admins
+- Search functions for messages and userlist
+- Filters for userlist
+- Userlist shows how many tasks each volunteer user has carried out
+- Admin can delete users (note: soft delete at this point. Users state is set to not active. In a real PROD-app personal information would be purged/pseudonymized, but all relevant information would be kept - activities performed, training-participations, loan history, etc.)
+- Volunteer information can be edited. 
+- Volunteers can be loaned tools, activity level can be changed and additional trainings can be added to their information. 
+- Each view and all information is properly authorized.
+- The overall look of the user interface needs to be polished. Some initial accessibility testing should also be performed (can this site be used well in a text based browser for instance)
+
+**If there is time, these'd be nice to add (but are not a top priority):**
+- Some simple report data (training participations, performed activities per year and month)
+- Some simple log-information (who has done and what)
+
+**Other information:** If you wish to create a local version of the application, you can find demodata for the project in the file demodata.sql. The file also contains some queries you can test in psql to test out the project and for educational purposes. 
 
 ## FEATURES
 This application can be used in different roles. Helpline coordinators manage personal information stored about volunteers. Coordinators also create accounts for volunteers. Volunteers use this application to report on volunteer activities they perform. Volunteers have an access to review what information has been stored about them. The application also has an administrator who has access to some additional features in the application (detailed below).  The helpline staff can send messages to a volunteer and a volunteer can send messages to the helpline staff. 
