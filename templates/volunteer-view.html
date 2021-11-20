@@ -37,7 +37,7 @@
                         <table>
                             <tr>
                                 <td>Choose date:</td>
-                                <td><input class="form-control" id="date" placeholder="Enter date of activity" type='date' name='activitydate' /></td>
+                                <td><input class="form-control" id="date" placeholder="Enter date of activity" type='date' name='date' /></td>
                             </tr>
                             <tr>
                                 <td>Select activity:</td>
@@ -58,8 +58,26 @@
                                 <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
                             </tr>
                         </table>
-                    
                     </form>
+
+                    <h2>My activities</h2>
+                    {% if nomessages is sameas false %} 
+                        <table>
+                            <tr>
+                                <th>Date</th>
+                                <th>Volunteer task</th>
+                                <th>Description</th>
+                            </tr>
+                            {% for message in messages %}  
+                            <tr>
+                                <td>{{ message.activity_date }}</td>
+                                <td>{{ message.task }}</td>
+                                <td>{{ message.content }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                    {% endif %}
 
     
 

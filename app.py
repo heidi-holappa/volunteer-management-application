@@ -10,6 +10,12 @@ import os
 import re
 import datetime
 
+# TO-DO
+# SPLIT INTO MULTIPLE FILES
+# MAKE MORE FUNCTIONS THAT SERVE GENERAL PURPOSES
+# CLEAN UP CODE
+# CHECK WEB-APP'S TO-DO LISTS FOR ADDITIONAL TASKS
+
 
 app = Flask(__name__)
 # from dotenv import load_dotenv
@@ -91,13 +97,14 @@ def submituser():
 @app.route("/submit-message-volunteer/<int:id>", methods=["POST"])
 def submit_message_volunteer(id):
     date = request.form["date"]
-    id = id
-    activity = request.form["doneactivity"]
+    volunteer_id = id
+    sender_id = id
+    task_id = int(request.form["doneactivity"])
     content = request.form["content"] 
-    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): id: {id}, date: {date}, activity-id: {activity} content: {content}")
+    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): volunteer_id: {volunteer_id}, sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}")
     try:
-        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, content) VALUES (:id, :id, :activity, :content)"
-        db.session.execute(sql, {"id":id, "id":id, "task_id":activity, "content":content})
+        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, content) VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :content)"
+        db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "activity_date":date, "content":content})
         db.session.commit()
     except:
         return render_template("volunteer-view", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
@@ -223,7 +230,16 @@ def volunteerview():
     sql2 = "SELECT tasks.task_id, tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
     result2 = db.session.execute(sql2, {"id":id})
     activities = result2.fetchall()
-    return render_template("volunteer-view.html", user=user, activities=activities)
+    sql3 = "SELECT messages.activity_date, messages.content, tasks.task FROM tsohaproject.messages LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE messages.volunteer_id=:id ORDER BY messages.activity_date DESC" 
+    result3 = db.session.execute(sql3, {"id":id})
+    messages = result3.fetchall()
+    print(messages)
+    if len(messages) == 0:
+        nomessages = True
+    else:
+        nomessages = False
+    print(nomessages)
+    return render_template("volunteer-view.html", user=user, activities=activities, messages=messages, nomessages=nomessages)
 
 
 #This method receives a new registration and coordinates/handles validation, saving to database and possible errors. 
@@ -280,6 +296,18 @@ def submit_feedback():
     return render_template("/docs/thank-you.html")
 
     
+@app.route("/view-activities")
+def supervisor_view_activities():
+    sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC" 
+    result = db.session.execute(sql)
+    messages = result.fetchall()
+    print(messages)
+    if len(messages) == 0:
+        nomessages = True
+    else:
+        nomessages = False
+    print(nomessages)
+    return render_template("message-view.html", messages=messages, nomessages=nomessages)
 
 
 # @app.route("/send", methods=["POST"])

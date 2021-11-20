@@ -80,3 +80,10 @@ SELECT activitylevel.level, currentactivity.date  FROM tsohaproject.users LEFT J
 
 SELECT tasks.task, tasks.task_id, CASE WHEN tasks.task_id IN (SELECT tasks.task_id FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON (users.user_id = volunteerqualification.user_id) LEFT JOIN tsohaproject.tasks ON (volunteerqualification.task_id = tasks.task_id) WHERE users.user_id = 9) THEN true ELSE false END AS isqualified FROM tsohaproject.tasks;
 
+/* Get all messages in order */
+
+SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC
+
+/* To run Flask in development server mode */
+export FLASK_ENV=development && flask run
+
