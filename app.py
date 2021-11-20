@@ -78,7 +78,7 @@ def error(description):
         message = "You have tried to access a page that you are not authorized to view. Please make sure you are logged in. If the problem continues, please leave feedback on the issue. Feedback form can be found in the footer"
     return render_template("error.html", error=message, logged=logged)
 
-
+#Purpose: this function adds a new user
 @app.route("/submituser", methods=["POST"])
 def submituser():
     role = user_role()
@@ -88,18 +88,27 @@ def submituser():
     firstname = request.form["firstname"]
     email = request.form["email"]
     date = request.form["startdate"]
-    role = request.form["role"]
+    # Had to juggle a bit with a 'selected disabled' form element. Solved the issue with try.
+    try:
+        role = request.form["role"]
+    except:
+        role = None
     username = request.form["username"]
     password = request.form["password"]
     password2 = request.form["password2"]
+    params = [lastname, firstname, email, date, role, username]
+    # Check that all fields have information
+    for i in params:
+        if i == None or len(i) == 0:
+            return render_template("addnew.html", show=True, message="One of the fields was empty. Please carefully fill in all fields.", filled=params)
     # Create default values for a new user
     isactive = True
     activitylevel = 4
-    #Password validation => Move to another module
+    #Password validation => TO-DO: Move to another module
     if len(password) < 8:
-        return render_template("addnew.html", show=True, message="Password must be atleast 8 characters long.")
+        return render_template("addnew.html", show=True, message="Password must be atleast 8 characters long.", filled=params)
     if password != password2: 
-        return render_template("addnew.html", show=True, message="Passwords do not match, try again.")
+        return render_template("addnew.html", show=True, message="Passwords do not match, try again.", filled=params)
     hash_value = generate_password_hash(password)
     try:
         sql = "INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username, isactive) VALUES (:lastname, :firstname, :email, :startdate, :role, :username, :isactive) RETURNING user_id"
@@ -117,9 +126,11 @@ def submituser():
         db.session.execute(sqlactivity, {"level_date":date, "user_id":user_id, "activitylevel":activitylevel})
         db.session.commit()
     except:
-        return render_template("register.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
+        return render_template("addnew.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
     return redirect("/users")
 
+
+# This function stores a new message. 
 @app.route("/submit-message-volunteer/<int:id>", methods=["POST"])
 def submit_message_volunteer(id):
     role = user_role()
@@ -131,11 +142,14 @@ def submit_message_volunteer(id):
     task_id = int(request.form["doneactivity"])
     content = request.form["content"] 
     msg_sent = datetime.now(timezone.utc)
-    print(msg_sent)
-    print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}, msg_sent: {msg_sent}")
+    # print(msg_sent)
+    # print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}, msg_sent: {msg_sent}")
     try:
-        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, send_date, content) VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content)"
-        db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "activity_date":date, "send_date":msg_sent, "content":content})
+        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, send_date, content) VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content) RETURNING msg_id"
+        result = db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "activity_date":date, "send_date":msg_sent, "content":content})
+        msg_id = result.fetchone()[0]
+        sql_update = "UPDATE tsohaproject.messages SET thread_id=:msg_id WHERE msg_id=:msg_id"
+        db.session.execute(sql_update, {"msg_id":msg_id})
         db.session.commit()
     except:
         return render_template("volunteer-view", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")

@@ -28,7 +28,7 @@
 
                         <div>
                             {% if show is sameas true %}
-                                Error: {{ message }}
+                                <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
                             {% else %}
                             {% endif %}
                         </div>
@@ -37,23 +37,23 @@
                             <table>
                                 <tr>
                                     <td>Last name:</td>
-                                    <td><input  class="form-control" id='lastname' placeholder="Enter last name" type='text' name='lastname' value=''></td>
+                                    <td><input  class="form-control" id='lastname' placeholder="Enter last name" type='text' name='lastname' value='{% if show is sameas true %}{{ filled[0] }}{% else %}{% endif %}' ></td>
                                 </tr>
                                 <tr>
                                     <td>First name:</td>
-                                    <td><input class="form-control" id="firstname" placeholder="Enter first name" type='text' name='firstname' /></td>
+                                    <td><input class="form-control" id="firstname" placeholder="Enter first name" type='text' name='firstname' value='{% if show is sameas true %}{{ filled[1] }}{% else %}{% endif %}'/></td>
                                 </tr>
                                 <tr>
                                     <td>Email:</td>
-                                    <td><input class="form-control" id="email" placeholder="Enter e-mail address" type='text' name='email' /></td>
+                                    <td><input class="form-control" id="email" placeholder="Enter e-mail address" type='text' name='email' value='{% if show is sameas true %}{{ filled[2] }}{% else %}{% endif %}'/></td>
                                 </tr>
                                 <tr>
                                     <td>Start date:</td>
-                                    <td><input class="form-control" id="startdate" placeholder="Enter start date" type='date' name='startdate' /></td>
+                                    <td><input class="form-control" id="startdate" placeholder="Enter start date" type='date' name='startdate' value='{% if show is sameas true %}{{ filled[3] }}{% else %}{% endif %}' /></td>
                                 </tr>
                                 <tr>
                                     <td>Username: </td>
-                                    <td><input class="form-control" id="username" placeholder="Enter username" type='text' name='username' /></td>
+                                    <td><input class="form-control" id="username" placeholder="Enter username" type='text' name='username' value='{% if show is sameas true %}{{ filled[5] }}{% else %}{% endif %}' /></td>
                                 </tr>
                                 <tr>
                                     <td>Password: </td>
@@ -115,7 +115,7 @@
                         <div class="alert alert-warning" role="alert">
                             <b>To-Do: </b>
                             <ul>
-                                <li>Add activity to SQL-query</li>
+                                <li>If something is missing, don't lose filled information</li>
                             </ul>
                         </div>
                     </div>

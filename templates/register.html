@@ -28,10 +28,11 @@
                 <div class="row">
                     <div class="col-sm-8">
                         <h2>Create a new admin-level account.</h2>
-                        <p>As an administrator you can create and manage user accounts in different roles. </p>
+                        <p>In this demo you can create an administrator level account for yourself. As an administrator you can create and manage user accounts in different roles. </p>
+                        <p>Please note that password must have atleast 8 characters.</p>
                         <div>
                             {% if show is sameas true %}
-                                Error: {{ message }}
+                                <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
                             {% else %}
                             {% endif %}
                         </div>
@@ -59,8 +60,8 @@
                                     <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
                                 </tr>
                             </table>
-
                         </form>
+                        <form action="/" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Back"/></form>
                         <br />
 
                     </div>

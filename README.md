@@ -28,7 +28,7 @@ https://helpline-management.herokuapp.com
  - Volunteer information can be edited. 
 
 **Missing features (to be built for phase 3)**
-- Information validation: At the least it should be checked that all needed information is set. If not, user should receive an informative error message.
+- Improve information validation: At the least it should be checked that all needed information is set. If not, user should receive an informative error message.
 - Usability: Update instructive texts
 - Messages can be replied by coordinators and admins
 - Search functions for userlist
@@ -37,7 +37,7 @@ https://helpline-management.herokuapp.com
 - Volunteers can be loaned tools, activity level can be changed and additional trainings can be added to their information. 
 - Authorization is improved.
 - The overall look of the user interface needs to be polished. Some initial accessibility testing should also be performed (can this site be used well in a text based browser for instance)
-- code is separated into multiple files. Flask extends is introduced to make managing repeating HTML elements easier. 
+- code needs to me refactored into multiple modules. Flask extends will be introduced to make managing repeating HTML elements easier and more reliable. 
 
 **If there is time, these'd be nice to add (but are not a top priority):**
 - Some simple report data (training participations, performed activities per year and month)
