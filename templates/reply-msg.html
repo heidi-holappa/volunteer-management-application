@@ -26,53 +26,30 @@
         <div class="container" style="margin-top:30px">
             <div class="row">
                 <div class="col-sm-8">
-                    <h1>Volunteer activity</h1>
+                    <h1>Write a reply</h1>
                     <br>
-                    <form action="/users" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Back"/></form>    
-                    <br>
-
-                    <h2>Submissions: </h2>
-                    <form action="/search-activities" method="GET">
-                        <table class="table">
+                    <form action="/submit-reply/{{ id }}" method="POST">
+                        <table>
                             <tr>
-                                <td><input class="form-control" autocomplete="off" type="text" name="query" placeholder="Search by content"></td>
-                                <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+                                <td colspan="2">
+                                    <div class="alert alert-secondary" role="alert">
+                                        <b>Original message by: </b> {{ message.firstname }} {{ message.lastname }} <br>
+                                        <b>Content: </b> <br> <br>
+                                        {{ message.content }}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <input type="hidden" id="task_id" name="task_id" value="{{ message.task_id }}">
+                            </tr>
+                            <tr>
+                                <td colspan="2"><textarea  class="form-control" id='content' placeholder="Write a reply" type='text' name='content' rows="4" cols="50"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
                             </tr>
                         </table>
-                    </form>
-
-
-                    {% if nomessages is sameas false %} 
-                        <table class="table">
-                            <tr>
-                                <th>Date</th>
-                                <th>Volunteer task</th>
-                                <th>Description</th>
-                                <th>Volunteer</th>
-                                <th>Reply message</th>
-                            </tr>
-                            {% for message in messages %}  
-                            <tr>
-                                <td>{% if message.role=='volunteer' %}{{ message.activity_date }}{% else %}{% endif %}</td>
-                                <td>{% if message.role=='volunteer' %}{{ message.task }}{% else %}{% endif %}</td>
-                                <td>{{ message.content }}</td>
-                                <td>{% if message.role=='volunteer' %}{{ message.firstname }} {{ message.lastname }}{% else %}{{ message.username }}{% endif %}</td>
-                                <td>{% if message.role=='volunteer' %}<a href="reply-msg/{{ message.msg_id }}">Reply</a>{% else %}{% endif %}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    {% else %}
-                    {% endif %}
-
-                    <div class="alert alert-warning" role="alert">
-                        <b>To-Do: </b>
-                        <ul>
-                            <li>Add dropdown for choosing volunteers to filter on one volunteer</li>
-                            <li>Make messages more readable. Maybe different color boxes for messages and replies?</li>
-                            <li>Optional if time: Admin has rights to delete messages</li>
-                            <li>Optional if time: Make pages (i.e. 10 messages per page, etc.)</li>
-                        </ul>
-                    </div>
+                    </form>    
     
 
                 </div>

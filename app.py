@@ -392,7 +392,8 @@ def supervisor_view_activities():
     role = user_role()
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
-    sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC" 
+    sql = "SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.thread_id DESC, messages.activity_date ASC"
+    # sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC" 
     result = db.session.execute(sql)
     messages = result.fetchall()
     print(messages)
@@ -402,6 +403,31 @@ def supervisor_view_activities():
         nomessages = False
     print(nomessages)
     return render_template("message-view.html", messages=messages, nomessages=nomessages)
+
+@app.route("/reply-msg/<int:id>")
+def reply_msg(id):
+    sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task_id FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE msg_id=:id"
+    result = db.session.execute(sql, {"id":id})
+    message = result.fetchone()
+    return render_template("reply-msg.html", id=id, message=message)
+
+@app.route("/submit-reply/<int:id>", methods=["POST"])
+def submit_reply(id):
+    sql = "SELECT volunteer_id FROM tsohaproject.messages WHERE msg_id=:id"
+    result = db.session.execute(sql, {"id":id})
+    volunteer_id = result.fetchone()[0]
+    sender_id = user_id()
+    thread_id = id
+    task_id = request.form["task_id"]
+    content = request.form["content"]
+    msg_sent = datetime.now(timezone.utc)
+    try:
+        sql="INSERT INTO tsohaproject.messages (thread_id, volunteer_id, sender_id, task_id, send_date, content) VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"
+        result = db.session.execute(sql, {"thread_id":thread_id ,"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "send_date":msg_sent, "content":content})
+        db.session.commit()
+    except:
+        return render_template("error.html", show=True, error="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
+    return redirect("/view-activities")
 
 @app.route("/search-activities")
 def supervisor_search_activities():
@@ -418,6 +444,8 @@ def supervisor_search_activities():
         nomessages = False
     print(nomessages)
     return render_template("message-view.html", messages=messages, nomessages=nomessages)
+
+
 
 
 # TO-DO: CLEAN THIS AWAY
