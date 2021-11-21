@@ -208,7 +208,7 @@ def update_user(id):
         db.session.commit()
     except:
         return render_template("error.html", logged=True, error="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
-    return redirect("view-user.html", user=oldinfo, qualifications=oldqualifications)
+    return redirect("/view-user/" + str(user_id))
     
 
 @app.route("/view-user/<int:id>")
