@@ -166,8 +166,6 @@ def submit_message_volunteer(id):
         db.session.commit()
     except:
         return render_template("volunteer-view", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
-
-
     return redirect("/volunteer-view")
 
 # Old userinfo is fetched from database and updated for those fields that can be updated. 
