@@ -436,6 +436,7 @@ def supervisor_view_activities():
     role = user_role()
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
+    #TO-DO: ORDER BY is not yet doing what I want. Perhaps the activity_date (date) doesn't work for sorting as intended?
     sql =   """SELECT messages.msg_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
             FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
             LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
