@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, date, timezone
 
 
 # TO-DO
@@ -65,9 +65,10 @@ def users():
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     #Info: craft and execute SQL query 
+    #TO-DO: Select columns instead of *
     sql =   """SELECT users.*, COUNT(messages.sender_id) AS activitycounter 
             FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
-            WHERE role='volunteer' 
+            WHERE role='volunteer' AND isactive='true'
             GROUP BY users.user_id;"""
     result = db.session.execute(sql)
     users = result.fetchall()
@@ -94,6 +95,7 @@ def submituser():
     email = request.form["email"]
     date = request.form["startdate"]
     # Had to juggle a bit with a 'selected disabled' form element. Solved the issue with try.
+    #TO-DO: Check in weekly guidance whether this is a good practice for using try
     try:
         role = request.form["role"]
     except:
@@ -122,6 +124,7 @@ def submituser():
     if password != password2: 
         return render_template("addnew.html", show=True, message="Passwords do not match, try again.", filled=params)
     hash_value = generate_password_hash(password)
+    #Try is used here because one of the tables (users) has an unique column (username). The commit contains multiple interts.
     try:
         sql =   """INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username, isactive) 
                 VALUES (:lastname, :firstname, :email, :startdate, :role, :username, :isactive) RETURNING user_id"""
@@ -156,6 +159,7 @@ def submit_message_volunteer(id):
     msg_sent = datetime.now(timezone.utc)
     # print(msg_sent)
     # print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}, msg_sent: {msg_sent}")
+    #TO-DO: This is not a recommended way of using a try. Fix this.
     try:
         sql="""INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, send_date, content) 
             VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content) RETURNING msg_id"""
@@ -188,7 +192,7 @@ def update_user(id):
     if request.form.get("terminate") != None:
         isactive = False
     if not isactive:
-        enddate = datetime.date.today()
+        enddate = date.today()
         print(enddate)
     else: 
         enddate = None
@@ -206,6 +210,8 @@ def update_user(id):
         db.session.commit()
     except:
         return render_template("error.html", logged=True, error="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
+    if not isactive:
+        return redirect("/users")
     return redirect("/view-user/" + str(user_id))
     
 
@@ -385,7 +391,7 @@ def createadmin():
         return render_template("register.html", show=True, message="Passwords do not match, try again.")
     hash_value = generate_password_hash(password)
     # print(f"Hashvalue: {hash_value}")
-    #Try to commit given information to the database
+    #TO-DO: This is not a recommended way of using a try. Fix this.
     try:
         sqlusers =  """INSERT INTO tsohaproject.users (username,role,isactive) 
                     VALUES (:username, :role, :isactive) RETURNING user_id"""
@@ -465,6 +471,7 @@ def submit_reply(id):
     task_id = request.form["task_id"]
     content = request.form["content"]
     msg_sent = datetime.now(timezone.utc)
+    #TO-DO: This is not a recommended way of using a try. Fix this.
     try:
         sql=    """INSERT INTO tsohaproject.messages (thread_id, volunteer_id, sender_id, task_id, send_date, content) 
                 VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"""

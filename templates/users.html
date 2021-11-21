@@ -31,12 +31,14 @@
                     
                     <div>Number of users: {{ count }}</div>
                     <br>
+                    <p>As an admin you can create new users. At the moment the role coordinator can be used for same tasks as an admin account. With a volunteer account you can sign in and report volunteer activities.</p>
 
                     <form action="/addnew" method='POST'><input class="btn btn-primary" id="addnew" name="addnew" type="submit" value="Create new user"/></form>
                     <br>
+                    <p>You can also view activitities volunteers have reported on. You can post a reply to volunteer's message.</p>
                     <form action="/view-activities" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="View completed activities"/></form>
                     <br>
-                    
+                    <p>Below you can view volunteer accounts. You can also edit account information or terminate an account.</p>
 
                     
                     <table class="table">
