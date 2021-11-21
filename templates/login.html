@@ -33,7 +33,11 @@
                         <br />
                         <div>
                             {% if show is sameas true %}
-                            <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
+                                {% if error is sameas true %}
+                                    <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
+                                {% else %}
+                                <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
+                                {% endif %}
                             {% else %}
                             {% endif %}
                         </div>

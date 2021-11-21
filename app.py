@@ -10,8 +10,9 @@ import os
 import re
 from datetime import datetime, timezone
 
+
 # TO-DO
-# SPLIT INTO MULTIPLE FILES
+# SPLIT INTO MULTIPLE FILES (REFACTOR)
 # MAKE MORE FUNCTIONS THAT SERVE GENERAL PURPOSES
 # CLEAN UP CODE
 # CHECK WEB-APP'S TO-DO LISTS FOR ADDITIONAL TASKS
@@ -63,8 +64,12 @@ def users():
     role = user_role()
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
-    #Info: craft and execute SQL query
-    result = db.session.execute("SELECT users.*, COUNT(messages.sender_id) AS activitycounter FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) WHERE role='volunteer' GROUP BY users.user_id;")
+    #Info: craft and execute SQL query 
+    sql =   """SELECT users.*, COUNT(messages.sender_id) AS activitycounter 
+            FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
+            WHERE role='volunteer' 
+            GROUP BY users.user_id;"""
+    result = db.session.execute(sql)
     users = result.fetchall()
     print(users)
     return render_template("users.html", count=len(users), users=users)
@@ -101,6 +106,13 @@ def submituser():
     for i in params:
         if i == None or len(i) == 0:
             return render_template("addnew.html", show=True, message="One of the fields was empty. Please carefully fill in all fields.", filled=params)
+    qualifications = request.form.getlist("qualification")
+    noqualifications = True
+    for qualification in qualifications:
+        if qualification != "":
+            noqualifications = False
+    if noqualifications:
+        return render_template("addnew.html", show=True, message="Please select atleast one qualification.", filled=params)
     # Create default values for a new user
     isactive = True
     activitylevel = 4
@@ -111,10 +123,10 @@ def submituser():
         return render_template("addnew.html", show=True, message="Passwords do not match, try again.", filled=params)
     hash_value = generate_password_hash(password)
     try:
-        sql = "INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username, isactive) VALUES (:lastname, :firstname, :email, :startdate, :role, :username, :isactive) RETURNING user_id"
+        sql =   """INSERT INTO tsohaproject.users (lastname, firstname, email, startdate, role, username, isactive) 
+                VALUES (:lastname, :firstname, :email, :startdate, :role, :username, :isactive) RETURNING user_id"""
         result = db.session.execute(sql, {"lastname": lastname, "firstname":firstname, "email":email, "startdate":date, "role":role, "username":username, "isactive":isactive})
         user_id = result.fetchone()[0]
-        qualifications = request.form.getlist("qualification")
         print(qualifications)
         for task_id in qualifications:
             if task_id != "":
@@ -126,7 +138,7 @@ def submituser():
         db.session.execute(sqlactivity, {"level_date":date, "user_id":user_id, "activitylevel":activitylevel})
         db.session.commit()
     except:
-        return render_template("addnew.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Try again.")
+        return render_template("addnew.html", show=True, message="Something bad has happened, but at this demo-stage I do not exactly know what. Most likely the username was already taken. Try again.", filled=params)
     return redirect("/users")
 
 
@@ -145,7 +157,8 @@ def submit_message_volunteer(id):
     # print(msg_sent)
     # print(f"DEF SUBMIT_MESSAGE_VOLUNTEER(ID): sender_id: {sender_id}, date: {date}, task_id: {task_id} content: {content}, msg_sent: {msg_sent}")
     try:
-        sql="INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, send_date, content) VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content) RETURNING msg_id"
+        sql="""INSERT INTO tsohaproject.messages (volunteer_id, sender_id, task_id, activity_date, send_date, content) 
+            VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content) RETURNING msg_id"""
         result = db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "activity_date":date, "send_date":msg_sent, "content":content})
         msg_id = result.fetchone()[0]
         sql_update = "UPDATE tsohaproject.messages SET thread_id=:msg_id WHERE msg_id=:msg_id"
@@ -161,6 +174,7 @@ def submit_message_volunteer(id):
 @app.route("/update-user/<int:id>", methods=["POST"])
 def update_user(id):
     user_id = id
+    # Get basic information TO-DO: REPLACE * WITH COLUMNS NEEDED!
     sql = "SELECT * FROM tsohaproject.users WHERE user_id=:id"
     result = db.session.execute(sql, {"id":id})
     oldinfo = result.fetchone()
@@ -186,7 +200,10 @@ def update_user(id):
     # for j in newinfo:
     #     print(j)
     try:
-        sql = "UPDATE tsohaproject.users SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, basictraining=:basictraning, isactive=:isactive WHERE user_id=:user_id"
+        sql =   """UPDATE tsohaproject.users 
+                SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, email=:email, 
+                phone=:phone, startdate=:startdate, enddate=:enddate, basictraining=:basictraning, isactive=:isactive 
+                WHERE user_id=:user_id"""
         db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], "firstname":newinfo[3], "username":newinfo[4], "email":newinfo[5], "phone":newinfo[6], "startdate":newinfo[7], "enddate":newinfo[8], "basictraning":newinfo[9], "isactive":newinfo[10], "user_id":user_id})
         db.session.commit()
     except:
@@ -224,7 +241,16 @@ def edituser(id):
 # Get qualifications
 def get_qualifiations(id):
     # sql = "SELECT tasks.task_id, tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
-    sql = "SELECT tasks.task, tasks.task_id, CASE WHEN tasks.task_id IN (SELECT tasks.task_id FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON (users.user_id = volunteerqualification.user_id) LEFT JOIN tsohaproject.tasks ON (volunteerqualification.task_id = tasks.task_id) WHERE users.user_id =:id) THEN true ELSE false END AS isqualified FROM tsohaproject.tasks"
+    sql =   """SELECT tasks.task, tasks.task_id, 
+            CASE WHEN tasks.task_id IN 
+                (SELECT tasks.task_id 
+                FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON (users.user_id = volunteerqualification.user_id) 
+                                        LEFT JOIN tsohaproject.tasks ON (volunteerqualification.task_id = tasks.task_id) 
+                WHERE users.user_id =:id) 
+                THEN true 
+                ELSE false 
+                END AS isqualified 
+            FROM tsohaproject.tasks"""
     result = db.session.execute(sql, {"id":id})
     qualifications = result.fetchall()
     print(qualifications)
@@ -232,6 +258,7 @@ def get_qualifiations(id):
 
 # Get basic userinformation from table users
 def get_userinfo(id):
+    # Get basic information TO-DO: REPLACE * WITH COLUMNS NEEDED!
     sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
     result = db.session.execute(sql, {"id":id})
     user = result.fetchone()
@@ -239,7 +266,11 @@ def get_userinfo(id):
 
 # Get activityinformation
 def get_activityinformation(id):
-    sql3 = "SELECT activitylevel.level, currentactivity.level_date  FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel on currentactivity.activity_id = activitylevel.activity_id WHERE users.user_id=:id ORDER BY currentactivity.level_date DESC"
+    sql3 =  """SELECT activitylevel.level, currentactivity.level_date 
+            FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id 
+            LEFT JOIN tsohaproject.activitylevel ON currentactivity.activity_id = activitylevel.activity_id 
+            WHERE users.user_id=:id 
+            ORDER BY currentactivity.level_date DESC"""
     result3 = db.session.execute(sql3, {"id":id})
     activity = result3.fetchall
     return activity
@@ -255,7 +286,9 @@ def authlogin():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        sql = "SELECT users.user_id, users.role, password.password FROM tsohaproject.users, tsohaproject.password WHERE users.username=:username"
+        sql =   """SELECT users.user_id, users.role, password.password 
+                FROM tsohaproject.users, tsohaproject.password 
+                WHERE users.username=:username"""
         result = db.session.execute(sql, {"username":username})
         user = result.fetchone()
         if not user:
@@ -267,7 +300,7 @@ def authlogin():
             else:
                 error = True
     if error:
-            return render_template("login.html", show=True, message="Username or password is incorrect. Please try again.")
+            return render_template("login.html", show=True, error=True, message="Username or password is incorrect. Please try again.")
     
     
     # A view for volunteers to post volunteer activities
@@ -313,15 +346,21 @@ def volunteerview():
     if role != 'volunteer':
         return error("notauthorized")
     id = user_id()
-    # Get basic information
+    # Get basic information TO-DO: REPLACE * WITH COLUMNS NEEDED!
     sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
     result = db.session.execute(sql, {"id":id})
     user = result.fetchone()
     # Get volunteer's activities - volunteer can participate in activities they are qualified in
-    sql2 = "SELECT tasks.task_id, tasks.task  FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id WHERE users.user_id=:id"
+    sql2 =  """SELECT tasks.task_id, tasks.task  
+            FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification ON users.user_id = volunteerqualification.user_id 
+            LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id 
+            WHERE users.user_id=:id"""
     result2 = db.session.execute(sql2, {"id":id})
     activities = result2.fetchall()
-    sql3 = "SELECT messages.activity_date, messages.content, tasks.task FROM tsohaproject.messages LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE messages.volunteer_id=:id ORDER BY messages.activity_date DESC" 
+    sql3 =  """SELECT messages.activity_date, messages.content, tasks.task 
+            FROM tsohaproject.messages LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+            WHERE messages.volunteer_id=:id 
+            ORDER BY messages.activity_date DESC"""
     result3 = db.session.execute(sql3, {"id":id})
     messages = result3.fetchall()
     print(messages)
@@ -350,7 +389,8 @@ def createadmin():
     # print(f"Hashvalue: {hash_value}")
     #Try to commit given information to the database
     try:
-        sqlusers = "INSERT INTO tsohaproject.users (username,role,isactive) VALUES (:username, :role, :isactive) RETURNING user_id"
+        sqlusers =  """INSERT INTO tsohaproject.users (username,role,isactive) 
+                    VALUES (:username, :role, :isactive) RETURNING user_id"""
         result = db.session.execute(sqlusers, {"username":username, "role":role, "isactive": isactive})
         user_id = result.fetchone()[0]
         sqlpassword = "INSERT INTO tsohaproject.password (user_id, password) VALUES (:user_id, :password)"
@@ -359,7 +399,7 @@ def createadmin():
     except:
         return render_template("register.html", show=True, message="Something bad has happened, but I do not specifically know what. Try again.")
     
-    return render_template("login.html", show=True, message="Registeration completed. Please login with your account.")
+    return render_template("login.html", show=True, error=False, message="Registeration completed. Please login with your account.")
 
 @app.route("/docs/aboutus")
 def about_us():
@@ -392,7 +432,10 @@ def supervisor_view_activities():
     role = user_role()
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
-    sql = "SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.thread_id DESC, messages.activity_date ASC"
+    sql =   """SELECT messages.msg_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
+            FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
+            LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+            ORDER BY messages.thread_id DESC, messages.activity_date ASC"""
     # sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) ORDER BY messages.activity_date DESC" 
     result = db.session.execute(sql)
     messages = result.fetchall()
@@ -406,7 +449,10 @@ def supervisor_view_activities():
 
 @app.route("/reply-msg/<int:id>")
 def reply_msg(id):
-    sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task_id FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE msg_id=:id"
+    sql =   """SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task_id 
+            FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) 
+            LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+            WHERE msg_id=:id"""
     result = db.session.execute(sql, {"id":id})
     message = result.fetchone()
     return render_template("reply-msg.html", id=id, message=message)
@@ -422,7 +468,8 @@ def submit_reply(id):
     content = request.form["content"]
     msg_sent = datetime.now(timezone.utc)
     try:
-        sql="INSERT INTO tsohaproject.messages (thread_id, volunteer_id, sender_id, task_id, send_date, content) VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"
+        sql=    """INSERT INTO tsohaproject.messages (thread_id, volunteer_id, sender_id, task_id, send_date, content) 
+                VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"""
         result = db.session.execute(sql, {"thread_id":thread_id ,"volunteer_id":volunteer_id, "sender_id":sender_id, "task_id":task_id, "send_date":msg_sent, "content":content})
         db.session.commit()
     except:
@@ -435,7 +482,11 @@ def supervisor_search_activities():
     if not role == 'admin' or role == 'coordinator':
         return error("notauthorized")
     query = request.args["query"]
-    sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE messages.content LIKE :query ORDER BY messages.activity_date DESC" 
+    sql =   """SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
+            FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
+            LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+            WHERE LOWER(messages.content) LIKE LOWER(:query) ORDER BY messages.thread_id DESC, messages.activity_date ASC"""
+    # sql = "SELECT users.lastname, users.firstname, messages.msg_id, messages.activity_date, messages.content, tasks.task FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) WHERE messages.content LIKE :query ORDER BY messages.activity_date DESC" 
     result = db.session.execute(sql, {"query":"%"+query+"%"})
     messages = result.fetchall()
     if len(messages) == 0:
