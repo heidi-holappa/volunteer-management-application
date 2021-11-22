@@ -23,7 +23,7 @@ INSERT INTO tsohaproject.activitylevel (level) VALUES ('two');
 /* This is used to create demo-users for the application */
 
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Doe', 'John', 'johndoe','johndoe@doe.com', '+1-50-4565465','11-11-2021', '11-11-2021', true);
-INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Mustard', 'Roger', 'rogemus','rogermust@doe.com', '+1-54-44215325','12-7-2021', '21-11-2020', true);
+INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Mustard', 'Roger', 'rogemus','rogermust@doe.com', '+1-54-44215325','12-7-2021', '11-11-2020', true);
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Avery', 'Ada', 'adaave','adavery@very.com', '+1-40-3123285','11-10-2021', '10-11-2021', true);
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, isactive) VALUES ('coordinator', 'Elper', 'Harry', 'harelpe','h.elper@org.com', '+1-30-3567285', true);
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, isactive) VALUES ('admin', 'Chief', 'Master', 'maschie','john-117@org.com', '+1-30-3567285', true);
@@ -91,9 +91,9 @@ ORDER BY messages.activity_date DESC
 
 /* Get all messages in order - versio 2 (problem: version 1 shows users with no messages) */
 
-SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname 
-FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.volunteer_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
-ORDER BY messages.activity_date DESC
+SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.role, users.lastname, users.firstname 
+FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+ORDER BY messages.thread_id DESC, messages.activity_date DESC
 
 /* Option two thanks to a friendly tip on Telegram :) */
 SELECT messages.msg_id, messages.activity_date, messages.content, tasks.task, users.lastname, users.firstname 
@@ -103,4 +103,11 @@ ORDER BY messages.activity_date DESC
 
 /* To run Flask in development server mode */
 export FLASK_ENV=development && flask run
+
+/* Fixed message query */
+SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
+            FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
+            LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+            ORDER BY  messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC;
+
 

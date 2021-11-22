@@ -290,11 +290,14 @@ def authlogin():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+        print(f"{password=}")
         sql =   """SELECT users.user_id, users.role, password.password 
-                FROM tsohaproject.users, tsohaproject.password 
+                FROM tsohaproject.users INNER JOIN tsohaproject.password ON users.user_id = password.user_id 
                 WHERE users.username=:username"""
         result = db.session.execute(sql, {"username":username})
         user = result.fetchone()
+        print(user.password)
+        print(check_password_hash(user.password, password))
         if not user:
             error = True
         else:
@@ -390,6 +393,7 @@ def createadmin():
     if password != password2: 
         return render_template("register.html", show=True, message="Passwords do not match, try again.")
     hash_value = generate_password_hash(password)
+    print(f"{password=}")
     # print(f"Hashvalue: {hash_value}")
     #TO-DO: This is not a recommended way of using a try. Fix this.
     try:
