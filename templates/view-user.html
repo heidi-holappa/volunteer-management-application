@@ -60,25 +60,45 @@
                                 <tr>
                                     <td>Role: </td>
                                     <td>{{ user.role }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Current activity: </td>
+                                    <td>{{ currentactivity.level }}</td>
+                                </tr>
                                     <tr>
-                                        <td>Qualifications:</td>
+                                        <td>Qualifications: </td>
                                         <td>
-                                            <tr>
-                                                <td>Qualifications: </td>
-                                                <td>
-                                                    {% for qualification in qualifications %}    
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}" name="qualification" {% if qualification.isqualified is sameas true %} checked {% else %} {% endif %} disabled>
-                                                            <label class="form-check-label" for="{{ qualification.task }}" class="text-info">
-                                                            {{ qualification.task }}
-                                                            </label>
-                                                        </div>
-                                                    {% endfor %}
-                                                </td>
-                                            </tr>
+                                            {% for qualification in qualifications %}    
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}" name="qualification" {% if qualification.isqualified is sameas true %} checked {% else %} {% endif %} disabled>
+                                                    <label class="form-check-label" for="{{ qualification.task }}" class="text-info">
+                                                        {{ qualification.task }}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
                                         </td>
-                                    <!-- </tr>
-                                    {% for qualification in qualifications %}
+                                    </tr>
+                                    <tr>
+                                        <td>Additional trainings: </td>
+                                        <td>{% for training in trainings %}
+                                            {{ training.training }}, {{ training.training_date }} <br>
+                                        {% endfor %}
+                                        <a href="#">Add training</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Loaned tools: </td>
+                                        <td>{% for tool in tools %}
+                                            Tool: {{ tool.tool }} <br>
+                                            Serialnumber: {{ tool.serialnumber }} <br>
+                                            Loaned: {{ tool.loandate }}<br>
+                                            <a href="#">Return loan</a>
+                                            <br><br> 
+                                        {% endfor %}
+                                        <a href="#">Add loaned tool</a>
+                                        </td>
+                                    </tr>
+                                    <!-- {% for qualification in qualifications %}
                                         {% if qualification.isqualified is sameas true %}   
                                         <tr>
                                             <td></td>

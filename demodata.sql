@@ -111,3 +111,29 @@ SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.sen
             ORDER BY  messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC;
 
 
+/* Fixed query for receiving password */
+
+SELECT users.user_id, users.role, password.password 
+                FROM tsohaproject.users INNER JOIN tsohaproject.password ON users.user_id = password.user_id
+                WHERE users.username='majuriperuna'
+
+/* Exploring getting most recent value. */
+/* This works as intented */
+SELECT user_id, MAX(level_date) FROM tsohaproject.currentactivity WHERE user_id=7 GROUP BY user_id;
+/* This does not yet work */
+SELECT user_id, activity_id, MAX(level_date)  FROM tsohaproject.currentactivity LEFT JOIN tsohaproject.activitylevel ON currentactivity.activity_id = activitylevel.activity_id WHERE user_id=7 GROUP BY user_id;
+
+/* Workaround */
+SELECT currentactivity.user_id, currentactivity.level_date, activitylevel.level FROM tsohaproject.currentactivity LEFT JOIN tsohaproject.activitylevel ON (currentactivity.activity_id = activitylevel.activity_id) WHERE user_id = 7 ORDER BY level_date DESC LIMIT 1; 
+
+
+/* Get additional trainings */
+
+SELECT additionaltrainings.training, trainingparticipation.training_date FROM tsohaproject.trainingparticipation LEFT JOIN tsohaproject.additionaltrainings ON (trainingparticipation.training_id = additionaltrainings.training_id) WHERE user_id = 7 ORDER BY training_date DESC; 
+
+/* Get loaned tools */
+SELECT loanedtools.loandate, tools.tool, tools.serialnumber FROM tsohaproject.loanedtools LEFT JOIN tsohaproject.tools ON (loanedtools.tool_id = tools.tool_id) WHERE user_id = 7 AND loanedtools.loaned = true;
+
+
+/* Deleted from the app */
+SELECT users.lastname, users.role, users.firstname, users.user_id, users.email, string_agg(tasks.task, ', ') FROM tsohaproject.users, tsohaproject.volunteerqualification, tsohaproject.tasks WHERE users.user_id = volunteerqualification.user_id AND tasks.task_id = volunteerqualification.task_id GROUP BY users.lastname, users.firstname, users.role, users.user_id, users.email;
