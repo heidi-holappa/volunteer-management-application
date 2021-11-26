@@ -1,14 +1,13 @@
 # To be refactored
-from flask import Flask
-from flask import redirect, render_template, request
-from flask_sqlalchemy import SQLAlchemy
-from random import randrange
-from flask import session
-from sqlalchemy.sql.elements import False_, Null
-from werkzeug.security import check_password_hash, generate_password_hash
 from os import getenv
 import os
 import re
+from flask import Flask
+from flask import redirect, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+from flask import session
+from sqlalchemy.sql.elements import False_, Null
+from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, date, timezone
 
 
@@ -92,7 +91,7 @@ def error(description):
                 please leave feedback on the issue. Feedback form can be found in the footer.')
     return render_template("error.html", error=message, logged=logged)
 
-#TO-DO: Function too long. This how to split. 
+#TO-DO: Function too long. This how to split.
 @app.route("/submituser", methods=["POST"])
 def submituser():
     """Add a new user"""
@@ -151,7 +150,8 @@ def submituser():
                 :startdate, :role, :username, :isactive) 
                 RETURNING user_id"""
         result = db.session.execute(sql, {"lastname": lastname, "firstname":firstname, \
-            "email":email, "startdate":startdate, "role":role, "username":username, "isactive":isactive})
+            "email":email, "startdate":startdate, "role":role, \
+                "username":username, "isactive":isactive})
         user_id = result.fetchone()[0]
         print(qualifications)
         for task_id in qualifications:
@@ -180,7 +180,7 @@ def submit_message_volunteer(u_id):
     role = user_role()
     if role != 'volunteer':
         return error("notauthorized")
-    date = request.form["date"]
+    activity_date = request.form["date"]
     sender_id = u_id
     volunteer_id = u_id
     task_id = int(request.form["doneactivity"])
@@ -196,7 +196,8 @@ def submit_message_volunteer(u_id):
             VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :content) \
             RETURNING msg_id"
         result = db.session.execute(sql, {"volunteer_id":volunteer_id, "sender_id":sender_id, \
-            "task_id":task_id, "activity_date":date, "send_date":msg_sent, "content":content})
+            "task_id":task_id, "activity_date":activity_date, "send_date":msg_sent, \
+                "content":content})
         msg_id = result.fetchone()[0]
         sql_update = "UPDATE tsohaproject.messages SET thread_id=:msg_id WHERE msg_id=:msg_id"
         db.session.execute(sql_update, {"msg_id":msg_id})
@@ -222,7 +223,7 @@ def update_user(u_id):
     role = request.form["role"]
     username = request.form["username"]
     isactive = True
-    if request.form.get("terminate") != None:
+    if request.form.get("terminate") is not None:
         isactive = False
     if not isactive:
         enddate = date.today()
@@ -279,8 +280,8 @@ def edituser(u_id):
         activity = get_activityinformation(u_id)
         return render_template("edit-user.html", user=user, \
             qualifications=qualifications, activity=activity)
-    if request.method == "GET":
-        return render_template("edit-user.html")
+    # If method is GET - render basic template
+    return render_template("edit-user.html")
 
 def get_qualifiations(u_id):
     """Return qualifications"""
@@ -387,7 +388,7 @@ def authlogin():
         return render_template("login.html", show=True, error=True, \
             message="Username or password is incorrect. Please try again.")
     role = user_role()
-    if role == 'admin' or role == 'coordinator':
+    if role in ('admin', 'coordinator'):
         return redirect("/users")
     return redirect("/volunteer-view")
 
@@ -409,8 +410,7 @@ def user_role():
         sql = "SELECT role FROM tsohaproject.users WHERE user_id =:id"
         result = db.session.execute(sql, {"id":u_id})
         return result.fetchone()[0]
-    else:
-        return u_id
+    return u_id
 
 @app.route("/logout")
 def logout_and_redirect():
@@ -422,7 +422,6 @@ def logout():
     """Deletes user sessions"""
     del session["user_id"]
     del session["role"]
-    return
 
 @app.route("/volunteer-view")
 def volunteerview():
@@ -451,10 +450,11 @@ def volunteerview():
     result3 = db.session.execute(sql3, {"id":u_id})
     messages = result3.fetchall()
     print(messages)
-    if len(messages) == 0:
-        nomessages = True
-    else:
-        nomessages = False
+    nomessages = bool(len(messages) == 0)
+    # if len(messages) == 0:
+    #     nomessages = True
+    # else:
+    #     nomessages = False
     print(nomessages)
     return render_template("volunteer-view.html", user=user, \
         activities=activities, messages=messages, nomessages=nomessages)
@@ -520,7 +520,7 @@ def submit_feedback():
     """Handle feedback submissions and render thank you view"""
     content = request.form["content"]
     now = date.today()
-    print(now)
+    print(now, content)
     return render_template("/docs/thank-you.html")
 
 @app.route("/view-activities")
@@ -546,10 +546,11 @@ def supervisor_view_activities():
     result = db.session.execute(sql)
     messages = result.fetchall()
     print(messages)
-    if len(messages) == 0:
-        nomessages = True
-    else:
-        nomessages = False
+    nomessages = bool(len(messages) == 0)
+    # if len(messages) == 0:
+    #     nomessages = True
+    # else:
+    #     nomessages = False
     print(nomessages)
     return render_template("message-view.html", messages=messages, nomessages=nomessages)
 
@@ -613,10 +614,11 @@ def supervisor_search_activities():
     # WHERE messages.content LIKE :query ORDER BY messages.activity_date DESC"
     result = db.session.execute(sql, {"query":"%"+query+"%"})
     messages = result.fetchall()
-    if len(messages) == 0:
-        nomessages = True
-    else:
-        nomessages = False
+    nomessages = bool(len(messages) == 0)
+    # if len(messages) == 0:
+    #     nomessages = True
+    # else:
+    #     nomessages = False
     print(nomessages)
     return render_template("message-view.html", \
         messages=messages, nomessages=nomessages)
