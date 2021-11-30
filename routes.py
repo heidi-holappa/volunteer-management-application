@@ -108,26 +108,15 @@ def submituser():
     hash_value = generate_password_hash(password)
     if not users.create_useraccount(params, qualifications, hash_value):
         return render_template("addnew.html", show=True, \
-            message="Something bad has happened, but at this demo-stage I do not exactly \
-                know what. Most likely the username was already taken. Try again."\
+            message="An error has occured. This means that most likely the username was already taken."\
                     , filled=params)
     return redirect("/users")
 
 @app.route("/update-user/<int:u_id>", methods=["POST"])
 def update_user(u_id):
     """Old userinfo is fetched from database and updated for those fields that can be updated."""
-    user_id = u_id
     # Get basic information TO-DO: REPLACE * WITH COLUMNS NEEDED!
-    sql = "SELECT * FROM tsohaproject.users WHERE user_id=:id"
-    result = db.session.execute(sql, {"id":u_id})
-    oldinfo = result.fetchone()
-    lastname = request.form["lastname"]
-    firstname = request.form["firstname"]
-    email = request.form["email"]
-    phone = request.form["phone"]
-    startdate = request.form["startdate"]
-    role = request.form["role"]
-    username = request.form["username"]
+    oldinfo = hrqueries.get_userinfo(u_id)
     isactive = True
     if request.form.get("terminate") is not None:
         isactive = False
@@ -136,30 +125,17 @@ def update_user(u_id):
         print(enddate)
     else:
         enddate = None
-    newinfo = [oldinfo[0], role, lastname, firstname, username, email, phone, \
-        startdate, enddate, oldinfo[9], isactive]
-    # for i in oldinfo:
-    #     print(i)
-    # for j in newinfo:
-    #     print(j)
-    try:
-        sql = "UPDATE tsohaproject.users \
-            SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, email=:email, \
-                phone=:phone, startdate=:startdate, enddate=:enddate, basictraining=:basictraning, isactive=:isactive \
-            WHERE user_id=:user_id"
-        db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], "firstname":newinfo[3], \
-            "username":newinfo[4], "email":newinfo[5], "phone":newinfo[6], "startdate":newinfo[7], \
-            "enddate":newinfo[8], "basictraning":newinfo[9], "isactive":newinfo[10], \
-            "user_id":user_id})
-        db.session.commit()
-    except:
+    newinfo = [oldinfo[0], request.form["role"], request.form["lastname"], request.form["firstname"]\
+        , request.form["username"], request.form["email"], request.form["phone"], \
+        request.form["startdate"], enddate, oldinfo[9], isactive]
+    if not hrqueries.update_userinfo(newinfo):
         return render_template("error.html", logged=True, error="Something bad has happened, \
             but at this demo-stage I do not exactly know what. Try again.")
     if not isactive:
         return redirect("/users")
-    return redirect("/view-user/" + str(user_id))
+    return redirect("/view-user/" + str(u_id))
 
-@app.route("/view-user/<int:id>")
+@app.route("/view-user/<int:u_id>")
 def viewuser(u_id):
     """Render singe user's informationpage"""
     if not users.is_coordinator():
@@ -173,13 +149,13 @@ def viewuser(u_id):
         currentactivity=currentactivity, trainings=trainings, tools=tools)
 
 # TO-DO - see why post? Shouldn't it be GET?
-@app.route("/edit-user/<int:id>", methods=["GET", "POST"])
+@app.route("/edit-user/<int:u_id>", methods=["GET", "POST"])
 def edituser(u_id):
     """Render edit-user page"""
     if not users.is_coordinator():
         return error("notauthorized")
     if request.method == "POST":
-        user = users.get_userinfo(u_id)
+        user = hrqueries.get_userinfo(u_id)
         qualifications = hrqueries.get_qualifiations(u_id)
         activity = hrqueries.get_activityinformation(u_id)
         return render_template("edit-user.html", user=user, \

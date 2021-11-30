@@ -1,14 +1,45 @@
 from db import db
 
+def update_userinfo(newinfo: list):
+    try:
+        sql = "UPDATE tsohaproject.users \
+            SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, email=:email, \
+                phone=:phone, startdate=:startdate, enddate=:enddate, basictraining=:basictraning, isactive=:isactive \
+            WHERE user_id=:user_id"
+        db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], "firstname":newinfo[3], \
+            "username":newinfo[4], "email":newinfo[5], "phone":newinfo[6], "startdate":newinfo[7], \
+            "enddate":newinfo[8], "basictraning":newinfo[9], "isactive":newinfo[10], \
+            "user_id":newinfo[0]})
+        db.session.commit()
+        return True
+    except:
+        return False
+
 def volunteer_list():
-    #TO-DO: Select columns instead of *
-    sql = "SELECT users.*, COUNT(messages.sender_id) AS activitycounter \
+    sql = "SELECT users.user_id, users.role, users.lastname, users.firstname, users.username, users.email, users.phone, startdate, COUNT(messages.sender_id) AS activitycounter \
     FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
     ON (users.user_id = messages.sender_id) \
     WHERE role='volunteer' AND isactive='true' \
     GROUP BY users.user_id;"
     result = db.session.execute(sql)
     return result.fetchall()
+
+def get_limited_userinfo(u_id):
+    """Return limited userinformation on  active users from table users"""
+    sql = "SELECT user_id, role, lastname, firstname, username, email FROM tsohaproject.users WHERE user_id =:id AND isactive = TRUE"
+    result = db.session.execute(sql, {"id":u_id})
+    user = result.fetchone()
+    return user
+
+
+def get_active_userinfo(u_id):
+    """Return active userinformation from table users"""
+    sql = "SELECT user_id, role, lastname, firstname, username, email, phone, startdate, basictraining FROM tsohaproject.users WHERE user_id =:id AND isactive = TRUE"
+    result = db.session.execute(sql, {"id":u_id})
+    user = result.fetchone()
+    return user
+
+
 
 def get_qualifiations(u_id):
     """Return qualifications"""
@@ -52,9 +83,8 @@ def get_loanedtools(u_id):
     return tools
 
 def get_userinfo(u_id):
-    """Return basic userinformation from table users"""
-    # Get basic information TO-DO: REPLACE * WITH COLUMNS NEEDED!
-    sql = "SELECT * FROM tsohaproject.users WHERE user_id =:id"
+    """Return extensive userinformation from table users"""
+    sql = "SELECT user_id, role, lastname, firstname, username, email, phone, startdate, basictraining, isactive FROM tsohaproject.users WHERE user_id =:id"
     result = db.session.execute(sql, {"id":u_id})
     user = result.fetchone()
     return user
