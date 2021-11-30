@@ -24,17 +24,17 @@ def volunteer_list():
     result = db.session.execute(sql)
     return result.fetchall()
 
-def get_limited_userinfo(u_id):
+def get_limited_volunteerinfo(u_id):
     """Return limited userinformation on  active users from table users"""
-    sql = "SELECT user_id, role, lastname, firstname, username, email FROM tsohaproject.users WHERE user_id =:id AND isactive = TRUE"
+    sql = "SELECT user_id, role, lastname, firstname, username, email FROM tsohaproject.users WHERE isactive = TRUE"
     result = db.session.execute(sql, {"id":u_id})
     user = result.fetchone()
     return user
 
 
-def get_active_userinfo(u_id):
+def get_active_volunteerinfo(u_id):
     """Return active userinformation from table users"""
-    sql = "SELECT user_id, role, lastname, firstname, username, email, phone, startdate, basictraining FROM tsohaproject.users WHERE user_id =:id AND isactive = TRUE"
+    sql = "SELECT user_id, role, lastname, firstname, username, email, phone, startdate, basictraining FROM tsohaproject.users WHERE isactive = TRUE"
     result = db.session.execute(sql, {"id":u_id})
     user = result.fetchone()
     return user
