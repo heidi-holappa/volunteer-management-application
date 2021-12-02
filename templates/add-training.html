@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Volunteer Management App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <style></style>
+    </head>
+    
+    <body>
+        
+        <header class="infinitehead">
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12 text-center">
+                        <h1 class="font-weight-light">Volunteer Management Application</h1>
+                        <p class="lead">Inspirational slogan here.</p>
+                        <form action="/logout" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Logout"/></form>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container" style="margin-top:30px">
+            <div class="row">
+                <div class="col-sm-8">
+                    <h1>Choose a training to add</h1>
+                    <br>    
+                    <form action="/add-training/{{ user.user_id }}" method="POST">
+                        <table>
+                            <tr>
+                                <td>Choose date:</td>
+                                <td><input class="form-control" id="date" placeholder="Enter date of training" type='date' name='date' /></td>
+                            </tr>
+                            <tr>
+                                <td>Select training:</td>
+                                <td>
+                                    <select class="form-control form-control-sm" name='training_id'>
+                                        <option value="" selected disabled>Choose activity</option>
+                                        {% for training in trainings %}
+                                            <option value="{{ training.training_id }}">{{ training.training }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
+                            </tr>
+                        </table>
+                    </form>
+    
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="jumbotron text-center" style="margin-bottom:0">
+            <footer>
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h4>Site information</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p><a href="https://github.com/heidi-holappa/volunteer-management-application/tree/main/Documentation" target="_blank">Project documentation</a></p>
+                        </div>
+                        <div class="col">
+                            <p><a href="/docs/feedback">Feedback</a></p>
+                        </div>
+                         <div class="col">
+                            <p><a href="/docs/aboutus">About Us</a></p>
+                        </div> 
+                    </div>
+                </div>
+                
+            </footer>
+        </div>
+    </body>
+</html>

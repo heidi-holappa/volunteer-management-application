@@ -32,14 +32,50 @@
                     <br>
 
                     <h2>Submissions: </h2>
-                    <form action="/search-activities" method="GET">
-                        <table class="table">
-                            <tr>
-                                <td><input class="form-control" autocomplete="off" type="text" name="query" placeholder="Search by content (unfinised - see To-Do below for known issues)"></td>
-                                <td><input class="btn btn-primary" type="submit" value="Submit"></td>
-                            </tr>
-                        </table>
-                    </form>
+                    {% if active_query is sameas False %}
+                        <form action="/view-activities/0" method="GET">
+                            <table class="table">
+                                <tr>
+                                    <td><input class="form-control" autocomplete="off" type="text" name="query" placeholder="Search by content (unfinised - see To-Do below for known issues)"></td>
+                                    <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+                                </tr>
+                            </table>
+                        </form>
+                    {% else %}
+                        <form action="/view-activities/0" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="End search"/></form>
+                    {% endif %}
+
+
+                    <div>
+                        Number of messages: {{ msg_count }} <br>
+                        Current query: {{ query }}
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% if show_previous is sameas true %}
+                                <form action="/view-activities/{{ offset - 1 }}" method='GET'>
+                                    <input type="hidden" name="query" value="{{ query }}">
+                                    <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous"/>
+                                </form>
+                                <!-- <form action="/view-activities/{{ offset - 1 }}" method='GET'><input class="btn btn-primary" id="previous" name="previous" type="submit" value="Previous"/></form> -->
+                                <!-- <a href="/view-activities/{{ offset - 1 }}">Previous</a> -->
+                            {% else %}
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            {% if show_next is sameas true %}
+                                <!-- <form action="/view-activities/{{ offset + 1 }}" method='GET'><input class="btn btn-primary" id="next" name="next" type="submit" value="Next"/></form> -->
+                                <!-- <a href="/view-activities/{{ offset + 1 }}">Next</a> -->
+                                <form action="/view-activities/{{ offset + 1 }}" method='GET'>
+                                    <input type="hidden" name="query" value="{{ query }}">
+                                    <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next"/>
+                                </form>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                    </div>
 
 
                     {% if nomessages is sameas false %} 
@@ -96,7 +132,35 @@
                             {% endfor %}
                         </table>
                     {% else %}
-                    {% endif %}
+                        <p>There are no messages.</p>
+                    {% endif %}                   
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% if show_previous is sameas true %}
+                                <form action="/view-activities/{{ offset - 1 }}" method='GET'>
+                                    <input type="hidden" name="query" value="{{ query }}">
+                                    <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous"/>
+                                </form>
+                                <!-- <form action="/view-activities/{{ offset - 1 }}" method='GET'><input class="btn btn-primary" id="previous" name="previous" type="submit" value="Previous"/></form> -->
+                                <!-- <a href="/view-activities/{{ offset - 1 }}">Previous</a> -->
+                            {% else %}
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            {% if show_next is sameas true %}
+                                <!-- <form action="/view-activities/{{ offset + 1 }}" method='GET'><input class="btn btn-primary" id="next" name="next" type="submit" value="Next"/></form> -->
+                                <!-- <a href="/view-activities/{{ offset + 1 }}">Next</a> -->
+                                <form action="/view-activities/{{ offset + 1 }}" method='GET'>
+                                    <input type="hidden" name="query" value="{{ query }}">
+                                    <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next"/>
+                                </form>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    
+                    
 
                     <div class="alert alert-warning" role="alert">
                         <b>To-Do: </b>

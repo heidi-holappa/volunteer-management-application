@@ -73,6 +73,26 @@ def view_users():
     volunteer_info = hrqueries.volunteer_list()
     return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
 
+@app.route("/search-volunteers")
+def supervisor_search_volunteers():
+    """Search volunteers by firstname, lastname, email"""
+    if not users.is_coordinator():
+        return error("notauthorized")
+    query = request.args["query"]
+    content = hrqueries.search_volunteerlist(query)
+    nousers = bool(len(content) == 0)
+    print(nousers)
+    return render_template("users.html", \
+        users=content, count=len(content) ,nousers=nousers)
+
+@app.route("/search-result")
+def search_volunteers():
+    """Search volunteers"""
+    if not users.is_coordinator():
+        return error("notauthorized")
+    volunteer_info = hrqueries.search_volunteerlist("s")
+    return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
+
 @app.route("/addnew", methods=["POST"])
 def addnew():
     """TO-DO: CLEAN THIS AWAY"""
@@ -148,6 +168,35 @@ def viewuser(u_id):
     return render_template("view-user.html", user=user, qualifications=qualifications, \
         currentactivity=currentactivity, trainings=trainings, tools=tools)
 
+@app.route("/return-loan/<int:tool_id>", methods=["POST"])
+def return_loan(tool_id: int):
+    user_id = hrqueries.loan_return(tool_id)
+    return redirect("../view-user/" + str(user_id))
+
+@app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
+def add_training(u_id):
+    if request.method == "GET":
+        user = hrqueries.get_userinfo(u_id)
+        trainings = hrqueries.get_possible_trainings()
+        return render_template("add-training.html", user=user, \
+            trainings=trainings)
+    if request.method == "POST":
+        training = [request.form["training_id"], u_id, request.form["date"]]
+        hrqueries.add_training_participation(training)
+        return redirect("../view-user/" + str(u_id))
+
+@app.route("/add-loan/<int:u_id>", methods=["GET", "POST"])
+def add_loaned_tool(u_id):
+    if request.method == "GET":
+        user = hrqueries.get_userinfo(u_id)
+        tools = hrqueries.get_available_tools()
+        return render_template("add-loan.html", user=user, \
+            tools=tools)
+    if request.method == "POST":
+        loaned_tool = [request.form["tool_id"], u_id, request.form["date"]]
+        hrqueries.add_loan(loaned_tool)
+        return redirect("../view-user/" + str(u_id))
+
 # TO-DO - see why post? Shouldn't it be GET?
 @app.route("/edit-user/<int:u_id>", methods=["GET", "POST"])
 def edituser(u_id):
@@ -163,29 +212,37 @@ def edituser(u_id):
     # If method is GET - render basic template
     return render_template("edit-user.html")
 
-@app.route("/view-activities")
-def supervisor_view_activities():
+@app.route("/view-activities/<int:set_offset>")
+def supervisor_view_activities(set_offset):
     """View messages as supervisor"""
     if not users.is_coordinator():
         return error("notauthorized")
     #TO-DO: ORDER BY is not yet doing what I want.
     #Perhaps the activity_date (date) doesn't work for sorting as intended?
-    all_messages = messages.fetch_all_messages()
-    no_messages = bool(len(all_messages) == 0)
-    return render_template("message-view.html", messages=all_messages, nomessages=no_messages)
+    limit = 5
+    offset = set_offset * 5
+    if 'query' in request.args and len(request.args["query"]) != 0:
+        query = request.args["query"]
+        active_query = True
+    else:
+        query = ""
+        active_query = False
+    fetched_messages = messages.fetch_all_messages(limit,offset, query)
+    print(fetched_messages)
+    count_messages = messages.fetch_message_count(query)
+    show_next = bool(count_messages > limit * (set_offset+1))
+    show_previous = bool(set_offset > 0)
+    no_messages = bool(len(fetched_messages) == 0)
+    return render_template("message-view.html", messages=fetched_messages, \
+        nomessages=no_messages, show_next=show_next, show_previous=show_previous, \
+            offset=set_offset, msg_count=count_messages, active_query=active_query, \
+                query=query)
 
-@app.route("/reply-msg/<int:id>")
-def reply_msg(u_id):
+@app.route("/reply-msg/<int:m_id>")
+def reply_msg(m_id):
     """Render reply to a message view"""
-    sql = "SELECT users.lastname, users.firstname, messages.msg_id, \
-        messages.activity_date, messages.content, tasks.task_id \
-        FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-        ON (users.user_id = messages.volunteer_id) \
-        LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) \
-        WHERE msg_id=:id"
-    result = db.session.execute(sql, {"id":u_id})
-    message = result.fetchone()
-    return render_template("reply-msg.html", id=u_id, message=message)
+    message = messages.fetch_selected_message(m_id)
+    return render_template("reply-msg.html", id=m_id, message=message)
 
 @app.route("/submit-reply/<int:id>", methods=["POST"])
 def submit_reply(u_id):
@@ -210,38 +267,25 @@ def submit_reply(u_id):
         return render_template("error.html", show=True, \
             error="Something bad has happened, \
                 but at this demo-stage I do not exactly know what. Try again.")
-    return redirect("/view-activities")
+    return redirect("/view-activities/0")
 
-@app.route("/search-activities")
-def supervisor_search_activities():
-    """Search activities"""
-    role = users.user_role()
-    if not role == 'admin' or role == 'coordinator':
-        return error("notauthorized")
-    query = request.args["query"]
-    sql = "SELECT messages.msg_id, messages.activity_date, messages.content, \
-        tasks.task, users.username, users.role, users.lastname, users.firstname \
-        FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-        ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-        ON (messages.task_id = tasks.task_id) \
-        WHERE LOWER(messages.content) LIKE LOWER(:query) \
-        ORDER BY messages.thread_id DESC, messages.activity_date ASC"
-    # sql = "SELECT users.lastname, users.firstname, messages.msg_id, \
-    # messages.activity_date, messages.content, tasks.task \
-    # FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-    # ON (users.user_id = messages.volunteer_id) \
-    # LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) \
-    # WHERE messages.content LIKE :query ORDER BY messages.activity_date DESC"
-    result = db.session.execute(sql, {"query":"%"+query+"%"})
-    messages = result.fetchall()
-    nomessages = bool(len(messages) == 0)
-    # if len(messages) == 0:
-    #     nomessages = True
-    # else:
-    #     nomessages = False
-    print(nomessages)
-    return render_template("message-view.html", \
-        messages=messages, nomessages=nomessages)
+# @app.route("/search-activities")
+# def supervisor_search_activities():
+#     """Search activities"""
+#     role = users.user_role()
+#     if not role == 'admin' or role == 'coordinator':
+#         return error("notauthorized")
+#     query = request.args["query"]
+#     content = messages.search_messages(query)
+#     nomessages = bool(len(content) == 0)
+#     # if len(messages) == 0:
+#     #     nomessages = True
+#     # else:
+#     #     nomessages = False
+#     print(nomessages)
+#     return render_template("message-view.html", \
+#         messages=content, nomessages=nomessages)
+
 
 
 #VOLUNTEER ROUTES

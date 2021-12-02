@@ -83,7 +83,7 @@
                                         <td>{% for training in trainings %}
                                             {{ training.training }}, {{ training.training_date }} <br>
                                         {% endfor %}
-                                        <a href="#">Add training</a>
+                                        <a href="/add-training/{{ user.user_id }}">Add training</a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -92,10 +92,37 @@
                                             Tool: {{ tool.tool }} <br>
                                             Serialnumber: {{ tool.serialnumber }} <br>
                                             Loaned: {{ tool.loandate }}<br>
-                                            <a href="#">Return loan</a>
+                                            <!-- <a href="#">Return loan</a> -->
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModalCenter{{ tool.tool_id }}">
+                                                Return loan
+                                            </button>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="exampleModalCenter{{ tool.tool_id }}">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongTitle{{ tool.tool_id }}">Confirm</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                    <p>Please confirm that you wish to return a loaned tool.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                                                    <form action="/return-loan/{{ tool.tool_id }}" method="post">
+                                                        <input type="submit" value="Confirm" class="btn btn-primary">
+                                                    </form>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            </div>
                                             <br><br> 
                                         {% endfor %}
-                                        <a href="#">Add loaned tool</a>
+                                        <a href="/add-loan/{{ user.user_id }}">Add loaned tool</a>
                                         </td>
                                     </tr>
                                     <!-- {% for qualification in qualifications %}
