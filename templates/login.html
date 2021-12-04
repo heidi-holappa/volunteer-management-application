@@ -1,102 +1,51 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+{% block headername %}Volunteer Management App{% endblock %}
+{% block navitems%}
+<li class="nav-item">
+    <a class="nav-link" href="/">Back to front page</a>
+</li>
+{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Volunteer Management App</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <style>
-            th, td {
-              padding: 4px;
-            }
-        </style>
-    </head>
-    <body>
-        <header class="infinitehead">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-12 text-center">
-                        <h1 class="font-weight-light">Volunteer Management Application</h1>
-                        <p class="lead">Inspirational slogan here.</p>
-                    </div>
-                </div>
-            </div>
-        </header>
-        
-        <div class="flex-wrapper">
-            <div class="container" style="margin-top:30px">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <h2>Please submit your username and password</h2>
-                        <br />
-                        <div>
-                            {% if show is sameas true %}
-                                {% if error is sameas true %}
-                                    <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-                                {% else %}
-                                <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
-                                {% endif %}
-                            {% else %}
-                            {% endif %}
-                        </div>
+{% block content %}
 
+<div class="container">
+        {% if show is sameas true %}
+        {% if error is sameas true %}
+        <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
+        {% else %}
+        <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
+        {% endif %}
+        {% else %}
+        {% endif %}
+</div>
 
-
-                        <form action="/auth/login" method='POST'>
-
-                            <table>
-                                <tr>
-                                    <td>Please enter your username:</td>
-                                    <td><input  class="form-control" id='username' placeholder="Enter username" type='text' name='username' value=''></td>
-                                </tr>
-                                <tr>
-                                    <td>Password:</td>
-                                    <td><input class="form-control" id="password" placeholder="Enter password" type='password' name='password' /></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
-                                </tr>
-                            </table>
-
-                        </form>
-                        <br />
-                        <p>
-                            Don't have an account? Create one <a href="/register">here</a>.
-                            <br>
-                            <br>
-                            <b>Note: </b> In this test-version you can create an admin account to test the application by clicking the link above.
-                        </p>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="jumbotron text-center" style="margin-bottom:0">
-                <footer>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col">
-                                <h4>Site information</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <p><a href="https://github.com/heidi-holappa/volunteer-management-application/tree/main/Documentation" target="_blank">Project documentation</a></p>
-                            </div>
-                            <div class="col">
-                                <p><a href="/docs/feedback">Feedback</a></p>
-                            </div>
-                             <div class="col">
-                                <p><a href="/docs/aboutus">About Us</a></p>
-                            </div> 
-                        </div>
-                    </div>
-                    
-                </footer>
-            </div>
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+        <div class="col-lg-7 text-center text-lg-start">
+            <h1 class="display-4 fw-bold lh-1 mb-3">Sign-in</h1>
+            <p class="col-lg-10 fs-4">Please enter your username and password to sign in.</p>
         </div>
+        <div class="col-md-10 mx-auto col-lg-5">
+            <form class="p-4 p-md-5 border rounded-3 bg-light" action="/auth/login" method='POST'>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingInput" placeholder="Username" name='username'>
+                    <label for="floatingInput">Enter username</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name='password'>
+                    <label for="floatingPassword">Enter password</label>
+                </div>
+                <div class="checkbox mb-3">
+                </div>
+                <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+                <hr class="my-4">
+                <small class="text-muted">Don't have an account? Create one <a href="/register">here</a>!</small>
+            </form>
+        </div>
+    </div>
+</div>
 
-    </body>
-</html>
+
+
+{% endblock %}

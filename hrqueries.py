@@ -29,16 +29,25 @@ def volunteer_list():
 
 def search_volunteerlist(u_query: str):
     """ Return searched string from columns firstname, lastname, email"""
-    sql = "SELECT users.user_id, users.role, users.lastname, \
-        users.firstname, users.username, users.email, \
-        users.phone, startdate, COUNT(messages.sender_id) AS activitycounter \
-        FROM (SELECT user_id, lastname || ' ' || firstname || ' ' || email \
-        AS document FROM tsohaproject.users WHERE role='volunteer') as subset \
-        LEFT JOIN tsohaproject.users ON (subset.user_id = users.user_id) \
-        LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) \
+    # sql = "SELECT users.user_id, users.role, users.lastname, \
+    #     users.firstname, users.username, users.email, \
+    #     users.phone, startdate, COUNT(messages.sender_id) AS activitycounter \
+    #     FROM (SELECT user_id, lastname || ' ' || firstname || ' ' || email \
+    #     AS document FROM tsohaproject.users WHERE role='volunteer') as subset \
+    #     LEFT JOIN tsohaproject.users ON (subset.user_id = users.user_id) \
+    #     LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) \
+    #     WHERE role='volunteer' AND isactive='true' \
+    #     AND LOWER(document) LIKE LOWER(:query) \
+    #     GROUP BY users.user_id"
+    sql = "SELECT users.user_id, users.role, users.lastname, users.firstname, \
+        users.username, users.email, users.phone, startdate, \
+        COUNT(messages.sender_id) AS activitycounter, user_id, \
+        lastname || ' ' || firstname || ' ' || email AS document  \
+        FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
+        ON (users.user_id = messages.sender_id) \
         WHERE role='volunteer' AND isactive='true' \
-        AND LOWER(document) LIKE LOWER(:query) \
-        GROUP BY users.user_id"
+        AND (lastname || ' ' || firstname || ' ' || email) LIKE :query \
+        GROUP BY users.user_id;"
     result = db.session.execute(sql, {"query":'%' + u_query + '%'})
     return result.fetchall()
 

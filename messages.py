@@ -31,11 +31,14 @@ def fetch_message_count(query):
 
 
 def fetch_volunteer_messages(u_id: int, limit: int, offset: int):
-    sql = "SELECT messages.activity_date, messages.content, tasks.task \
-        FROM tsohaproject.messages LEFT JOIN tsohaproject.tasks \
+    sql = "SELECT users.username, users.lastname, users.firstname, users.role, \
+        messages.activity_date, messages.content, tasks.task \
+        FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
+        ON users.user_id = messages.sender_id \
+        LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
         WHERE messages.volunteer_id=:id \
-        ORDER BY messages.activity_date DESC \
+        ORDER BY messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC \
         LIMIT :limit OFFSET :offset"
     result = db.session.execute(sql, {"id":u_id, "limit":limit, "offset":offset})
     return result.fetchall()
@@ -76,6 +79,7 @@ def search_messages(query: str):
     return result.fetchall()
 
 def fetch_selected_message(m_id):
+    """Fetches a selected message from the database"""
     sql = "SELECT users.lastname, users.firstname, messages.msg_id, \
         messages.activity_date, messages.content, tasks.task_id \
         FROM tsohaproject.users INNER JOIN tsohaproject.messages \
@@ -84,3 +88,17 @@ def fetch_selected_message(m_id):
         WHERE msg_id=:id"
     result = db.session.execute(sql, {"id":m_id})
     return result.fetchone()
+
+def fetch_feedback():
+    """Fetches all received feedback"""
+    sql = "SELECT feedback_date, content \
+        FROM tsohaproject.feeback"
+    result = db.session.execute(sql)
+    return result.fetchall()
+
+def submit_feedback(fb_date, content):
+    """Stores a feedback to the database"""
+    sql = "INSERT INTO tsohaproject.feedback (feedback_date, content) \
+        VALUES (:fb_date, :content)"
+    db.session.execute(sql, {"fb_date":fb_date, "content":content})
+    db.session.commit()

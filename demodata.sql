@@ -137,3 +137,38 @@ SELECT loanedtools.loandate, tools.tool, tools.serialnumber FROM tsohaproject.lo
 
 /* Deleted from the app */
 SELECT users.lastname, users.role, users.firstname, users.user_id, users.email, string_agg(tasks.task, ', ') FROM tsohaproject.users, tsohaproject.volunteerqualification, tsohaproject.tasks WHERE users.user_id = volunteerqualification.user_id AND tasks.task_id = volunteerqualification.task_id GROUP BY users.lastname, users.firstname, users.role, users.user_id, users.email;
+
+
+/* Search query */
+SELECT user_id, lastname, firstname, email FROM (SELECT user_id, lastname, firstname, email, lastname || ' ' || firstname || ' ' || username || ' ' || email AS document  FROM tsohaproject.users WHERE role='volunteer') as subset WHERE document LIKE '%:query%';
+
+
+/* Combine search query to volunteer-query */
+
+SELECT users.user_id, users.role, users.lastname, users.firstname, users.username, users.email, users.phone, startdate, COUNT(messages.sender_id) AS activitycounter 
+FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN (SELECT user_id, lastname || ' ' || firstname || ' ' || username || ' ' || email AS document  FROM tsohaproject.users WHERE role='volunteer') as subset ON (messages.sender_id = subset.user_id)
+WHERE role='volunteer' AND isactive='true' AND document LIKE '%:query%'
+GROUP BY users.user_id
+
+
+SELECT users.user_id, users.role, users.lastname, users.firstname, users.username, users.email, startdate, COUNT(messages.sender_id) AS activitycounter 
+FROM (SELECT user_id, lastname || ' ' || firstname || ' ' || username || ' ' || email AS document  FROM tsohaproject.users WHERE role='volunteer') AS subset LEFT JOIN tsohaproject.users ON (subset.user_id = users.user_id) LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
+WHERE role='volunteer' AND isactive='true' AND LOWER(document) LIKE LOWER('%jes%')
+GROUP BY users.user_id;
+
+
+
+SELECT messages.thread_id, messages.msg_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
+FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+ORDER BY messages.thread_id DESC, messages.activity_date ASC;
+
+
+
+
+/* Searching users without a subquery */
+
+SELECT users.user_id, users.role, users.lastname, users.firstname, users.username, users.email, users.phone, startdate, COUNT(messages.sender_id) AS activitycounter, user_id, lastname || ' ' || firstname || ' ' || email  AS document
+FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
+WHERE role='volunteer' AND isactive='true' AND (lastname || ' ' || firstname || ' ' || email) LIKE '%a%' 
+GROUP BY users.user_id;
+

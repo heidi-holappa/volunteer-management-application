@@ -1,71 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Volunteer Management App</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <style></style>
-    </head>
-    
-    <body>
-        
-        <header class="infinitehead">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-12 text-center">
-                        <h1 class="font-weight-light">Volunteer Management Application</h1>
-                        <p class="lead">Inspirational slogan here.</p>
-                        {% if logged is sameas true %}  
-                        <form action="/logout" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Logout"/></form>
-                        {% else %} 
-                        <form action="/login" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Login"/></form>
-                        {% endif %}
-                    </div>
-                </div>
+{% extends "layout.html" %}
+{% block title %}About Us{% endblock %}
+{% block headername %}Volunteer Management App{% endblock %}
+
+{% block navitems%}
+{% if logged is sameas true %}  
+<li class="nav-item">
+    <a class="nav-link" href="/logout">Logout</a>
+</li>
+{% else %} 
+<li class="nav-item">
+    <a class="nav-link" href="/login">Login</a>
+</li>
+{% endif %}
+{% endblock %}
+                    
+
+{% block content %}
+    <div class="container" style="margin-top:30px">
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <h1>About Us</h1>
+                <p>Volunteer Management Application is a brain child of a reclusive Hemuli living near the southern coasts of Finland. They are sometimes seen at the Kumpula campus or at their office. Mostly they lurk at their home, studying and working intensively.</p>
             </div>
-        </header>
-
-        <div class="container" style="margin-top:30px">
-            <div class="row">
-                <div class="col-sm-8">
-                    <h1>About Us</h1>
-
-                    <p>Volunteer Management Application is a brain child of a reclusive Hemuli living near the southern coasts of Finland. They are sometimes seen at the Kumpula campus or at their office. Mostly they lurk at their home, studying and working intensively.</p>
-
-
-                    <br>    
-    
-
-                </div>
-            </div>
+            <div class="col-sm-3"></div>
         </div>
+    </div>
 
-
-
-        <div class="jumbotron text-center" style="margin-bottom:0">
-            <footer>
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <h4>Site information</h4>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <p><a href="https://github.com/heidi-holappa/volunteer-management-application/tree/main/Documentation" target="_blank">Project documentation</a></p>
-                        </div>
-                        <div class="col">
-                            <p><a href="/docs/feedback">Feedback</a></p>
-                        </div>
-                         <div class="col">
-                            <p><a href="/docs/aboutus">About Us</a></p>
-                        </div> 
-                    </div>
-                </div>
-                
-            </footer>
-        </div>
-    </body>
-</html>
+{% endblock %}

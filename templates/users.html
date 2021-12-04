@@ -1,125 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Volunteer Management App</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <style></style>
-    </head>
-    
-    <body>
-        
-        <header class="infinitehead">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-12 text-center">
-                        <h1 class="font-weight-light">Volunteer Management Application</h1>
-                        <p class="lead">Inspirational slogan here.</p>
-                        <form action="/logout" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="Logout"/></form>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="container" style="margin-top:30px">
-            <div class="row">
-                <div class="col-sm-8">
-                    <h1>Volunteer list</h1>
-                    <br>
-                    
-                    <div>Number of users: {{ count }}</div>
-                    <br>
-                    <h2>Search volunteers: </h2>
-                    <form action="/search-volunteers" method="GET">
-                        <table class="table">
-                            <tr>
-                                <td><input class="form-control" autocomplete="off" type="text" name="query" placeholder="Search by firstname, lastname, email address"></td>
-                                <td><input class="btn btn-primary" type="submit" value="Submit"></td>
-                            </tr>
-                        </table>
-                    </form>
-                    <p>As an admin you can create new users. At the moment the role coordinator can be used for same tasks as an admin account. With a volunteer account you can sign in and report volunteer activities.</p>
-
-                    <form action="/addnew" method='POST'><input class="btn btn-primary" id="addnew" name="addnew" type="submit" value="Create new user"/></form>
-                    <br>
-                    <p>You can also view activitities volunteers have reported on. You can post a reply to volunteer's message.</p>
-                    <form action="/view-activities/0" method='GET'><input class="btn btn-primary" id="addnew" name="logout" type="submit" value="View completed activities"/></form>
-                    <br>
-                    <p>Below you can view volunteer accounts. You can also edit account information or terminate an account.</p>
-
-                    
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>User-ID</th>
-                                <th>Lastname</th>
-                                <th>Firstname</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <!-- <th>Qualifications</th> -->
-                                <th>Activites done</th>
-                                <th>Modify</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                                <tr>
-                                    <td>{{ user.user_id }}</td>
-                                    <td>{{ user.lastname }}</td>
-                                    <td>{{ user.firstname }}</td>
-                                    <td>{{ user.email }}</td>
-                                    <td>{{user.role}}</td>
-                                    <td>{{ user.activitycounter }}</td>
-                                    <!-- <td>{{ user.string_agg }}</td> -->
-                                    <td><a href="view-user/{{ user.user_id }}">View details</a></td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+{% extends "layout.html" %}
+{% block title %}Users{% endblock %}
+{% block headername %}Volunteer Management App{% endblock %}
+{% block navitems%}
+<li class="nav-item">
+    <a class="nav-link" href="/view-activities/0">Browse activities</a>
+  </li>
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Dropdown link
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+      <a class="dropdown-item" href="/addnew">Add user account</a>
+      <a class="dropdown-item" href="/add-training-module">Add training module</a>
+      <a class="dropdown-item" href="/add-tool">Add tool</a>
+    </div>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="/logout">Logout</a>
+  </li>
+{% endblock %}
 
 
+{% block content %}
+<div class="container" style="margin-top:30px">
+    <div class="row">
+        <div class="col-sm-8">
 
-                    <div class="alert alert-warning" role="alert">
-                        <b>To-Do: </b>
-                        <ul>
-                            <li>Add search feature</li>
-                            <li>Add filter based on activity</li>
-                            <li>Admin should be able to view coordinators and admins as well. </li>
-                            <li>If time: Admin should be able to delete accounts</li>
-                            <li>Show date of last participation</li>
-                            <li>Improve and test authorization (only roles coordinator and admin can view this page and subpages)</li>
-                        </ul>
-                    </div>
-
-                </div>
+            <h1>Volunteer list</h1>
+            <br>
+            <h2>Search volunteers: </h2>
+            <form action="/search-volunteers" method="GET">
+                <table class="table">
+                    <tr>
+                        <td><input class="form-control" autocomplete="off" type="text" name="query"
+                                placeholder="Search by firstname, lastname, email address"></td>
+                        <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+                    </tr>
+                </table>
+            </form>
+            <p>As an admin you can create new users. At the moment the role coordinator can be used for same tasks as an
+                admin account. With a volunteer account you can sign in and report volunteer activities.</p>
+            <br>
+            <p>You can also view activitities volunteers have reported on. You can post a reply to volunteer's message.
+            </p>
+            <br>
+            <p>Below you can view volunteer accounts. You can also create accounts, edit account information or terminate an account.</p>
+            <div>Number of users: {{ count }}</div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User-ID</th>
+                        <th>Lastname</th>
+                        <th>Firstname</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <!-- <th>Qualifications</th> -->
+                        <th>Activites done</th>
+                        <th>Modify</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.lastname }}</td>
+                        <td>{{ user.firstname }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{user.role}}</td>
+                        <td>{{ user.activitycounter }}</td>
+                        <!-- <td>{{ user.string_agg }}</td> -->
+                        <td><a href="view-user/{{ user.user_id }}">View details</a></td>
+                    </tr>
+                    {% endfor %}
+                <tr>
+                    <td colspan=7 class="align-right">
+                        <form action="/addnew" method='GET'><input class="btn btn-link" id="addnew" name="addnew" type="submit"
+                            value="Create new user" /></form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="alert alert-warning" role="alert">
+                <b>To-Do: </b>
+                <ul>
+                    <li>Add filter based on activity</li>
+                    <li>Admin should be able to view coordinators and admins as well. </li>
+                    <li>If time: Admin should be able to delete accounts</li>
+                    <li>Show date of last participation</li>
+                    <li>Improve and test authorization (only roles coordinator and admin can view this page and
+                        subpages)</li>
+                </ul>
             </div>
         </div>
-        
-        
-        <div class="jumbotron text-center" style="margin-bottom:0">
-            <footer>
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <h4>Site information</h4>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <p><a href="https://github.com/heidi-holappa/volunteer-management-application/tree/main/Documentation" target="_blank">Project documentation</a></p>
-                        </div>
-                        <div class="col">
-                            <p><a href="/docs/feedback">Feedback</a></p>
-                        </div>
-                         <div class="col">
-                            <p><a href="/docs/aboutus">About Us</a></p>
-                        </div> 
-                    </div>
-                </div>
-                
-            </footer>
-        </div>
-    </body>
-</html>
+    </div>
+</div>
+
+{% endblock %}

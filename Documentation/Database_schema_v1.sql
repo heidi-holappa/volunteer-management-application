@@ -96,6 +96,11 @@ CREATE TABLE "tsohaproject".APPLOG (
   "description" varchar
 );
 
+CREATE TABLE "tsohaproject".FEEDBACK (
+  "feedback_date" date,
+  "content" varchar
+);
+
 ALTER TABLE "tsohaproject".CURRENTACTIVITY ADD FOREIGN KEY ("user_id") REFERENCES "tsohaproject".USERS ("user_id");
 
 ALTER TABLE "tsohaproject".CURRENTACTIVITY ADD FOREIGN KEY ("activity_id") REFERENCES "tsohaproject".ACTIVITYLEVEL ("activity_id");

@@ -36,7 +36,7 @@ def authlogin():
         else: 
             return render_template("login.html", show=True, error=True, \
             message="Username or password is incorrect. Please try again.")
-    return redirect("/volunteer-view")
+    return redirect("/volunteer-view/0")
 
 @app.route("/register")
 def register():
@@ -93,7 +93,7 @@ def search_volunteers():
     volunteer_info = hrqueries.search_volunteerlist("s")
     return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
 
-@app.route("/addnew", methods=["POST"])
+@app.route("/addnew", methods=["GET"])
 def addnew():
     """TO-DO: CLEAN THIS AWAY"""
     return render_template("addnew.html")
@@ -269,6 +269,14 @@ def submit_reply(u_id):
                 but at this demo-stage I do not exactly know what. Try again.")
     return redirect("/view-activities/0")
 
+@app.route("/add-training-module")
+def add_new_training():
+    return render_template("add-training-module.html")
+
+@app.route("/add-tool")
+def add_new_tool():
+    return render_template("add-tool.html")
+
 # @app.route("/search-activities")
 # def supervisor_search_activities():
 #     """Search activities"""
@@ -289,18 +297,24 @@ def submit_reply(u_id):
 
 
 #VOLUNTEER ROUTES
-@app.route("/volunteer-view")
-def volunteerview():
+@app.route("/volunteer-view/<int:set_offset>")
+def volunteerview(set_offset):
     """Render volunteer's view"""
     if not users.is_volunteer():
         return error("notauthorized")
+    limit=5
+    offset = set_offset * limit
     u_id = users.get_user_id()
     user = hrqueries.get_userinfo(u_id)
     activities = hrqueries.get_activities(u_id)
-    volunteer_messages = messages.fetch_volunteer_messages(u_id)
+    volunteer_messages = messages.fetch_volunteer_messages(u_id, limit, offset)
+    count_messages = len(volunteer_messages)
+    show_next = bool(count_messages > limit * (set_offset+1))
+    show_previous = bool(set_offset > 0)
     nomessages = bool(len(volunteer_messages) == 0)
     return render_template("volunteer-view.html", user=user, \
-        activities=activities, messages=volunteer_messages, nomessages=nomessages)
+        activities=activities, messages=volunteer_messages, nomessages=nomessages, \
+            show_previous=show_previous, show_next=show_next)
 
 @app.route("/submit-message-volunteer/<int:u_id>", methods=["POST"])
 def submit_message_volunteer(u_id):
@@ -314,9 +328,13 @@ def submit_message_volunteer(u_id):
         "content": request.form["content"], \
         "msg_sent":datetime.now(timezone.utc)}
     messages.new_message(message)
-    return redirect("/volunteer-view")
+    return redirect("/volunteer-view/0")
 
 #INFORMATIONROUTES
+@app.route("/success")
+def success():
+    return render_template("success.html")
+
 @app.route("/docs/aboutus")
 def about_us():
     """Render About Us view"""
@@ -341,8 +359,8 @@ def feedback():
 def submit_feedback():
     """Handle feedback submissions and render thank you view"""
     content = request.form["content"]
-    now = date.today()
-    print(now, content)
+    fb_date = date.today()
+    messages.submit_feedback(fb_date, content)
     return render_template("/docs/thank-you.html")
 
 def error(description):
@@ -373,3 +391,4 @@ def error(description):
 # def new():
 #     """TO-DO: CLEAN THIS AWAY"""
 #     return render_template("new.html")
+

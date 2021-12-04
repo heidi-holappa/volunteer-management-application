@@ -1,89 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Volunteer Management App</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <style></style>
-    </head>
-    
-    <body>
-        <header class="infinitehead">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-12 text-center">
-                        <h1 class="font-weight-light">Volunteer Management Application</h1>
-                        <p class="lead">Inspirational slogan here.</p>
-                    </div>
-                </div>
-            </div>
-        </header>
-        <br>
-        <br>
-          
-        <div class="container">
-            
-        </div>
-        
-        <br>
-        <br>
-        <div class="container">
-            <div class="row">
-                <h3>Welcome to the Volunteer Management App!</h3>
-                <p>This application is a school project that demonstrates the functionalities of a HR-type application tailored for managing a volunteer activity.</p>
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+{% block headername %}Volunteer Portal{% endblock %}
 
-                <p><b>Please note:</b> For demonstration purposes this application simulates handling of personal data. Please do not submit any real personal information into this application or use passwords that you use in other services when testing the application. The quality of data security is still on apprentice-level. </p>
-            </div>
+{% block content %}
+<div class="container" style="margin-top:60px">
+    <div class="row">
+        <div class="col-sm">
+            <h3>Welcome to the Volunteer Management App!</h3>
+            <p>This application is a school project that demonstrates the functionalities of a HR-type application
+                tailored for managing a volunteer activity.</p>
+            <p><b>Please note:</b> For demonstration purposes this application simulates handling of personal data.
+                Please do not submit any real personal information into this application or use passwords that you use
+                in other services when testing the application. The quality of data security is still on
+                apprentice-level. </p>
         </div>
         <br>
         <br>
-        
+    </div>
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <h4>Already have an account?</h4>
+            <p><a href="/login">Login to use the service</a></p>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-4"></div>
-                <div class="col-sm-4">
-                    <h3>Already have an account?</h3>
-                    <p><a href="/login">Login to use the service</a></p>
-                </div>
-                <div class="col-sm-4"></div>
-            </div>            
-            <div class="row">
-                <div class="col-sm-4"></div>
-                <div class="col-sm-4">
-                    <h3>New user?</h3>
-                    <p><a href="/register">Create an account to use the service!</a></p>
-                </div>
-                <div class="col-sm-4"></div>
-            </div>
+            <h4>New user?</h4>
+            <p><a href="/register">Create an admin account to test the service!</a></p>
         </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
 
 
-        <div class="jumbotron text-center" style="margin-bottom:0">
-            <footer>
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <h4>Site information</h4>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <p><a href="https://github.com/heidi-holappa/volunteer-management-application/tree/main/Documentation" target="_blank">Project documentation</a></p>
-                        </div>
-                        <div class="col">
-                            <p><a href="/docs/feedback">Feedback</a></p>
-                        </div>
-                         <div class="col">
-                            <p><a href="/docs/aboutus">About Us</a></p>
-                        </div> 
-                    </div>
-                </div>
-                
-            </footer>
-        </div>
-    
-    </body>
-</html>
+
+
+{% endblock %}
