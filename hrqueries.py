@@ -67,6 +67,16 @@ def get_active_volunteerinfo():
     result = db.session.execute(sql)
     return result.fetchall()
 
+def get_current_trainings():
+    """Return training options"""
+    sql = "SELECT training FROM tsohaproject.additionaltrainings"
+    result = db.session.execute(sql)
+    return result
+
+def add_new_training_module(training: str):
+    sql = "INSERT INTO tsohaproject.additionaltrainings (training) VALUES (:training)"
+    db.session.execute(sql, {"training":training})
+    db.session.commit()
 
 
 def get_qualifiations(u_id):
@@ -112,6 +122,16 @@ def get_available_tools():
         WHERE loaned='FALSE'"
     result = db.session.execute(sql)
     return result
+
+def get_all_tools():
+    sql = "SELECT tool, serialnumber, loaned \
+        FROM tsohaproject.tools"
+    return db.session.execute(sql)
+
+def add_new_tool(tool: list):
+    sql = "INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES (:tool, :serialnumber, 'False')"
+    db.session.execute(sql, {"tool":tool[0], "serialnumber":tool[1]})
+    db.session.commit()
 
 def add_loan(loaned_tool):
     sql_a = "INSERT INTO tsohaproject.loanedtools (user_id, tool_id, loandate, loaned) VALUES (:user_id, :tool_id, :loandate, 'TRUE')"

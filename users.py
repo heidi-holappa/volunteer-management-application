@@ -30,9 +30,9 @@ def create_admin(username: str, hash_value: str):
             VALUES (:user_id, :password)"
         db.session.execute(sqlpassword, {"user_id":user_id, "password":hash_value})
         db.session.commit()
+        return True
     except:
-        return render_template("register.html", show=True, \
-            message="Something bad has happened, but I do not specifically know what. Try again.")
+        return False
 
 def is_admin():
     """Returns true if user is admin"""

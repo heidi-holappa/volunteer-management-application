@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
-{% block navitems%}
+{% block coordinatornav %}{% endblock%}
+{% block volunteer_nav %}{% endblock%}
+{% block custom_navitems%}
 <li class="nav-item">
     <a class="nav-link" href="/">Back to front page</a>
 </li>
@@ -12,15 +14,15 @@
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
     <div class="row align-items-center g-lg-5 py-5">
         <div class="col-lg-7 text-center text-lg-start">
-            <h1 class="display-4 fw-bold lh-1 mb-3">Create a new admin-level account.</h1>
             <div>
                 {% if show is sameas true %}
                 <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
                 {% else %}
                 {% endif %}
             </div>
+            <h1 class="display-4 fw-bold lh-1 mb-3">Create a new admin-level account.</h1>
             <p class="col-lg-10 fs-4">In this demo you can create an administrator level account for yourself. As an administrator you can
-                create and manage users.</p>
+                create and manage users and view user activities.</p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">
             <form class="p-4 p-md-5 border rounded-3 bg-light" action="/auth/createadmin" method='POST'>
@@ -45,53 +47,5 @@
         </div>
     </div>
 </div>
-
-<!-- <div class="flex-wrapper">
-    <div class="container" style="margin-top:30px">
-        <div class="row">
-            <div class="col-sm-8">
-                <h2>Create a new admin-level account.</h2>
-                <p>In this demo you can create an administrator level account for yourself. As an administrator you can
-                    create and manage users and reply their messages. </p>
-                <p>Please note that password must have atleast 8 characters.</p>
-                <div>
-                    {% if show is sameas true %}
-                    <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-                    {% else %}
-                    {% endif %}
-                </div>
-                <br />
-
-
-
-                <form action="/auth/createadmin" method='POST'>
-
-                    <table>
-                        <tr>
-                            <td>Please select a username:</td>
-                            <td><input class="form-control" id='username' placeholder="Enter username" type='text'
-                                    name='username' value=''></td>
-                        </tr>
-                        <tr>
-                            <td>Choose a password:</td>
-                            <td><input class="form-control" id="password1" placeholder="Enter password" type='password'
-                                    name='password1' /></td>
-                        </tr>
-
-                        <tr>
-                            <td>Please retype your password:</td>
-                            <td><input class="form-control" id="password2" placeholder="Enter password again"
-                                    type='password' name='password2' /></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" align="right"><input class="btn btn-primary" id="submit" name="submit"
-                                    type="submit" value="submit" /></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </div>
-    </div>
-</div> -->
 
 {% endblock %}

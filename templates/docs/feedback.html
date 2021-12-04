@@ -2,16 +2,25 @@
 {% block title %}About Us{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block navitems%}
-{% if logged is sameas true %}  
-<li class="nav-item">
-    <a class="nav-link" href="/logout">Logout</a>
-</li>
-{% else %} 
-<li class="nav-item">
-    <a class="nav-link" href="/login">Login</a>
-</li>
-{% endif %}
+{% block coordinatornav %}
+    {% if (role == 'coordinator' or role == 'admin') %}
+        {{ super() }}
+    {% else %}
+    {% endif %}
+{% endblock%}
+{% block volunteer_nav %}
+    {% if (role == 'volunteer') %}
+        {{ super() }}
+    {% else %}
+    {% endif %}
+{% endblock%}
+{% block custom_navitems %}
+    {% if logged is sameas true %}
+    {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+        </li>    
+    {% endif %}
 {% endblock %}
 
 

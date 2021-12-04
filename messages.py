@@ -102,3 +102,16 @@ def submit_feedback(fb_date, content):
         VALUES (:fb_date, :content)"
     db.session.execute(sql, {"fb_date":fb_date, "content":content})
     db.session.commit()
+
+def get_op_id(u_id):
+    sql = "SELECT volunteer_id FROM tsohaproject.messages WHERE msg_id=:id"
+    result = db.session.execute(sql, {"id":u_id})
+    return result.fetchone()[0]
+
+def submit_reply(new_reply: list):
+    sql = "INSERT INTO tsohaproject.messages \
+            (thread_id, volunteer_id, sender_id, task_id, send_date, content) \
+            VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"
+    result = db.session.execute(sql, {"thread_id":new_reply[0], "volunteer_id":new_reply[1], \
+            "sender_id":new_reply[2], "task_id":new_reply[4], "send_date":new_reply[5], "content":new_reply[6]})
+    db.session.commit()

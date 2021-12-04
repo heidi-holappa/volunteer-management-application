@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
+{% block coordinatornav %}{% endblock%}
+{% block volunteer_nav %}{{ super() }}{% endblock%}
+{% block custom_navitems%}{% endblock %}
 
 {% block content %}
 
@@ -57,7 +60,7 @@
                             {% else %}
                                 <div class="alert alert-dark">
                                     <b>Reply: </b><br>
-                                    <b>Date: </ b>{{ message.activity_date }}<br>
+                                    <b>Date: </b>{{ message.activity_date }}<br>
                                     <b>Sender: </b> {{ message.username }}<br>
                                     <br>
                                     <b>Content: </b>{{ message.content }}

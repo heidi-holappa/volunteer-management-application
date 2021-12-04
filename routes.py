@@ -57,10 +57,12 @@ def createadmin():
     password2 = request.form["password2"]
     valid_password = users.password_valid(password, password2)
     if not valid_password[0]:
-        render_template("register.html", show=True, \
+        return render_template("register.html", show=True, \
             message=valid_password[1])
     hash_value = generate_password_hash(password)
-    users.create_admin(username, hash_value)
+    if not users.create_admin(username, hash_value):
+        return render_template("register.html", show=True, \
+            message="Something went wrong. Most likely the username was already taken. Try again.")
     return render_template("login.html", show=True, error=False, \
         message="Registration completed. Please login with your account.")
 
@@ -247,35 +249,68 @@ def reply_msg(m_id):
 @app.route("/submit-reply/<int:id>", methods=["POST"])
 def submit_reply(u_id):
     """Submit reply"""
-    sql = "SELECT volunteer_id FROM tsohaproject.messages WHERE msg_id=:id"
-    result = db.session.execute(sql, {"id":u_id})
-    volunteer_id = result.fetchone()[0]
+    volunteer_id = messages.get_op_id(u_id)
     sender_id = users.get_user_id()
     thread_id = u_id
     task_id = request.form["task_id"]
     content = request.form["content"]
     msg_sent = datetime.now(timezone.utc)
+    new_reply = [thread_id, volunteer_id, sender_id, task_id, msg_sent, content]    
     #TO-DO: This is not a recommended way of using a try. Fix this.
-    try:
-        sql = "INSERT INTO tsohaproject.messages \
-            (thread_id, volunteer_id, sender_id, task_id, send_date, content) \
-            VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"
-        result = db.session.execute(sql, {"thread_id":thread_id, "volunteer_id":volunteer_id, \
-            "sender_id":sender_id, "task_id":task_id, "send_date":msg_sent, "content":content})
-        db.session.commit()
-    except:
-        return render_template("error.html", show=True, \
-            error="Something bad has happened, \
-                but at this demo-stage I do not exactly know what. Try again.")
+    messages.submit_reply(new_reply)
     return redirect("/view-activities/0")
 
-@app.route("/add-training-module")
+@app.route("/add-training-module", methods=["GET", "POST"])
 def add_new_training():
-    return render_template("add-training-module.html")
+    if request.method == "GET":
+        current_trainings = hrqueries.get_current_trainings()
+        return render_template("add-training-module.html", trainings=current_trainings, show=False, \
+            message="", error=False)
+    if request.method == "POST":
+        new_training = request.form["training"]
+        if len(new_training) == 0:
+            session["error"] = True
+            return redirect("/training-submission")
+        hrqueries.add_new_training_module(new_training)
+        session["error"] = False
+        return redirect("/training-submission")
+        
+@app.route("/training-submission")
+def training_submission_handling():
+    current_trainings = hrqueries.get_current_trainings()
+    error = session.get("error", 0)
+    if error:
+        return render_template("add-training-module.html", \
+                message="Please add a name for the training module", error=True, show=True, \
+                    trainings=current_trainings)
+    return render_template("add-training-module.html", show=True, error=False, \
+            message="New module successfully added.", trainings=current_trainings)
 
-@app.route("/add-tool")
+
+@app.route("/add-tool", methods=["POST", "GET"])
 def add_new_tool():
-    return render_template("add-tool.html")
+    if request.method == "GET":
+        tools = hrqueries.get_all_tools()
+        return render_template("add-tool.html", show=False, tools=tools)
+    if request.method == "POST":
+        if len(request.form["tool"]) == 0 or len(request.form["serialnumber"])== 0:
+            session["error"] = True
+            return redirect("/tool-submission")
+        hrqueries.add_new_tool([request.form["tool"], request.form["serialnumber"]])
+        session["error"] = False
+        return redirect("/tool-submission")
+
+@app.route("/tool-submission")
+def tool_submission():
+    tools = hrqueries.get_all_tools()
+    error = session.get("error", 0)
+    if error:
+        return render_template("add-tool.html", tools=tools, show=True, \
+            error=True, message="Please fill in both fields to submit a new tool.")
+    return render_template("add-tool.html", tools=tools, show=True, \
+            error=False, message="New tool added successfully.")
+
+
 
 # @app.route("/search-activities")
 # def supervisor_search_activities():
@@ -339,21 +374,17 @@ def success():
 def about_us():
     """Render About Us view"""
     u_id = users.get_user_id()
-    print(id)
-    logged = False
-    if u_id != 0:
-        logged = True
-    return render_template("docs/aboutus.html", logged=logged)
+    logged = bool(u_id != 0)
+    role = users.get_role()
+    return render_template("docs/aboutus.html", logged=logged, role=role)
 
 @app.route("/docs/feedback")
 def feedback():
     """Render feedback view"""
     u_id = users.get_user_id()
-    print(id)
-    logged = False
-    if u_id != 0:
-        logged = True
-    return render_template("docs/feedback.html", logged=logged)
+    logged = bool(u_id != 0)
+    role = users.get_role()
+    return render_template("docs/feedback.html", logged=logged, role=role)
 
 @app.route("/submit-feedback", methods=["POST"])
 def submit_feedback():
