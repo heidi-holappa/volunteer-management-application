@@ -8,166 +8,141 @@
 {% block custom_navitems%}{% endblock %}
 
 {% block content %}
-    <div class="container" style="margin-top:30px">
-        <div class="row">
-            <div class="col-sm-8">
-                <h1>Volunteer activity</h1>
-                <br>
-                <form action="/users" method='GET'><input class="btn btn-primary" id="addnew" name="logout"
-                        type="submit" value="Back" /></form>
-                <br>
-
-                <h2>Submissions: </h2>
-                {% if active_query is sameas False %}
-                <form action="/view-activities/0" method="GET">
-                    <table class="table">
-                        <tr>
-                            <td><input class="form-control" autocomplete="off" type="text" name="query"
-                                    placeholder="Search by content (unfinised - see To-Do below for known issues)"></td>
-                            <td><input class="btn btn-primary" type="submit" value="Submit"></td>
-                        </tr>
-                    </table>
-                </form>
-                {% else %}
-                <form action="/view-activities/0" method='GET'><input class="btn btn-primary" id="addnew" name="logout"
-                        type="submit" value="End search" /></form>
-                {% endif %}
+<div class="container" style="margin-top:30px">
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>Volunteer activity</h1>
+            <p>On this page you can read submissions from volunteers and reply those submissions. Volunteers can then
+                see your replies. You can search for messages with strings. Search is not case sensitive. Please not
+                that the search provides all results with a match. Because of that replies and posts before them might
+                not be related to each other while browsing through search results.</p>
 
 
-                <div>
-                    Number of messages: {{ msg_count }} <br>
-                    Current query: {{ query }}
-                </div>
-
-
-                <div class="row">
-                    <div class="col-sm-6">
-                        {% if show_previous is sameas true %}
-                        <form action="/view-activities/{{ offset - 1 }}" method='GET'>
-                            <input type="hidden" name="query" value="{{ query }}">
-                            <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
-                        </form>
-                        <!-- <form action="/view-activities/{{ offset - 1 }}" method='GET'><input class="btn btn-primary" id="previous" name="previous" type="submit" value="Previous"/></form> -->
-                        <!-- <a href="/view-activities/{{ offset - 1 }}">Previous</a> -->
-                        {% else %}
-                        {% endif %}
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        {% if show_next is sameas true %}
-                        <!-- <form action="/view-activities/{{ offset + 1 }}" method='GET'><input class="btn btn-primary" id="next" name="next" type="submit" value="Next"/></form> -->
-                        <!-- <a href="/view-activities/{{ offset + 1 }}">Next</a> -->
-                        <form action="/view-activities/{{ offset + 1 }}" method='GET'>
-                            <input type="hidden" name="query" value="{{ query }}">
-                            <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
-                        </form>
-                        {% else %}
-                        {% endif %}
-                    </div>
-                </div>
-
-
-                {% if nomessages is sameas false %}
-                <!-- <table class="table">
-                            <tr>
-                                <th>Date</th>
-                                <th>Volunteer task</th>
-                                <th>Description</th>
-                                <th>Volunteer</th>
-                                <th>Reply message</th>
-                            </tr>
-                            {% for message in messages %}  
-                            <tr>
-                                <td>{% if message.role=='volunteer' %}{{ message.activity_date }}{% else %}{% endif %}</td>
-                                <td>{% if message.role=='volunteer' %}{{ message.task }}{% else %}{% endif %}</td>
-                                <td>{{ message.content }}</td>
-                                <td>{% if message.role=='volunteer' %}{{ message.firstname }} {{ message.lastname }}{% else %}{{ message.username }}{% endif %}</td>
-                                <td>{% if message.role=='volunteer' %}<a href="reply-msg/{{ message.msg_id }}">Reply</a>{% else %}{% endif %}</td>
-                            </tr>
-                            {% endfor %}
-                        </table> -->
+            <h2>Submissions: </h2>
+            {% if active_query is sameas False %}
+            <form action="/view-activities/0" method="GET">
                 <table class="table">
-                    {% for message in messages %}
-                    {% if message.role=='volunteer' %}
-                    <tr class="table-primary">
-                        <td colspan="2">
-                            <div>
-                                <b>Sent by: </b> {{ message.firstname }} {{ message.lastname }} <br>
-                                <b>Task: </b> {{ message.task }}
-                                <b>Date of activity: </b> {{ message.activity_date }} <br>
-                                <b>Message sent: </b> {{ message.send_date  }} <br>
-                                <br>
-                                {{ message.content }}
-                                <br><br>
-                                <a href="../reply-msg/{{ message.msg_id }}">Reply</a>
-                            </div>
-                        </td>
+                    <tr>
+                        <td><input class="form-control" autocomplete="off" type="text" name="query"
+                                placeholder="Search by content (unfinised - see To-Do below for known issues)"></td>
+                        <td><input class="btn btn-primary" type="submit" value="Submit"></td>
                     </tr>
-                    {% else %}
-                    <tr class="table-secondary">
-                        <td></td>
-                        <td>
-                            <div class="text-left">
-                                <b>Reply by: </b> {{ message.username }} <br>
-                                <b>Sent: </b> {{ message.send_date }} <br>
-                                <br>
-                                {{ message.content }}
-                            </div>
-                        </td>
-                    </tr>
-
-                    {% endif %}
-
-                    {% endfor %}
                 </table>
-                {% else %}
-                <p>There are no messages.</p>
-                {% endif %}
-                <div class="row">
-                    <div class="col-sm-6">
-                        {% if show_previous is sameas true %}
-                        <form action="/view-activities/{{ offset - 1 }}" method='GET'>
-                            <input type="hidden" name="query" value="{{ query }}">
-                            <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
-                        </form>
-                        <!-- <form action="/view-activities/{{ offset - 1 }}" method='GET'><input class="btn btn-primary" id="previous" name="previous" type="submit" value="Previous"/></form> -->
-                        <!-- <a href="/view-activities/{{ offset - 1 }}">Previous</a> -->
-                        {% else %}
-                        {% endif %}
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        {% if show_next is sameas true %}
-                        <!-- <form action="/view-activities/{{ offset + 1 }}" method='GET'><input class="btn btn-primary" id="next" name="next" type="submit" value="Next"/></form> -->
-                        <!-- <a href="/view-activities/{{ offset + 1 }}">Next</a> -->
-                        <form action="/view-activities/{{ offset + 1 }}" method='GET'>
-                            <input type="hidden" name="query" value="{{ query }}">
-                            <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
-                        </form>
-                        {% else %}
-                        {% endif %}
-                    </div>
-                </div>
+            </form>
+            {% else %}
+            <form action="/view-activities/0" method='GET'><input class="btn btn-primary" id="addnew" name="logout"
+                    type="submit" value="End search" /></form>
+            {% endif %}
 
 
-
-
-                <div class="alert alert-warning" role="alert">
-                    <b>To-Do: </b>
-                    <ul>
-                        <li>Add dropdown for choosing volunteers to filter on one volunteer</li>
-                        <li>Make messages more readable. Thread startes and replies have now different colors. What more
-                            could be done? </li>
-                        <li>Search needs further development. It now returns messages with hits, mixing messages from
-                            different threads. User cannot know how information is related (or not). Perhaps should
-                            return threads with hits. Maybe first get thread_id's and then get threads with matches? How
-                            to make results understandable to user? </li>
-                        <li>Optional if time: Admin has rights to delete messages</li>
-                        <li>Optional if time: Make pages (i.e. 10 messages per page, etc.)</li>
-                    </ul>
-                </div>
-
-
+            <div>
+                Number of messages: {{ msg_count }} <br>
+                Current query: {{ query }}
             </div>
+
+
+            <div class="row">
+                <div class="col-sm-6">
+                    {% if show_previous is sameas true %}
+                    <form action="/view-activities/{{ offset - 1 }}" method='GET'>
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
+                    </form>
+                    <!-- <form action="/view-activities/{{ offset - 1 }}" method='GET'><input class="btn btn-primary" id="previous" name="previous" type="submit" value="Previous"/></form> -->
+                    <!-- <a href="/view-activities/{{ offset - 1 }}">Previous</a> -->
+                    {% else %}
+                    {% endif %}
+                </div>
+                <div class="col-sm-6 text-right">
+                    {% if show_next is sameas true %}
+                    <!-- <form action="/view-activities/{{ offset + 1 }}" method='GET'><input class="btn btn-primary" id="next" name="next" type="submit" value="Next"/></form> -->
+                    <!-- <a href="/view-activities/{{ offset + 1 }}">Next</a> -->
+                    <form action="/view-activities/{{ offset + 1 }}" method='GET'>
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
+                    </form>
+                    {% else %}
+                    {% endif %}
+                </div>
+            </div>
+
+
+            {% if nomessages is sameas false %}
+
+            <table class="table">
+                {% for message in messages %}
+                {% if message.role=='volunteer' %}
+                <tr class="table-primary">
+                    <td colspan="2">
+                        <div>
+                            <b>Sent by: </b> {{ message.firstname }} {{ message.lastname }} <br>
+                            <b>Task: </b> {{ message.task }}
+                            <b>Date of activity: </b> {{ message.activity_date }} <br>
+                            <b>Message sent: </b> {{ message.send_date  }} <br>
+                            <br>
+                            {{ message.content }}
+                            <br><br>
+                            <a href="../reply-msg/{{ message.msg_id }}">Reply</a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr class="table-secondary">
+                    <td></td>
+                    <td>
+                        <div class="text-left">
+                            <b>Reply by: </b> {{ message.username }} <br>
+                            <b>Sent: </b> {{ message.send_date }} <br>
+                            <br>
+                            {{ message.content }}
+                        </div>
+                    </td>
+                </tr>
+
+                {% endif %}
+
+                {% endfor %}
+            </table>
+            {% else %}
+            <p>There are no messages.</p>
+            {% endif %}
+            <div class="row">
+                <div class="col-sm-6">
+                    {% if show_previous is sameas true %}
+                    <form action="/view-activities/{{ offset - 1 }}" method='GET'>
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
+                    </form>
+                    {% else %}
+                    {% endif %}
+                </div>
+                <div class="col-sm-6 text-right">
+                    {% if show_next is sameas true %}
+                    <form action="/view-activities/{{ offset + 1 }}" method='GET'>
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
+                    </form>
+                    {% else %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="alert alert-warning" role="alert">
+                <b>To-Do: </b>
+                <ul>
+                    <li>Add dropdown for choosing volunteers to filter on one volunteer</li>
+                    <li>Make messages more readable. Thread startes and replies have now different colors. What more
+                        could be done? </li>
+                    <li>Search needs further development. It now returns messages with hits, mixing messages from
+                        different threads. User cannot know how information is related (or not). Perhaps should
+                        return threads with hits. Maybe first get thread_id's and then get threads with matches? How
+                        to make results understandable to user? </li>
+                </ul>
+            </div>
+
+
         </div>
     </div>
+</div>
 
 {% endblock %}}

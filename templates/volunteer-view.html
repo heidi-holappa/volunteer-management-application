@@ -72,31 +72,10 @@
                     {% else %}
                     {% endif %}
 
-                    <!-- <h2>My activities</h2>
-                    {% if nomessages is sameas false %} 
-                        <table class="table">
-                            <tr>
-                                <th>Date</th>
-                                <th>Volunteer task</th>
-                                <th>Description</th>
-                            </tr>
-                            {% for message in messages %}  
-                            <tr>
-                                <td>{{ message.activity_date }}</td>
-                                <td>{{ message.task }}</td>
-                                <td>{{ message.content }}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    {% else %}
-                    {% endif %} -->
-
-
                     <div class="alert alert-warning" role="alert">
                         <b>To-Do: </b>
                         <ul>
-                            <li>Volunteers have an opportunity to click a checkbox indicating they want a reply to a sent message.</li>
-                            <li>Admins and coordinators can reply to messages. Replies show next to the message they are related to. </li>
+                            <li>If time: Volunteers have an opportunity to click a checkbox indicating they want a reply to a sent message.</li>
                             <li><b>Fix bug: </b>Message can be sent multiple times in Heroku by cliking submit-button more than once.</li>
                         </ul>
                     </div>

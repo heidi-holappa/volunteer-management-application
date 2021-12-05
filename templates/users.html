@@ -38,7 +38,6 @@
                         <th>Firstname</th>
                         <th>Email</th>
                         <th>Role</th>
-                        <!-- <th>Qualifications</th> -->
                         <th>Activites done</th>
                         <th>Modify</th>
                     </tr>
@@ -52,7 +51,6 @@
                         <td>{{ user.email }}</td>
                         <td>{{user.role}}</td>
                         <td>{{ user.activitycounter }}</td>
-                        <!-- <td>{{ user.string_agg }}</td> -->
                         <td><a href="view-user/{{ user.user_id }}">View details</a></td>
                     </tr>
                     {% endfor %}
