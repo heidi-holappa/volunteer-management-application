@@ -139,7 +139,7 @@ def submituser():
     if not users.is_coordinator():
         return error("notauthorized")
     if request.method == "GET":
-        return render_template("add-user.html", user_role=users.get_role())
+        return render_template("add-user.html", role=users.get_role())
     if request.method == "POST":
         if 'role' in request.form:
             role = request.form["role"]
