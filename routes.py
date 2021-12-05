@@ -461,6 +461,8 @@ def submit_feedback():
     fb_date = date.today()
     u_id = users.get_user_id()
     logged = bool(u_id != 0)
+    if len(content) == 0:
+        return error('missing_value')
     messages.submit_feedback(fb_date, content)
     return render_template("/docs/thank-you.html", role=users.get_role(), 
         logged=logged)
