@@ -28,7 +28,7 @@
                             <tr>
                                 <td>Select activity:</td>
                                 <td>
-                                    <select class="form-control form-control-sm" name='doneactivity'>
+                                    <select class="form-select form-control-sm" name='doneactivity'>
                                         <option value="" selected disabled>Choose activity</option>
                                         {% for activity in activities %}
                                             <option value="{{ activity.task_id }}">{{ activity.task }}</option>
@@ -38,7 +38,7 @@
                             </tr>
                             <tr>
                                 <td>Description:</td>
-                                <td><textarea  class="form-select" id='content' placeholder="Write a summary of activity" type='text' name='content' rows="4" cols="50"></textarea></td>
+                                <td><textarea  class="form-control" id='content' placeholder="Write a summary of activity" type='text' name='content' rows="4" cols="50"></textarea></td>
                             </tr>
                             <tr>
                                 <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
