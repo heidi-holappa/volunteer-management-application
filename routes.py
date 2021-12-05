@@ -259,7 +259,7 @@ def add_training(u_id):
         user = hrqueries.get_userinfo(u_id)
         trainings = hrqueries.get_possible_trainings()
         return render_template("add-training.html", user=user, \
-            trainings=trainings)
+            trainings=trainings, role=users.get_role())
     if request.method == "POST":
         if not ('training_id' in request.form and 'date' in request.form):
             return error("missing_value")
