@@ -55,6 +55,9 @@ def createadmin():
     username = request.form["username"]
     password = request.form["password1"]
     password2 = request.form["password2"]
+    if len(username) < 3:
+        return render_template("register.html", show=True, \
+            message="Username must have atleast 3 characters")
     valid_password = users.password_valid(password, password2)
     if not valid_password[0]:
         return render_template("register.html", show=True, \
