@@ -8,10 +8,9 @@
 {% block custom_navitems%}{% endblock %}
 
 {% block content %}
-<div class="flex-wrapper">
+
     <div class="container" style="margin-top:30px">
-        <div class="row">
-            <div class="col-sm-8">
+
 
                 <h2>Showing user information</h2>
                 <br>
@@ -70,20 +69,26 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>Additional trainings: </td>
+                            <td>Completed additional trainings modules: 
+                                <br><a href="/add-training/{{ user.user_id }}">Add training</a>
+                            </td>
                             <td>{% for training in trainings %}
                                 {{ training.training }}, {{ training.training_date }} <br>
                                 {% endfor %}
-                                <a href="/add-training/{{ user.user_id }}">Add training</a>
+                                <br>
+                                
                             </td>
                         </tr>
                         <tr>
-                            <td>Loaned tools: </td>
+                            <td>Loaned tools: 
+                                <br>
+                                <a href="/add-loan/{{ user.user_id }}">Add new loaned tool</a>
+                            </td>
                             <td>{% for tool in tools %}
                                 Tool: {{ tool.tool }} <br>
                                 Serialnumber: {{ tool.serialnumber }} <br>
                                 Loaned: {{ tool.loandate }}<br>
-                                <!-- <a href="#">Return loan</a> -->
+                                
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-link" data-toggle="modal"
                                     data-target="#exampleModalCenter{{ tool.tool_id }}">
@@ -117,7 +122,6 @@
                                 </div>
                                 <br><br>
                                 {% endfor %}
-                                <a href="/add-loan/{{ user.user_id }}">Add loaned tool</a>
                             </td>
                         </tr>
                     </tbody>
@@ -128,11 +132,7 @@
                         <li>Add user activity</li>
                     </ul>
                 </div>
-
-
             </div>
-        </div>
-    </div>
-</div>
+
 
 {% endblock %}

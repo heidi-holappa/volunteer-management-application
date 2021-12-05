@@ -132,6 +132,14 @@ def get_report_data():
         ORDER BY c DESC"
     training_participation = db.session.execute(training_participation_sql)
     result['training_participation'] = training_participation.fetchall()
+    active_loans_sql = "SELECT tools.tool, COUNT(tools.tool), \
+        COALESCE(SUM(CASE WHEN loanedtools.loaned='True' THEN 1 ELSE 0 END)) \
+        FROM tsohaproject.tools LEFT JOIN tsohaproject.loanedtools \
+        ON (tools.tool_id = loanedtools.tool_id) \
+        GROUP BY tool \
+        ORDER BY tool ASC"
+    active_loans = db.session.execute(active_loans_sql)
+    result['active_loans'] = active_loans.fetchall()
     return result
     
 
@@ -246,7 +254,8 @@ def get_loanedtools(u_id):
 
 def get_userinfo(u_id):
     """Return extensive userinformation from table users"""
-    sql = "SELECT user_id, role, lastname, firstname, username, email, phone, startdate, basictraining, isactive FROM tsohaproject.users WHERE user_id =:id"
+    sql = "SELECT user_id, role, lastname, firstname, username, email, \
+        phone, startdate, basictraining, isactive FROM tsohaproject.users WHERE user_id =:id"
     result = db.session.execute(sql, {"id":u_id})
     user = result.fetchone()
     return user

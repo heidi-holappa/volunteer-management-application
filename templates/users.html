@@ -10,11 +10,12 @@
 
 {% block content %}
 <div class="container" style="margin-top:30px">
-    <div class="row">
-        <div class="col-sm-8">
-
             <h1>User list: {% if volunteer_view is sameas true %}volunteers{% else %}coordinators{% endif %}</h1>
+            <p>As an admin you can create new users. Volunteers can report on activities done, coordinators can create and manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple reporting data on helpline performance.</p>
             <br>
+            <p>As an admin or a coordinator you can also view activitities volunteers have reported on. You can post a reply to a volunteer's message.</p>
+</div>
+<div class="container" style="margin-top:30px">
             <h2>Search users: </h2>
             <form action="{% if volunteer_view is sameas true %}/search-volunteers{% else %}/search-coordinators{% endif %}" method="GET">
                 <table class="table">
@@ -25,10 +26,7 @@
                     </tr>
                 </table>
             </form>
-            <p>As an admin you can create new users. Volunteers can report on activities done, coordinators can create and manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple reporting data on helpline performance.</p>
-            <br>
-            <p>As an admin or a coordinator you can also view activitities volunteers have reported on. You can post a reply to a volunteer's message.
-            </p>
+            
             <div>Number of users: {{ count }}</div>
             <table class="table">
                 <thead>
@@ -62,8 +60,6 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
 </div>
 
 {% endblock %}
