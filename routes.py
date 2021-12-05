@@ -1,14 +1,8 @@
 from app import app
-from os import getenv
-import os
-import re
 from datetime import datetime, date, timezone
 from flask import Flask
 from flask import redirect, render_template, request, session
-from flask_sqlalchemy import SQLAlchemy
-# from flask import session
-from sqlalchemy.sql.elements import False_, Null
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
 import users, hrqueries, messages
 
 @app.route("/")
@@ -462,8 +456,11 @@ def submit_feedback():
     """Handle feedback submissions and render thank you view"""
     content = request.form["content"]
     fb_date = date.today()
+    u_id = users.get_user_id()
+    logged = bool(u_id != 0)
     messages.submit_feedback(fb_date, content)
-    return render_template("/docs/thank-you.html", role=users.get_role())
+    return render_template("/docs/thank-you.html", role=users.get_role(), 
+        logged=logged)
 
 def error(description):
     """Render Error view"""
