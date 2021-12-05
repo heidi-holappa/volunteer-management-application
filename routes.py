@@ -174,7 +174,9 @@ def update_user(u_id):
             but at this demo-stage I do not exactly know what. Try again.", 
             role=users.get_role())
     if not isactive:
-        return redirect("/users")
+        if newinfo[1] == 'volunteer':
+            return redirect("../view-volunteers")
+        return redirect('../view-coordinators')
     return redirect("/view-user/" + str(u_id))
 
 @app.route("/view-user/<int:u_id>")
