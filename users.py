@@ -3,6 +3,7 @@ from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 def login(username, password):
+    """User login"""
     sql = "SELECT users.user_id, users.role, password.password \
             FROM tsohaproject.users INNER JOIN tsohaproject.password \
             ON users.user_id = password.user_id \
@@ -20,6 +21,7 @@ def login(username, password):
             return False
     
 def create_admin(username: str, hash_value: str):
+    """Create an admin level account"""
     try:
         sqlusers = "INSERT INTO tsohaproject.users (username,role,isactive) \
             VALUES (:username, :role, :isactive) RETURNING user_id"
@@ -49,7 +51,6 @@ def is_volunteer():
 def get_user_id():
     """Return id of logged in user"""
     u_id = session.get("user_id", 0)
-    # print(f"user-id: {id}")
     return u_id
 
 def get_role():
@@ -74,12 +75,8 @@ def logout():
 def password_valid(password1: str, password2: str):
     if len(password1) < 8:
         return [False, "Password must be atleast 8 characters long."]
-        # render_template("register.html", show=True, \
-        #     message="Password must be atleast 8 characters long.")
     if password1 != password2:
         return [False, "Passwords do not match, try again."]
-        # render_template("register.html", show=True, \
-        #     message="Passwords do not match, try again.")
     return [True, ""]
 
 def validate_userinfo(params: list, qualifications: list):
@@ -97,8 +94,7 @@ def validate_userinfo(params: list, qualifications: list):
     return [True, ""]
 
 def create_useraccount(params: list, qualifications: list, hash_value: str):
-    #Try is used here because one of the tables (users) has an unique column (username).
-    #The commit contains multiple interts.
+    """Try is used here because one of the tables (users) has an unique column (username)."""
     try:
         sql = """INSERT INTO tsohaproject.users (lastname, firstname, email,
                 startdate, role, username, isactive) 

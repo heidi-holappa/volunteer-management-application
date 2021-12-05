@@ -57,10 +57,12 @@ def createadmin():
     password = request.form["password1"]
     password2 = request.form["password2"]
     if len(username) < 3:
+        log_action('Creating an admin account failed. Username too short.')
         return render_template("register.html", show=True, \
             message="Username must have atleast 3 characters")
     valid_password = users.password_valid(password, password2)
     if not valid_password[0]:
+        log_action('Creating an admin account failed. Password too short.')
         return render_template("register.html", show=True, \
             message=valid_password[1])
     hash_value = generate_password_hash(password)
@@ -111,17 +113,6 @@ def search_coordinators():
     nousers = bool(len(content) == 0)
     return render_template("users.html", \
         users=content, count=len(content) ,nousers=nousers, role=users.get_role())
-
-
-# @app.route("/search-result")
-# def search_volunteers():
-#     """Search volunteers"""
-#     if not users.is_coordinator():
-#         return error("notauthorized")
-#     volunteer_info = hrqueries.search_volunteerlist("s")
-#     return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
-
-  
 
 @app.route("/reporting", methods=["GET"])
 def reporting():
@@ -493,6 +484,11 @@ def error(description):
 
 
 def log_action(content: str):
-    hrqueries.log_mark([users.get_user_id(), datetime.now(timezone.utc), content])
+    u_id = users.get_user_id()
+    if u_id == 0:
+        u_id = 1
+        hrqueries.log_mark([u_id, datetime.now(timezone.utc), f"No user id: {content}"])
+    else: 
+        hrqueries.log_mark([u_id, datetime.now(timezone.utc), content])
 
 
