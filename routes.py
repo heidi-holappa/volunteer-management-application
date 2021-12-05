@@ -166,7 +166,7 @@ def submituser():
             return render_template("add-user.html", show=True, \
                 message="An error has occured. This means that most likely the username was already taken."\
                         , filled=params, role=users.get_role())
-        return redirect("/users")
+        return redirect("/view-volunteers")
 
 @app.route("/update-user/<int:u_id>", methods=["POST"])
 def update_user(u_id):
