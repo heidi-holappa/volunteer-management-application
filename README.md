@@ -7,6 +7,31 @@ The demonstration setting is a fictional helpline service that provides counseli
 
 The helpline staff needs to store information on the volunteer workers to maintain the helpline activities. The basic principle is to store only information that is necessary and relevant for the helpline activity. A detailed list of information is described later on. Because the nature of this project is educational, some information requiring the storing of more sensitive content has been opted out to make sure that not in any point of development and testing such information would be submitted into this application and stored in its database (for instance a background check done to volunteers working with children and adolescents). Additionally because of the scope of the course the focus is on the most relevant basic features. 
 
+## PHASE 3
+For easier reading experience you can view what's happening with the app in phase 3 from the this section. Please see below to review earlier phases. 
+
+**Web-version at Heroku:**
+
+https://helpline-management.herokuapp.com/
+
+**State of the project**
+ - You can create an admin account and login
+ - As an admin you can create user accounts in all different roles. As a coordinator you can create volunteers
+ - Coordinators and admins can manage volunteer-information, add training modules, tools and set their state (active/not-active)
+ - Admins can view simple reporting data
+ - As a volunteer you can log in and report on activities you have performed
+ - As an admin or a coordinator you can view activities volunteers have reported and reply to a volunteer. Replies are personal and only visible to the volunteer in question. 
+ - As an admin or a coordinator you can terminate a volunteer account. 
+ - All users can edit their personal information. 
+
+**Features that will be added**
+ - Cyber security will be updated (XSS- and CSRF-vulnerabilities)
+ - Code will be re-checked with Pylint and possibly refactored into more modules
+ - Filter for viewing volunteer-messages by username
+ - Volunteer's activitylevel can be changed. 
+ - UI will be polished more
+ - If time: some log-information will be stored from user activity
+
 ## PHASE 2
 For easier reading experience you can view what's happening with the app in phase 2 from this section. To see the initial project plan from phase 1 please review sections Featuers and Datamodel. All feedback is very welcome. I would especially appreciate feedback on 'Missing features.' Is there something I have overlooked that I should add to the list?
 
