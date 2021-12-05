@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
-{% block coordinatornav %}{{ super() }}{% endblock%}
+
+{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 

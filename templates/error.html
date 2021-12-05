@@ -2,12 +2,8 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block coordinatornav %}
-    {% if (role == 'coordinator' or role == 'admin') %}
-        {{ super() }}
-    {% else %}
-    {% endif %}
-{% endblock%}
+{% block adminnav %}{% if (role == 'admin') %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if (role == 'coordinator') %}{{ super() }}{% else %}{% endif %}{% endblock%}
 {% block volunteer_nav %}
     {% if (role == 'volunteer') %}
         {{ super() }}

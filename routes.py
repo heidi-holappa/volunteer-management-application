@@ -32,7 +32,7 @@ def authlogin():
         password = request.form["password"]
         if users.login(username, password):
             if users.is_coordinator():
-                return redirect("/users")
+                return redirect("/view-volunteers")
         else: 
             return render_template("login.html", show=True, error=True, \
             message="Username or password is incorrect. Please try again.")
@@ -70,38 +70,69 @@ def createadmin():
         message="Registration completed. Please login with your account.")
 
 #ADMIN/COORDINATOR ROUTES
-@app.route("/users")
-def view_users():
+@app.route("/view-volunteers")
+def view_volunteers():
     """Check validation and fetch userinformation"""
     if not users.is_coordinator():
         return error("notauthorized")
-    volunteer_info = hrqueries.volunteer_list()
-    return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
+    volunteer_info = hrqueries.get_active_user_list('volunteer')
+    return render_template("users.html", count=len(volunteer_info), users=volunteer_info,
+        volunteer_view = True, role=users.get_role())
+
+@app.route("/view-coordinators")
+def view_coordinators():
+    """Check validation and fetch userinformation"""
+    if not users.is_admin():
+        return error("notauthorized")
+    coordinator_info = hrqueries.get_active_user_list('coordinator')
+    return render_template("users.html", count=len(coordinator_info), users=coordinator_info,
+        volunteer_view = False, role=users.get_role())
 
 @app.route("/search-volunteers")
-def supervisor_search_volunteers():
+def search_volunteers():
     """Search volunteers by firstname, lastname, email"""
     if not users.is_coordinator():
         return error("notauthorized")
     query = request.args["query"]
-    content = hrqueries.search_volunteerlist(query)
+    content = hrqueries.search_userlist(query, 'volunteer')
     nousers = bool(len(content) == 0)
     print(nousers)
     return render_template("users.html", \
-        users=content, count=len(content) ,nousers=nousers)
+        users=content, count=len(content) ,nousers=nousers, role=users.get_role(),
+        volunteer_view = True)
 
-@app.route("/search-result")
-def search_volunteers():
-    """Search volunteers"""
-    if not users.is_coordinator():
+@app.route("/search-coordinators")
+def search_coordinators():
+    """Search coordinators by firstname, lastname, email"""
+    if not users.is_admin():
         return error("notauthorized")
-    volunteer_info = hrqueries.search_volunteerlist("s")
-    return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
+    query = request.args["query"]
+    content = hrqueries.search_userlist(query, 'coordinator')
+    nousers = bool(len(content) == 0)
+    print(nousers)
+    return render_template("users.html", \
+        users=content, count=len(content) ,nousers=nousers, role=users.get_role())
+
+
+# @app.route("/search-result")
+# def search_volunteers():
+#     """Search volunteers"""
+#     if not users.is_coordinator():
+#         return error("notauthorized")
+#     volunteer_info = hrqueries.search_volunteerlist("s")
+#     return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
 
   
 
+@app.route("/reporting", methods=["GET"])
+def reporting():
+    if not users.is_admin():
+        return error("notauthorized")
+    report_data = hrqueries.get_report_data()
+    print(report_data)
+    return render_template("reporting.html", role=users.get_role(),
+    data = report_data)
 
-#TO-DO: Function too long. This how to split.
 @app.route("/add-user", methods=["POST", "GET"])
 def submituser():
     """Check validation, add a new user"""
@@ -122,7 +153,7 @@ def submituser():
         userinfo_is_valid = users.validate_userinfo(params, qualifications)
         if not userinfo_is_valid[0]:
             return render_template("addnew.html", \
-                show=True, message=userinfo_is_valid[1], filled=params)
+                show=True, message=userinfo_is_valid[1], filled=params, role=users.get_role())
         #Password validation => TO-DO: Move to another module
         password = request.form["password"]
         password2 = request.form["password2"]
@@ -134,7 +165,7 @@ def submituser():
         if not users.create_useraccount(params, qualifications, hash_value):
             return render_template("add-user.html", show=True, \
                 message="An error has occured. This means that most likely the username was already taken."\
-                        , filled=params)
+                        , filled=params, role=users.get_role())
         return redirect("/users")
 
 @app.route("/update-user/<int:u_id>", methods=["POST"])
@@ -158,7 +189,8 @@ def update_user(u_id):
         hrqueries.add_qualifications(qualifications, newinfo[0])
     if not hrqueries.update_userinfo(newinfo):
         return render_template("error.html", logged=True, error="Something bad has happened, \
-            but at this demo-stage I do not exactly know what. Try again.")
+            but at this demo-stage I do not exactly know what. Try again.", 
+            role=users.get_role())
     if not isactive:
         return redirect("/users")
     return redirect("/view-user/" + str(u_id))
@@ -173,16 +205,56 @@ def viewuser(u_id):
     currentactivity = hrqueries.get_currentactivity(u_id)
     trainings = hrqueries.get_additionaltrainings(u_id)
     tools = hrqueries.get_loanedtools(u_id)
-    return render_template("view-user.html", user=user, qualifications=qualifications, \
-        currentactivity=currentactivity, trainings=trainings, tools=tools)
+    view='view-volunteers'
+    return render_template("view-user.html", user=user, qualifications=qualifications, 
+        currentactivity=currentactivity, trainings=trainings, tools=tools, view=view, 
+        role=users.get_role())
+
+@app.route("/view-account")
+def view_account():
+    """Render logged in user's informationpage"""
+    u_id = users.get_user_id()
+    if u_id == 0:
+        return error("notauthorized")
+    user = hrqueries.get_userinfo(u_id)
+    qualifications = hrqueries.get_qualifiations(u_id)
+    currentactivity = hrqueries.get_currentactivity(u_id)
+    trainings = hrqueries.get_additionaltrainings(u_id)
+    tools = hrqueries.get_loanedtools(u_id)
+    return render_template("user-account.html", user=user, qualifications=qualifications, 
+        currentactivity=currentactivity, trainings=trainings, tools=tools, 
+        role=users.get_role())
+
+@app.route("/edit-account")
+def edit_account():
+    """Render page for editing basic personal information"""
+    u_id = users.get_user_id()
+    if u_id == 0:
+        return error("notauthorized")
+    user = hrqueries.get_userinfo(u_id)
+    return render_template("edit-account.html", user=user, 
+        role=users.get_role())
+
+@app.route("/submit-edit-account", methods=["POST"])
+def submit_edit_account():
+    """Save changes to account"""
+    u_id = users.get_user_id()
+    if u_id == 0:
+        return error("notauthorized")
+    newinfo = [u_id, request.form["lastname"], request.form["firstname"],
+            request.form["email"], request.form["phone"]]
+    hrqueries.submit_account_edit(newinfo)
+    return redirect("/view-account")
 
 @app.route("/return-loan/<int:tool_id>", methods=["POST"])
 def return_loan(tool_id: int):
     user_id = hrqueries.loan_return(tool_id)
-    return redirect("../view-user/" + str(user_id))
+    return redirect("../view-user/" + str(user_id), role=users.get_role())
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
 def add_training(u_id):
+    if not users.is_coordinator():
+        return error("notauthorized")
     if request.method == "GET":
         user = hrqueries.get_userinfo(u_id)
         trainings = hrqueries.get_possible_trainings()
@@ -197,7 +269,7 @@ def add_training(u_id):
             return error("missing_value")
         training = [training_id, u_id, participation_date]
         hrqueries.add_training_participation(training)
-        return redirect("../view-user/" + str(u_id))
+        return redirect("../view-user/" + str(u_id), role=users.get_role())
 
 @app.route("/add-loan/<int:u_id>", methods=["GET", "POST"])
 def add_loaned_tool(u_id):
@@ -205,13 +277,12 @@ def add_loaned_tool(u_id):
         user = hrqueries.get_userinfo(u_id)
         tools = hrqueries.get_available_tools()
         return render_template("add-loan.html", user=user, \
-            tools=tools)
+            tools=tools, role=users.get_role())
     if request.method == "POST":
         loaned_tool = [request.form["tool_id"], u_id, request.form["date"]]
         hrqueries.add_loan(loaned_tool)
-        return redirect("../view-user/" + str(u_id))
+        return redirect("../view-user/" + str(u_id), role=users.get_role())
 
-# TO-DO - see why post? Shouldn't it be GET?
 @app.route("/edit-user/<int:u_id>", methods=["GET", "POST"])
 def edituser(u_id):
     """Render edit-user page"""
@@ -222,9 +293,9 @@ def edituser(u_id):
         qualifications = hrqueries.get_qualifiations(u_id)
         activity = hrqueries.get_activityinformation(u_id)
         return render_template("edit-user.html", user=user, \
-            qualifications=qualifications, activity=activity)
-    # If method is GET - render basic template
-    return render_template("edit-user.html")
+            qualifications=qualifications, activity=activity, role=users.get_role())
+    return render_template("edit-user.html", role=users.get_role())
+
 
 @app.route("/view-activities/<int:set_offset>")
 def supervisor_view_activities(set_offset):
@@ -250,13 +321,14 @@ def supervisor_view_activities(set_offset):
     return render_template("message-view.html", messages=fetched_messages, \
         nomessages=no_messages, show_next=show_next, show_previous=show_previous, \
             offset=set_offset, msg_count=count_messages, active_query=active_query, \
-                query=query)
+                query=query, role=users.get_role())
 
 @app.route("/reply-msg/<int:m_id>")
 def reply_msg(m_id):
     """Render reply to a message view"""
     message = messages.fetch_selected_message(m_id)
-    return render_template("reply-msg.html", id=m_id, message=message)
+    return render_template("reply-msg.html", id=m_id, message=message, 
+        role=users.get_role())
 
 @app.route("/submit-reply/<int:u_id>", methods=["POST"])
 def submit_reply(u_id):
@@ -278,7 +350,7 @@ def add_new_training():
     if request.method == "GET":
         current_trainings = hrqueries.get_current_trainings()
         return render_template("add-training-module.html", trainings=current_trainings, show=False, \
-            message="", error=False)
+            message="", error=False, role=users.get_role())
     if request.method == "POST":
         if not ('training' in request.form and 'description' in request.form):
             error("missing_values")
@@ -298,9 +370,10 @@ def training_submission_handling():
     if error:
         return render_template("add-training-module.html", \
                 message="Please fill in all fields.", error=True, show=True, \
-                    trainings=current_trainings)
+                    trainings=current_trainings, role=users.get_role())
     return render_template("add-training-module.html", show=True, error=False, \
-            message="New module successfully added.", trainings=current_trainings)
+            message="New module successfully added.", trainings=current_trainings, 
+            role=users.get_role())
 
 
 @app.route("/training-active/<int:isactive>/<int:t_id>")
@@ -313,7 +386,7 @@ def training_active(isactive: int, t_id: int):
 def add_new_tool():
     if request.method == "GET":
         tools = hrqueries.get_all_tools()
-        return render_template("add-tool.html", show=False, tools=tools)
+        return render_template("add-tool.html", show=False, tools=tools, role=users.get_role())
     if request.method == "POST":
         if len(request.form["tool"]) == 0 or len(request.form["serialnumber"])== 0:
             session["error"] = True
@@ -334,9 +407,11 @@ def tool_submission():
     error = session.get("error", 0)
     if error:
         return render_template("add-tool.html", tools=tools, show=True, \
-            error=True, message="Please fill in both fields to submit a new tool.")
+            error=True, message="Please fill in both fields to submit a new tool.", 
+            role=users.get_role())
     return render_template("add-tool.html", tools=tools, show=True, \
-            error=False, message="New tool added successfully.")
+            error=False, message="New tool added successfully.", 
+            role=users.get_role())
 
 
 
@@ -377,7 +452,8 @@ def volunteerview(set_offset):
     nomessages = bool(len(volunteer_messages) == 0)
     return render_template("volunteer-view.html", user=user, \
         activities=activities, messages=volunteer_messages, nomessages=nomessages, \
-            show_previous=show_previous, show_next=show_next)
+            show_previous=show_previous, show_next=show_next, 
+            role=users.get_role())
 
 @app.route("/submit-message-volunteer/<int:u_id>", methods=["POST"])
 def submit_message_volunteer(u_id):
@@ -396,7 +472,7 @@ def submit_message_volunteer(u_id):
 #INFORMATIONROUTES
 @app.route("/success")
 def success():
-    return render_template("success.html")
+    return render_template("success.html", role=users.get_role())
 
 @app.route("/docs/aboutus")
 def about_us():
@@ -420,7 +496,7 @@ def submit_feedback():
     content = request.form["content"]
     fb_date = date.today()
     messages.submit_feedback(fb_date, content)
-    return render_template("/docs/thank-you.html")
+    return render_template("/docs/thank-you.html", role=users.get_role())
 
 def error(description):
     """Render Error view"""

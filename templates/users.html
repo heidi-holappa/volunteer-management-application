@@ -2,7 +2,9 @@
 {% block title %}Users{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block coordinatornav %}{{ super() }}{% endblock%}
+
+{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -11,10 +13,10 @@
     <div class="row">
         <div class="col-sm-8">
 
-            <h1>Volunteer list</h1>
+            <h1>User list: {% if volunteer_view is sameas true %}volunteers{% else %}coordinators{% endif %}</h1>
             <br>
-            <h2>Search volunteers: </h2>
-            <form action="/search-volunteers" method="GET">
+            <h2>Search users: </h2>
+            <form action="{% if volunteer_view is sameas true %}/search-volunteers{% else %}/search-coordinators{% endif %}" method="GET">
                 <table class="table">
                     <tr>
                         <td><input class="form-control" autocomplete="off" type="text" name="query"
@@ -23,13 +25,10 @@
                     </tr>
                 </table>
             </form>
-            <p>As an admin you can create new users. At the moment the role coordinator can be used for same tasks as an
-                admin account. With a volunteer account you can sign in and report volunteer activities.</p>
+            <p>As an admin you can create new users. Volunteers can report on activities done, coordinators can create and manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple reporting data on helpline performance.</p>
             <br>
-            <p>You can also view activitities volunteers have reported on. You can post a reply to volunteer's message.
+            <p>As an admin or a coordinator you can also view activitities volunteers have reported on. You can post a reply to a volunteer's message.
             </p>
-            <br>
-            <p>Below you can view volunteer accounts. You can also create accounts, edit account information or terminate an account.</p>
             <div>Number of users: {{ count }}</div>
             <table class="table">
                 <thead>
@@ -65,17 +64,6 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="alert alert-warning" role="alert">
-                <b>To-Do: </b>
-                <ul>
-                    <li>Add filter based on activity</li>
-                    <li>Admin should be able to view coordinators and admins as well. </li>
-                    <li>If time: Admin should be able to delete accounts</li>
-                    <li>Show date of last participation</li>
-                    <li>Improve and test authorization (only roles coordinator and admin can view this page and
-                        subpages)</li>
-                </ul>
-            </div>
         </div>
     </div>
 </div>

@@ -26,18 +26,30 @@ def add_qualifications(qualifications: list, user_id: int):
             db.session.execute(sql, {"task_id":task_id, "user_id":user_id})
     db.session.commit()
 
-def volunteer_list():
+def get_active_user_list(role: str):
+    """Returns active users with specified role"""
     sql = "SELECT users.user_id, users.role, users.lastname, \
         users.firstname, users.username, users.email, users.phone, \
         startdate, COUNT(messages.sender_id) AS activitycounter \
     FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
     ON (users.user_id = messages.sender_id) \
-    WHERE role='volunteer' AND isactive='true' \
+    WHERE role=:role AND isactive='true' \
     GROUP BY users.user_id;"
-    result = db.session.execute(sql)
+    result = db.session.execute(sql, {"role":role})
     return result.fetchall()
 
-def search_volunteerlist(u_query: str):
+def submit_account_edit(newinfo: list):
+    sql = "UPDATE tsohaproject.users SET \
+        lastname=:lastname, \
+        firstname=:firstname, \
+        email=:email, \
+        phone=:phone \
+        WHERE user_id=:user_id"
+    db.session.execute(sql, {"user_id":newinfo[0], "lastname":newinfo[1], 
+            "firstname":newinfo[2], "email":newinfo[3], "phone":newinfo[4]})
+    db.session.commit()
+
+def search_userlist(u_query: str, role: str):
     """ Return searched string from columns firstname, lastname, email"""
     # sql = "SELECT users.user_id, users.role, users.lastname, \
     #     users.firstname, users.username, users.email, \
@@ -55,10 +67,10 @@ def search_volunteerlist(u_query: str):
         lastname || ' ' || firstname || ' ' || email AS document  \
         FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
         ON (users.user_id = messages.sender_id) \
-        WHERE role='volunteer' AND isactive='true' \
+        WHERE role=:role AND isactive='true' \
         AND (lastname || ' ' || firstname || ' ' || email) LIKE :query \
         GROUP BY users.user_id;"
-    result = db.session.execute(sql, {"query":'%' + u_query + '%'})
+    result = db.session.execute(sql, {"query":'%' + u_query + '%', "role":role})
     return result.fetchall()
 
 
@@ -77,8 +89,51 @@ def get_active_volunteerinfo():
     result = db.session.execute(sql)
     return result.fetchall()
 
-
-
+def get_report_data():
+    """This method returns some simple report data"""
+    result = {}
+    msg_and_thread_count  = "SELECT COUNT(DISTINCT(thread_id)), COUNT(*) \
+        FROM tsohaproject.messages"
+    msg_count = db.session.execute(msg_and_thread_count)
+    result['messages'] = msg_count.fetchall()
+    user_count = "SELECT role,  COUNT(*) FROM tsohaproject.users \
+        WHERE users.isactive = 'True' GROUP BY role ORDER BY role ASC"
+    user_count_result = db.session.execute(user_count)
+    result['active_users'] = user_count_result.fetchall()
+    loans_sql = "SELECT COUNT(*), \
+        (SELECT COUNT(*) FROM tsohaproject.loanedtools WHERE loaned='True') \
+        FROM tsohaproject.loanedtools "
+    loans = db.session.execute(loans_sql)
+    result['loans'] = loans.fetchall()
+    equipment_sql = "SELECT COUNT(*), \
+        (SELECT COUNT(*) FROM tsohaproject.tools WHERE active='True') \
+        FROM tsohaproject.tools"
+    equipment = db.session.execute(equipment_sql)
+    result['equipment'] = equipment.fetchall()
+    trainings_sql = "SELECT COUNT(*), \
+        (SELECT COUNT(*) FROM tsohaproject.additionaltrainings WHERE active='True') \
+        FROM tsohaproject.additionaltrainings"
+    loans_by_type_sql = "SELECT tool, COUNT(user_id) as C \
+        FROM tsohaproject.tools LEFT JOIN \
+        tsohaproject.loanedtools ON \
+        (tools.tool_id = loanedtools.tool_id) \
+        GROUP BY tool \
+        ORDER BY c DESC"
+    loans_by_type = db.session.execute(loans_by_type_sql)
+    result['loans_by_type'] = loans_by_type.fetchall()
+    trainings = db.session.execute(trainings_sql)
+    result['trainings'] = trainings.fetchall()
+    training_participation_sql = "SELECT training, COUNT(user_id) AS c \
+        FROM tsohaproject.additionaltrainings \
+        LEFT JOIN tsohaproject.trainingparticipation \
+        ON (additionaltrainings.training_id = \
+        trainingparticipation.training_id) \
+        GROUP BY training \
+        ORDER BY c DESC"
+    training_participation = db.session.execute(training_participation_sql)
+    result['training_participation'] = training_participation.fetchall()
+    return result
+    
 
 
 def get_qualifiations(u_id):

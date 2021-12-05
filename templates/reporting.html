@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+{% block headername %}Volunteer Management App{% endblock %}
+
+{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if role == 'coordinator' %}{% else %}{% endif %}{% endblock%}
+{% block volunteer_nav %}{% endblock%}
+{% block custom_navitems%}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>Reporting</h1>
+    <p>On this page admins can view data on the helpline activites</p>
+    <h2>Activities and messages</h2>
+    <ul>
+        <li>Volunteer activities reported: {{ data['messages'][0][0] }}</li>
+        <li>Total of messages sent: {{ data['messages'][0][1] }}</li>
+    </ul>
+    <h2>Active user accounts</h2>
+    A total of active useraccounts per role:
+    <ul>
+        <li>Admin: {{ data['active_users'][0][1] }} </li>
+        <li>Coordinator: {{ data['active_users'][1][1] }} </li>
+        <li>Volunteer: {{ data['active_users'][2][1] }}</li>
+    </ul>
+
+    <h2>Training modules</h2>
+    <ul>
+        <li>Number of active training modules: {{ data['trainings'][0][1] }} </li>
+        <li>Number of all training modules: {{ data['trainings'][0][0] }} </li>
+        <li>Number of completed modules per training: </li>
+        <ul>
+            {% for item in data['training_participation'] %}
+            <li>{{ item[0] }}: {{ item[1] }}</li>
+            {% endfor %}
+        </ul>
+    </ul>
+
+    <h2>Tools</h2>
+    <ul>
+        <li>Number of active tools: {{ data['equipment'][0][1] }} </li>
+        <li>Number of tools currently loaned: {{ data['loans'][0][1] }} </li>
+        <li>Number of total loans: {{ data['loans'][0][0] }} </li>
+        <li>Number of loans per tool: </li>
+        <ul>
+            {% for item in data['loans_by_type'] %}
+            <li>{{ item[0] }}: {{ item[1] }}</li>
+            {% endfor %}
+        </ul>
+    </ul>
+
+</div>
+
+<div class="container">
+{% endblock %}

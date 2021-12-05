@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}Index{% endblock %}
+{% block headername %}Volunteer Portal{% endblock %}
+
+{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block volunteer_nav %}{% if role == 'volunteer' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block custom_navitems%}{% endblock %}
+
+
+{% block content %}
+
+<div class="container" style="margin-top:30px">
+    <div class="row">
+        <div class="col-sm-8">
+
+            <h1>User account</h1>
+            <p>On this page you can view your personal user account information. In this demo administrator accounts can be created by just creating a username and a password. Because of that, admin-accounts might look quite empty. You can fill in missing information by pressing 'edit personal informaion.  '</p>
+            <br>
+            <form action="/edit-account" method='GET'><input class="btn btn-primary" id="edit-user"
+                    name="edit-user" type="submit" value="Edit personal information" /></form>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lastname: </td>
+                        <td>{{ user.lastname }}</td>
+                    </tr>
+                    <tr>
+                        <td>Firstname: </td>
+                        <td>{{ user.firstname }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email: </td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone: </td>
+                        <td>{{ user.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td>Role: </td>
+                        <td>{{ user.role }}</td>
+                    </tr>
+                    {% if (role == 'volunteer') %}
+                    <tr>
+                        <td>Current activity: </td>
+                        <td>{{ currentactivity.level }}</td>
+                    </tr>
+                    {% else %}
+                    {% endif %}
+                    {% if (role == 'volunteer' or role == 'coordinator') %}
+                    <tr>
+                        <td>Qualifications: </td>
+                        <td>
+                            {% for qualification in qualifications %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}"
+                                    name="qualification" {% if qualification.isqualified is sameas true %} checked
+                                    {% else %} {% endif %} disabled>
+                                <label class="form-check-label" for="{{ qualification.task }}" class="text-info">
+                                    {{ qualification.task }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Additional trainings: </td>
+                        <td>{% for training in trainings %}
+                            {{ training.training }}, {{ training.training_date }} <br>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Loaned tools: </td>
+                        <td>{% for tool in tools %}
+                            Tool: {{ tool.tool }} <br>
+                            Serialnumber: {{ tool.serialnumber }} <br>
+                            Loaned: {{ tool.loandate }}<br>
+                            <br>
+                            {% endfor %}
+
+                        </td>
+                    </tr>
+                    {% else %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

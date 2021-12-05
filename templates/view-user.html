@@ -2,6 +2,11 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
+{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block volunteer_nav %}{% endblock%}
+{% block custom_navitems%}{% endblock %}
+
 {% block content %}
 <div class="flex-wrapper">
     <div class="container" style="margin-top:30px">
@@ -13,8 +18,8 @@
                 <form action="/edit-user/{{ user.user_id }}" method='POST'><input class="btn btn-primary" id="edit-user"
                         name="edit-user" type="submit" value="Edit user" /></form>
                 <br>
-                <form action="/users" method='GET'><input class="btn btn-primary" id="addnew" name="logout"
-                        type="submit" value="Back to users" /></form>
+                <form action="/{{ view }}"   method='GET'><input class="btn btn-primary" id="addnew" name="logout"
+                        type="submit" value="Back" /></form>
 
                 <br />
                 <table class="table">

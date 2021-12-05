@@ -36,7 +36,7 @@ def create_admin(username: str, hash_value: str):
 
 def is_admin():
     """Returns true if user is admin"""
-    return user_role() is 'admin'
+    return user_role() == 'admin'
 
 def is_coordinator():
     """If user is either coordinator or admin returns true"""

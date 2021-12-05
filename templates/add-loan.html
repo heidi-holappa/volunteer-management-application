@@ -2,6 +2,11 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
+{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block volunteer_nav %}{% endblock%}
+{% block custom_navitems%}{% endblock %}
+
 {% block content %}
 
 <div class="container" style="margin-top:30px">
@@ -24,7 +29,7 @@
                     <tr>
                         <td>Select training:</td>
                         <td>
-                            <select class="form-control form-control-sm" name='tool_id'>
+                            <select class="form-select form-control-sm" name='tool_id'>
                                 <option value="" selected disabled>Choose tool</option>
                                 {% for tool in tools %}
                                 <option value="{{ tool.tool_id }}">{{ tool.tool }}</option>
