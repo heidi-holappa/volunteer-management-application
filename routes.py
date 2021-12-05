@@ -31,6 +31,7 @@ def authlogin():
         username = request.form["username"]
         password = request.form["password"]
         if users.login(username, password):
+            log_action('Action: login')
             if users.is_coordinator():
                 return redirect("/view-volunteers")
         else: 
@@ -96,7 +97,6 @@ def search_volunteers():
     query = request.args["query"]
     content = hrqueries.search_userlist(query, 'volunteer')
     nousers = bool(len(content) == 0)
-    print(nousers)
     return render_template("users.html", \
         users=content, count=len(content) ,nousers=nousers, role=users.get_role(),
         volunteer_view = True)
@@ -109,7 +109,6 @@ def search_coordinators():
     query = request.args["query"]
     content = hrqueries.search_userlist(query, 'coordinator')
     nousers = bool(len(content) == 0)
-    print(nousers)
     return render_template("users.html", \
         users=content, count=len(content) ,nousers=nousers, role=users.get_role())
 
@@ -129,7 +128,6 @@ def reporting():
     if not users.is_admin():
         return error("notauthorized")
     report_data = hrqueries.get_report_data()
-    print(report_data)
     return render_template("reporting.html", role=users.get_role(),
     data = report_data)
 
@@ -178,7 +176,6 @@ def update_user(u_id):
         isactive = False
     if not isactive:
         enddate = date.today()
-        print(enddate)
     else:
         enddate = None
     newinfo = [oldinfo[0], request.form["role"], request.form["lastname"], request.form["firstname"]\
@@ -313,7 +310,6 @@ def supervisor_view_activities(set_offset):
         query = ""
         active_query = False
     fetched_messages = messages.fetch_all_messages(limit,offset, query)
-    print(fetched_messages)
     count_messages = messages.fetch_message_count(query)
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
@@ -414,26 +410,6 @@ def tool_submission():
             role=users.get_role())
 
 
-
-# @app.route("/search-activities")
-# def supervisor_search_activities():
-#     """Search activities"""
-#     role = users.user_role()
-#     if not role == 'admin' or role == 'coordinator':
-#         return error("notauthorized")
-#     query = request.args["query"]
-#     content = messages.search_messages(query)
-#     nomessages = bool(len(content) == 0)
-#     # if len(messages) == 0:
-#     #     nomessages = True
-#     # else:
-#     #     nomessages = False
-#     print(nomessages)
-#     return render_template("message-view.html", \
-#         messages=content, nomessages=nomessages)
-
-
-
 #VOLUNTEER ROUTES
 @app.route("/volunteer-view/<int:set_offset>")
 def volunteerview(set_offset):
@@ -512,22 +488,11 @@ def error(description):
                 please leave feedback on the issue. Feedback form can be found in the footer.'
     if description == 'missing_value':
         message = 'One or more fields were left empty. Please fill in all fields carefully.'
+    log_action(f"Landed on errorpage. Errormessage received: {message}")
     return render_template("error.html", error=message, logged=logged, role=role)
 
 
+def log_action(content: str):
+    hrqueries.log_mark([users.get_user_id(), datetime.now(timezone.utc), content])
 
-# TO-DO: CLEAN THIS AWAY
-# @app.route("/send", methods=["POST"])
-# def send():
-#     content = request.form["content"]
-#     sql = "INSERT INTO messages (content) VALUES (:content)"
-#     db.session.execute(sql, {"content":content})
-#     db.session.commit()
-#     return redirect("/")
-
-
-# @app.route("/new")
-# def new():
-#     """TO-DO: CLEAN THIS AWAY"""
-#     return render_template("new.html")
 

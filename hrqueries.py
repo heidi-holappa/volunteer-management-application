@@ -305,3 +305,8 @@ def get_currentactivity(u_id):
     currectactivity = result.fetchone()
     return currectactivity
 
+def log_mark(log: list):
+    sql = "INSERT INTO tsohaproject.applog (user_id, timestamp, description) \
+        VALUES (:user_id, :timestamp, :description)"
+    db.session.execute(sql, {"user_id":log[0], "timestamp":log[1], "description":log[2]})
+    db.session.commit()
