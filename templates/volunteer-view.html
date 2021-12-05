@@ -47,6 +47,26 @@
                     </form>
 
                     <h2>My activities</h2>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% if show_previous is sameas true %}
+                            <form action="/volunteer-view/{{ offset - 1 }}" method='GET'>
+                                <input type="hidden" name="query" value="{{ query }}">
+                                <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
+                            </form>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            {% if show_next is sameas true %}
+                            <form action="/volunteer-view/{{ offset + 1 }}" method='GET'>
+                                <input type="hidden" name="query" value="{{ query }}">
+                                <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
+                            </form>
+                            {% else %}
+                            {% endif %}
+                        </div>
+                    </div>
                     {% if nomessages is sameas false %} 
                         
                         {% for message in messages %}  

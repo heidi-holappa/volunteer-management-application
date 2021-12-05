@@ -27,23 +27,24 @@
                 </table>
             </form>
             
-            <div>Number of users: {{ count }}</div>
+</div>
+<div class="container">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>User-ID</th>
-                        <th>Lastname</th>
-                        <th>Firstname</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Activites done</th>
-                        <th>Modify</th>
+                        <th scope="col">User-ID</th>
+                        <th scope="col">Lastname</th>
+                        <th scope="col">Firstname</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Activites done</th>
+                        <th scope="col">Modify</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
                     <tr>
-                        <td>{{ user.user_id }}</td>
+                        <th scope="row">{{ user.user_id }}</th>
                         <td>{{ user.lastname }}</td>
                         <td>{{ user.firstname }}</td>
                         <td>{{ user.email }}</td>
@@ -52,14 +53,9 @@
                         <td><a href="view-user/{{ user.user_id }}">View details</a></td>
                     </tr>
                     {% endfor %}
-                <tr>
-                    <td colspan=7 class="align-right">
-                        <form action="/add-user" method='GET'><input class="btn btn-link" id="addnew" name="addnew" type="submit"
-                            value="Create new user" /></form>
-                    </td>
-                </tr>
                 </tbody>
             </table>
+            <a href="/add-user" method='GET'>Create new user</a>
 </div>
 
 {% endblock %}

@@ -10,7 +10,7 @@ def fetch_all_messages(limit: int, offset: int, query: str):
         ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
         WHERE LOWER(messages.content) LIKE LOWER(:query) \
-        ORDER BY messages.thread_id, messages.send_date ASC, messages.activity_date DESC \
+        ORDER BY activity_date DESC, thread_id, msg_id ASC \
         LIMIT :limit OFFSET :offset"
     # sql = "SELECT users.lastname, users.firstname, messages.msg_id, \
     # messages.activity_date, messages.content, tasks.task \
@@ -26,8 +26,13 @@ def fetch_message_count(query):
         WHERE LOWER(messages.content) LIKE LOWER(:query)"
     result = db.session.execute(sql, {"query":"%"+query+"%"})
     count = result.fetchone()[0]
-    print(f"Count of messages: {count}")
     return count
+
+def fetch_message_count_by_user(u_id):
+    sql = "SELECT COUNT(*) FROM tsohaproject.messages \
+        WHERE messages.volunteer_id=:u_id"
+    result = db.session.execute(sql, {"u_id":u_id})
+    return result.fetchone()[0]
 
 
 def fetch_volunteer_messages(u_id: int, limit: int, offset: int):
@@ -38,7 +43,7 @@ def fetch_volunteer_messages(u_id: int, limit: int, offset: int):
         LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
         WHERE messages.volunteer_id=:id \
-        ORDER BY messages.thread_id, messages.msg_id ASC, messages.activity_date DESC \
+        ORDER BY activity_date DESC, thread_id, msg_id ASC \
         LIMIT :limit OFFSET :offset"
     result = db.session.execute(sql, {"id":u_id, "limit":limit, "offset":offset})
     return result.fetchall()
@@ -113,7 +118,14 @@ def submit_reply(new_reply: list):
             (thread_id, volunteer_id, sender_id, task_id, send_date, content, activity_date) \
             VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, \
             :send_date, :content, :activity_date)"
-    result = db.session.execute(sql, {"thread_id":new_reply[0], "volunteer_id":new_reply[1], \
+    db.session.execute(sql, {"thread_id":new_reply[0], "volunteer_id":new_reply[1], \
             "sender_id":new_reply[2], "task_id":new_reply[3], "send_date":new_reply[4], 
             "content":new_reply[5], "activity_date":new_reply[6]})
     db.session.commit()
+
+def get_op_date(m_id: int):
+    sql = "SELECT activity_date \
+        FROM tsohaproject.messages \
+        WHERE msg_id=:m_id"
+    result = db.session.execute(sql, {"m_id":m_id})
+    return result.fetchone()[0]

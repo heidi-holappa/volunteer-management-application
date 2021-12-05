@@ -325,7 +325,7 @@ def submit_reply(u_id):
     task_id = request.form["task_id"]
     content = request.form["content"]
     msg_sent = datetime.now(timezone.utc)
-    msg_sent_date = date.today()
+    msg_sent_date = messages.get_op_date(u_id)
     new_reply = [thread_id, volunteer_id, sender_id, task_id, msg_sent, content, msg_sent_date]    
     #TO-DO: This is not a recommended way of using a try. Fix this.
     messages.submit_reply(new_reply)
@@ -412,14 +412,14 @@ def volunteerview(set_offset):
     user = hrqueries.get_userinfo(u_id)
     activities = hrqueries.get_activities(u_id)
     volunteer_messages = messages.fetch_volunteer_messages(u_id, limit, offset)
-    count_messages = len(volunteer_messages)
+    count_messages = messages.fetch_message_count_by_user(u_id)
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
     nomessages = bool(len(volunteer_messages) == 0)
     return render_template("volunteer-view.html", user=user, \
         activities=activities, messages=volunteer_messages, nomessages=nomessages, \
             show_previous=show_previous, show_next=show_next, 
-            role=users.get_role())
+            role=users.get_role(), offset=set_offset)
 
 @app.route("/submit-message-volunteer/<int:u_id>", methods=["POST"])
 def submit_message_volunteer(u_id):
