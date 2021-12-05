@@ -95,44 +95,44 @@ def search_volunteers():
     volunteer_info = hrqueries.search_volunteerlist("s")
     return render_template("users.html", count=len(volunteer_info), users=volunteer_info)
 
-@app.route("/addnew", methods=["GET"])
-def addnew():
-    """TO-DO: CLEAN THIS AWAY"""
-    return render_template("addnew.html")
+  
 
 
 #TO-DO: Function too long. This how to split.
-@app.route("/submituser", methods=["POST"])
+@app.route("/add-user", methods=["POST", "GET"])
 def submituser():
     """Check validation, add a new user"""
     if not users.is_coordinator():
         return error("notauthorized")
-    if 'role' in request.form:
-        role = request.form["role"]
-    else:
-        role = None
-    qualifications = request.form.getlist("qualification")
-    params = [request.form["lastname"], request.form["firstname"], \
-        request.form["email"], request.form["startdate"], \
-            role, request.form["username"]]
-    # Check that all fields have information
-    userinfo_is_valid = users.validate_userinfo(params, qualifications)
-    if not userinfo_is_valid[0]:
-        return render_template("addnew.html", \
-            show=True, message=userinfo_is_valid[1], filled=params)
-    #Password validation => TO-DO: Move to another module
-    password = request.form["password"]
-    password2 = request.form["password2"]
-    valid_password = users.password_valid(password, password2)
-    if not valid_password[0]:
-        render_template("addnew.html", show=True, \
-            message=valid_password[1], filled=params)
-    hash_value = generate_password_hash(password)
-    if not users.create_useraccount(params, qualifications, hash_value):
-        return render_template("addnew.html", show=True, \
-            message="An error has occured. This means that most likely the username was already taken."\
-                    , filled=params)
-    return redirect("/users")
+    if request.method == "GET":
+        return render_template("add-user.html", user_role=users.get_role())
+    if request.method == "POST":
+        if 'role' in request.form:
+            role = request.form["role"]
+        else:
+            role = None
+        qualifications = list(request.form.getlist("qualification"))
+        params = [request.form["lastname"], request.form["firstname"], \
+            request.form["email"], request.form["startdate"], \
+                role, request.form["username"]]
+        # Check that all fields have information
+        userinfo_is_valid = users.validate_userinfo(params, qualifications)
+        if not userinfo_is_valid[0]:
+            return render_template("addnew.html", \
+                show=True, message=userinfo_is_valid[1], filled=params)
+        #Password validation => TO-DO: Move to another module
+        password = request.form["password"]
+        password2 = request.form["password2"]
+        valid_password = users.password_valid(password, password2)
+        if not valid_password[0]:
+            render_template("add-user.html", show=True, \
+                message=valid_password[1], filled=params)
+        hash_value = generate_password_hash(password)
+        if not users.create_useraccount(params, qualifications, hash_value):
+            return render_template("add-user.html", show=True, \
+                message="An error has occured. This means that most likely the username was already taken."\
+                        , filled=params)
+        return redirect("/users")
 
 @app.route("/update-user/<int:u_id>", methods=["POST"])
 def update_user(u_id):
@@ -149,7 +149,10 @@ def update_user(u_id):
         enddate = None
     newinfo = [oldinfo[0], request.form["role"], request.form["lastname"], request.form["firstname"]\
         , request.form["username"], request.form["email"], request.form["phone"], \
-        request.form["startdate"], enddate, oldinfo[9], isactive]
+        request.form["startdate"], enddate, oldinfo[8], isactive]
+    if 'qualification' in request.values:
+        qualifications = request.form.getlist("qualification")
+        hrqueries.add_qualifications(qualifications, newinfo[0])
     if not hrqueries.update_userinfo(newinfo):
         return render_template("error.html", logged=True, error="Something bad has happened, \
             but at this demo-stage I do not exactly know what. Try again.")
@@ -183,7 +186,13 @@ def add_training(u_id):
         return render_template("add-training.html", user=user, \
             trainings=trainings)
     if request.method == "POST":
-        training = [request.form["training_id"], u_id, request.form["date"]]
+        if not ('training_id' in request.form and 'date' in request.form):
+            return error("missing_value")
+        training_id = request.form["training_id"]
+        participation_date = request.form["date"]
+        if len(training_id) == 0 or len(participation_date) == 0:
+            return error("missing_value")
+        training = [training_id, u_id, participation_date]
         hrqueries.add_training_participation(training)
         return redirect("../view-user/" + str(u_id))
 
@@ -246,7 +255,7 @@ def reply_msg(m_id):
     message = messages.fetch_selected_message(m_id)
     return render_template("reply-msg.html", id=m_id, message=message)
 
-@app.route("/submit-reply/<int:id>", methods=["POST"])
+@app.route("/submit-reply/<int:u_id>", methods=["POST"])
 def submit_reply(u_id):
     """Submit reply"""
     volunteer_id = messages.get_op_id(u_id)
@@ -255,7 +264,8 @@ def submit_reply(u_id):
     task_id = request.form["task_id"]
     content = request.form["content"]
     msg_sent = datetime.now(timezone.utc)
-    new_reply = [thread_id, volunteer_id, sender_id, task_id, msg_sent, content]    
+    msg_sent_date = date.today()
+    new_reply = [thread_id, volunteer_id, sender_id, task_id, msg_sent, content, msg_sent_date]    
     #TO-DO: This is not a recommended way of using a try. Fix this.
     messages.submit_reply(new_reply)
     return redirect("/view-activities/0")
@@ -267,11 +277,14 @@ def add_new_training():
         return render_template("add-training-module.html", trainings=current_trainings, show=False, \
             message="", error=False)
     if request.method == "POST":
+        if not ('training' in request.form and 'description' in request.form):
+            error("missing_values")
         new_training = request.form["training"]
-        if len(new_training) == 0:
+        description = request.form["description"]
+        if len(new_training) == 0 or len(description) == 0:
             session["error"] = True
             return redirect("/training-submission")
-        hrqueries.add_new_training_module(new_training)
+        hrqueries.add_new_training_module(new_training, description)
         session["error"] = False
         return redirect("/training-submission")
         
@@ -281,11 +294,17 @@ def training_submission_handling():
     error = session.get("error", 0)
     if error:
         return render_template("add-training-module.html", \
-                message="Please add a name for the training module", error=True, show=True, \
+                message="Please fill in all fields.", error=True, show=True, \
                     trainings=current_trainings)
     return render_template("add-training-module.html", show=True, error=False, \
             message="New module successfully added.", trainings=current_trainings)
 
+
+@app.route("/training-active/<int:isactive>/<int:t_id>")
+def training_active(isactive: int, t_id: int):
+    active = bool(isactive == 1)
+    hrqueries.training_set_activity(active, t_id)
+    return redirect("/add-training-module")
 
 @app.route("/add-tool", methods=["POST", "GET"])
 def add_new_tool():
@@ -299,6 +318,12 @@ def add_new_tool():
         hrqueries.add_new_tool([request.form["tool"], request.form["serialnumber"]])
         session["error"] = False
         return redirect("/tool-submission")
+
+@app.route("/tool-active/<int:isactive>/<int:t_id>")
+def tool_active(isactive: int, t_id: int):
+    active = bool(isactive == 1)
+    hrqueries.tool_set_activity(active, t_id)
+    return redirect("/add-tool")
 
 @app.route("/tool-submission")
 def tool_submission():
@@ -397,14 +422,18 @@ def submit_feedback():
 def error(description):
     """Render Error view"""
     u_id = users.get_user_id()
-    logged = False
-    if u_id != 0:
-        logged = True
+    logged = bool(u_id != 0)
+    role = users.get_role()
+    message = "This is a general error message. Something caused an error, but there is not \
+        enough information to tell what. Feedback on the error would be appreciated! \
+            We apologize for the inconvenience."
     if description == 'notauthorized':
-        message = ('You have tried to access a page that you are not authorized to view. \
+        message = 'You have tried to access a page that you are not authorized to view. \
             Please make sure you are logged in. If the problem continues, \
-                please leave feedback on the issue. Feedback form can be found in the footer.')
-    return render_template("error.html", error=message, logged=logged)
+                please leave feedback on the issue. Feedback form can be found in the footer.'
+    if description == 'missing_value':
+        message = 'One or more fields were left empty. Please fill in all fields carefully.'
+    return render_template("error.html", error=message, logged=logged, role=role)
 
 
 

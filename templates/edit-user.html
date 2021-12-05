@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
+{% block coordinatornav %}{{ super() }}{% endblock%}
+{% block volunteer_nav %}{% endblock%}
+{% block custom_navitems%}{% endblock %}
 
 {% block content %}
 <div class="flex-wrapper">
@@ -62,9 +65,10 @@
                             <td>
                                 {% for qualification in qualifications %}
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}"
-                                        name="qualification" {% if qualification.isqualified is sameas true %} checked
-                                        {% else %} {% endif %}>
+                                    <input class="form-check-input" type="checkbox" 
+                                        name="qualification" {% if qualification.isqualified is sameas true %} 
+                                        checked disabled value=""
+                                        {% else %} value="{{ qualification.task_id }}" {% endif %}>
                                     <label class="form-check-label" for="{{ qualification.task }}">
                                         {{ qualification.task }}
                                     </label>

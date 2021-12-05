@@ -4,17 +4,27 @@ from db import db
 def update_userinfo(newinfo: list):
     try:
         sql = "UPDATE tsohaproject.users \
-            SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, email=:email, \
-                phone=:phone, startdate=:startdate, enddate=:enddate, basictraining=:basictraning, isactive=:isactive \
+            SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, \
+                email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, \
+                basictraining=:basictraning, isactive=:isactive \
             WHERE user_id=:user_id"
-        db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], "firstname":newinfo[3], \
-            "username":newinfo[4], "email":newinfo[5], "phone":newinfo[6], "startdate":newinfo[7], \
-            "enddate":newinfo[8], "basictraning":newinfo[9], "isactive":newinfo[10], \
+        db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], 
+            "firstname":newinfo[3], "username":newinfo[4], "email":newinfo[5], 
+            "phone":newinfo[6], "startdate":newinfo[7], "enddate":newinfo[8], 
+            "basictraning":newinfo[9], "isactive":newinfo[10], 
             "user_id":newinfo[0]})
         db.session.commit()
         return True
     except:
         return False
+
+def add_qualifications(qualifications: list, user_id: int):
+    for task_id in qualifications:
+        if task_id != "":
+            sql = "INSERT INTO tsohaproject.volunteerqualification (task_id, user_id) \
+                    VALUES (:task_id, :user_id)"
+            db.session.execute(sql, {"task_id":task_id, "user_id":user_id})
+    db.session.commit()
 
 def volunteer_list():
     sql = "SELECT users.user_id, users.role, users.lastname, \
@@ -67,16 +77,8 @@ def get_active_volunteerinfo():
     result = db.session.execute(sql)
     return result.fetchall()
 
-def get_current_trainings():
-    """Return training options"""
-    sql = "SELECT training FROM tsohaproject.additionaltrainings"
-    result = db.session.execute(sql)
-    return result
 
-def add_new_training_module(training: str):
-    sql = "INSERT INTO tsohaproject.additionaltrainings (training) VALUES (:training)"
-    db.session.execute(sql, {"training":training})
-    db.session.commit()
+
 
 
 def get_qualifiations(u_id):
@@ -100,7 +102,7 @@ def get_qualifiations(u_id):
     return qualifications
 
 def get_additionaltrainings(u_id):
-    """Return additional trainings participated in"""
+    """Return taken trainings for selected user"""
     sql = "SELECT additionaltrainings.training, trainingparticipation.training_date \
         FROM tsohaproject.trainingparticipation LEFT JOIN tsohaproject.additionaltrainings \
         ON (trainingparticipation.training_id = additionaltrainings.training_id) \
@@ -110,32 +112,69 @@ def get_additionaltrainings(u_id):
     trainings = result.fetchall()
     return trainings
 
+def get_current_trainings():
+    """Return all submitted training options"""
+    sql = "SELECT training_id, training, description, active \
+        FROM tsohaproject.additionaltrainings \
+        ORDER BY active DESC"
+    result = db.session.execute(sql)
+    return result
+
+def add_new_training_module(training: str, description: str):
+    """Add a new training module"""
+    sql = "INSERT INTO tsohaproject.additionaltrainings (training, description, active) \
+        VALUES (:training, :description, 'True')"
+    db.session.execute(sql, {"training":training, "description":description})
+    db.session.commit()
+
+def training_set_activity(active, t_id):
+    """Change training activity state to true or false"""
+    sql = "UPDATE tsohaproject.additionaltrainings SET active = :active WHERE training_id = :t_id"
+    db.session.execute(sql, {"active":active, "t_id":t_id})
+    db.session.commit()
+
 def get_possible_trainings():
+    """Get all active trainings"""
     sql = "SELECT training_id, training \
-        FROM tsohaproject.additionaltrainings"
+        FROM tsohaproject.additionaltrainings \
+        WHERE active='True'"
     result = db.session.execute(sql)
     return result
 
 def get_available_tools():
+    """get all active tools"""
     sql = "SELECT tool_id, tool \
         FROM tsohaproject.tools \
-        WHERE loaned='FALSE'"
+        WHERE loaned='FALSE' AND active='True'"
     result = db.session.execute(sql)
     return result
 
 def get_all_tools():
-    sql = "SELECT tool, serialnumber, loaned \
-        FROM tsohaproject.tools"
+    """Get all submitted tools"""
+    sql = "SELECT tool_id, tool, serialnumber, loaned, active \
+        FROM tsohaproject.tools \
+        ORDER BY active DESC"
     return db.session.execute(sql)
 
 def add_new_tool(tool: list):
-    sql = "INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES (:tool, :serialnumber, 'False')"
+    """Add new tool"""
+    sql = "INSERT INTO tsohaproject.tools (tool, serialnumber, loaned, active) \
+        VALUES (:tool, :serialnumber, 'False', 'True')"
     db.session.execute(sql, {"tool":tool[0], "serialnumber":tool[1]})
     db.session.commit()
 
+def tool_set_activity(active, t_id):
+    """Set tool active state to true or false"""
+    sql = "UPDATE tsohaproject.tools SET active = :active WHERE tool_id = :t_id"
+    db.session.execute(sql, {"active":active, "t_id":t_id})
+    db.session.commit()
+
 def add_loan(loaned_tool):
-    sql_a = "INSERT INTO tsohaproject.loanedtools (user_id, tool_id, loandate, loaned) VALUES (:user_id, :tool_id, :loandate, 'TRUE')"
-    db.session.execute(sql_a, {"user_id":loaned_tool[1], "tool_id":loaned_tool[0], "loandate":loaned_tool[2]})
+    """Add loan to database"""
+    sql_a = "INSERT INTO tsohaproject.loanedtools (user_id, tool_id, loandate, loaned) \
+        VALUES (:user_id, :tool_id, :loandate, 'TRUE')"
+    db.session.execute(sql_a, {"user_id":loaned_tool[1], "tool_id":loaned_tool[0], 
+        "loandate":loaned_tool[2]})
     sql_b = "UPDATE tsohaproject.tools SET loaned='TRUE' WHERE tool_id=:id"
     db.session.execute(sql_b, {"id":loaned_tool[0]})
     db.session.commit()
@@ -181,7 +220,8 @@ def get_activityinformation(u_id):
 
 def loan_return(tool_id):
     sql_a = "UPDATE tsohaproject.tools SET loaned='FALSE' WHERE tool_id=:id"
-    sql_b = "UPDATE tsohaproject.loanedtools SET loaned='FALSE' WHERE tool_id=:id AND loaned='TRUE' RETURNING user_id"
+    sql_b = "UPDATE tsohaproject.loanedtools SET loaned='FALSE' \
+        WHERE tool_id=:id AND loaned='TRUE' RETURNING user_id"
     db.session.execute(sql_a, {"id":tool_id})
     result = db.session.execute(sql_b, {"id":tool_id})
     db.session.commit()
@@ -189,8 +229,12 @@ def loan_return(tool_id):
     return user_id
 
 def add_training_participation(training_info: list):
-    sql = "INSERT INTO tsohaproject.trainingparticipation (training_id, user_id, training_date) VALUES (:training_id, :user_id, :training_date)"
-    db.session.execute(sql, {"training_id":training_info[0], "user_id":training_info[1], "training_date":training_info[2]})
+    """Add training participation to a selected volunteed"""
+    sql = "INSERT INTO tsohaproject.trainingparticipation \
+        (training_id, user_id, training_date) \
+            VALUES (:training_id, :user_id, :training_date)"
+    db.session.execute(sql, {"training_id":training_info[0], 
+    "user_id":training_info[1], "training_date":training_info[2]})
     db.session.commit()
     return
 

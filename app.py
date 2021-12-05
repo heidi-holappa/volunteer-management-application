@@ -6,12 +6,6 @@ from flask import Flask
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-# TO-DO
-# SPLIT INTO MULTIPLE FILES (REFACTOR)
-# MAKE MORE FUNCTIONS THAT SERVE GENERAL PURPOSES
-# CLEAN UP CODE
-# CHECK WEB-APP'S TO-DO LISTS FOR ADDITIONAL TASKS
-
 app = Flask(__name__)
 
 # from dotenv import load_dotenv

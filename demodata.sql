@@ -5,9 +5,9 @@ INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310'
 INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310', '3234-12345678', false);
 INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310', '4234-12345678', false);
 
-INSERT INTO tsohaproject.additionaltrainings (training) VALUES ('mental health');
-INSERT INTO tsohaproject.additionaltrainings (training) VALUES ('LGBTQI');
-INSERT INTO tsohaproject.additionaltrainings (training) VALUES ('Puberty and sexuality');
+INSERT INTO tsohaproject.additionaltrainings (training, description, active) VALUES ('Mental Health', 'A basic training on adolescense and mental health.', 'True');
+INSERT INTO tsohaproject.additionaltrainings (training, description, active) VALUES ('LGBTQI', 'An overview of current LGBTQI themes in helpline contacts.', 'True');
+INSERT INTO tsohaproject.additionaltrainings (training, description, active) VALUES ('Puberty and Sexuality', 'An update on information regarding puberty', 'True' );
 
 
 INSERT INTO tsohaproject.tasks (task) VALUES ('child helpline phone');
@@ -39,8 +39,23 @@ INSERT INTO tsohaproject.volunteerqualification (user_id, task_id) VALUES (3,3);
 INSERT INTO tsohaproject.currentactivity (user_id, activity_id, level_date) VALUES (1,4,'11-11-2021');
 INSERT INTO tsohaproject.currentactivity (user_id, activity_id, level_date) VALUES (2,4,'12-7-2021');
 
+/* Some generic activities - volunteers */
+Parent helpline:
+It was a quiet night, only got a few calls. A mom of two young children called. She was exhausted. I did my best to listen and to encourage her to seek help.
+A busy night at the parent helpline. Answerred multiple chat contacts. Most memorable one was from a father who wanted to know, how to react to his son coming out to him. 
+A very quiet night at the parent helpline. Got no calls today.
+Got three calls. A mother who regretted becoming a mother called. She felt that she was unable to provide the kind of life she wanted to her children. She had not talked with her spouse about her feelings. The other calls were about coping with babies (feeding, sleeping etc.)
+A father of a young woman called. His daughter had moved to her own apartment and the father was worried about her life. She studied at the university, but the father was concerned that she wasn't performing well and that she could have some coping issues in life as well.'
 
+Child helpline:
+Busy evening in the chat. Most contacts dealt with anxiety and depressive thoughts.
+Busy afternoon in the phone. Most callers were elementary aged children. Most had nothing particular they wished to talked about and just wanted someone to be with them for a while and to listen. 
+I spoke with a 15-17 year old girl for three hours. She had been going through a rough time in her life. Her parents had divorced and she felt pressure to tip toe in order to not make either parent feel like she was favoring the other. 
 
+/* Some generic replies - coordinators */
+Wow, sounds like you had quite a challenging evening. Call me if you want to talk about it. Thanks for all your hard work!
+Thanks for all your hard work! We really appreciate it. 
+Keep up the good work! 
 
 
 /* To delete the tsohaproject from database: */
@@ -163,12 +178,28 @@ FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = mes
 ORDER BY messages.thread_id DESC, messages.activity_date ASC;
 
 
-
-
 /* Searching users without a subquery */
 
 SELECT users.user_id, users.role, users.lastname, users.firstname, users.username, users.email, users.phone, startdate, COUNT(messages.sender_id) AS activitycounter, user_id, lastname || ' ' || firstname || ' ' || email  AS document
 FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) 
 WHERE role='volunteer' AND isactive='true' AND (lastname || ' ' || firstname || ' ' || email) LIKE '%a%' 
 GROUP BY users.user_id;
+
+
+ALTER TABLE tsohaproject.feedback RENAME COLUMN feedback_given TO feedback_date;
+
+
+
+SELECT messages.activity_date, messages.content, tasks.task 
+FROM tsohaproject.messages LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+WHERE messages.volunteer_id=7 
+ORDER BY messages.activity_date DESC 
+LIMIT 5 OFFSET 0
+
+
+SELECT users.user_id, messages.activity_date, messages.content, tasks.task, thread_id, msg_id, sender_id 
+FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON users.user_id = messages.sender_id LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+WHERE messages.volunteer_id=7 
+ORDER BY messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC 
+LIMIT 5 OFFSET 0;
 

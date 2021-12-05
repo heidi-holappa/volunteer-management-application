@@ -1,6 +1,6 @@
 from db import db
 
-
+# messages.send_date ASC
 
 def fetch_all_messages(limit: int, offset: int, query: str):
     """Fetch and return messages"""
@@ -10,7 +10,7 @@ def fetch_all_messages(limit: int, offset: int, query: str):
         ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
         WHERE LOWER(messages.content) LIKE LOWER(:query) \
-        ORDER BY messages.activity_date DESC, messages.thread_id DESC, messages.activity_date ASC \
+        ORDER BY messages.thread_id, messages.send_date ASC, messages.activity_date DESC \
         LIMIT :limit OFFSET :offset"
     # sql = "SELECT users.lastname, users.firstname, messages.msg_id, \
     # messages.activity_date, messages.content, tasks.task \
@@ -38,7 +38,7 @@ def fetch_volunteer_messages(u_id: int, limit: int, offset: int):
         LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
         WHERE messages.volunteer_id=:id \
-        ORDER BY messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC \
+        ORDER BY messages.thread_id, messages.msg_id ASC, messages.activity_date DESC \
         LIMIT :limit OFFSET :offset"
     result = db.session.execute(sql, {"id":u_id, "limit":limit, "offset":offset})
     return result.fetchall()
@@ -110,8 +110,10 @@ def get_op_id(u_id):
 
 def submit_reply(new_reply: list):
     sql = "INSERT INTO tsohaproject.messages \
-            (thread_id, volunteer_id, sender_id, task_id, send_date, content) \
-            VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, :send_date, :content)"
+            (thread_id, volunteer_id, sender_id, task_id, send_date, content, activity_date) \
+            VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, \
+            :send_date, :content, :activity_date)"
     result = db.session.execute(sql, {"thread_id":new_reply[0], "volunteer_id":new_reply[1], \
-            "sender_id":new_reply[2], "task_id":new_reply[4], "send_date":new_reply[5], "content":new_reply[6]})
+            "sender_id":new_reply[2], "task_id":new_reply[3], "send_date":new_reply[4], 
+            "content":new_reply[5], "activity_date":new_reply[6]})
     db.session.commit()

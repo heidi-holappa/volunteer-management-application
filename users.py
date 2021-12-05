@@ -90,7 +90,7 @@ def validate_userinfo(params: list, qualifications: list):
     qualifications_exists = False
     for qualification in qualifications:
         if qualification != "":
-            noqualifications = True
+            qualifications_exists = True
     if not qualifications_exists:
         return [False, "Please select \
                 atleast one qualification."]

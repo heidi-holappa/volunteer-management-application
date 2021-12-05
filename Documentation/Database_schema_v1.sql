@@ -27,7 +27,10 @@ CREATE TABLE "tsohaproject".CURRENTACTIVITY (
 
 CREATE TABLE "tsohaproject".ADDITIONALTRAININGS (
   "training_id" SERIAL PRIMARY KEY,
-  "training" varchar
+  "training" varchar,
+  "description" varchar,
+  "active" boolean
+  
 );
 
 CREATE TABLE "tsohaproject".TRAININGPARTICIPATION (
@@ -57,6 +60,7 @@ CREATE TABLE "tsohaproject".TOOLS (
   "tool_id" SERIAL PRIMARY KEY,
   "tool" varchar,
   "serialnumber" varchar,
+  "active" boolean,
   "loaned" boolean
 );
 

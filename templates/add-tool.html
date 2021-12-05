@@ -1,30 +1,15 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
-{% block navitems%}
-<li class="nav-item">
-    <a class="nav-link" href="/users">View volunteers</a>
-  </li>
-<li class="nav-item">
-    <a class="nav-link" href="/view-activities/0">Browse activities</a>
-  </li>
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Add
-    </a>
-    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-      <a class="dropdown-item" href="/addnew">Add user account</a>
-      <a class="dropdown-item" href="/add-training-module">Add training module</a>
-      <a class="dropdown-item" href="/add-tool">Add tool</a>
-    </div>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="/logout">Logout</a>
-  </li>
-{% endblock %}
+{% block coordinatornav %}{{ super() }}{% endblock%}
+{% block volunteer_nav %}{% endblock%}
+{% block custom_navitems%}{% endblock %}
 {% block content %}
 
 <div class="container">
+  <h1>Manage tools</h1>
+  <p>The helpline provides volunteers tools for volunteer work. Here you can add new tools and manage, whether tools are active and available for loan.</p>
+
     {% if show is sameas true %}
     {% if error is sameas true %}
     <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
@@ -52,9 +37,35 @@
       </form>
 </div>
 
-<b>Current tools: </b>
-{% for tool in tools %}
-<br> {{ tool.tool }}, {{ tool.serialnumber }}, {{ tool.loaned }}
-{% endfor %}
+<div class="container">
+  <h2>Current training modules</h2>
+  <p>Below you can see submitted training modules. Volunteers can take active training modules. Modules can be deactivated and activated.</p>
+  <table class="table">
+      <thead>
+          <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Serial number</th>
+              <th scope="col">Loaned</th>
+              <th scope="col">Is active</th>
+              <th scope="col">Activate/Deactivate</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for tool in tools %}
 
-{% endblock %}
+          <tr>
+              <th scope="row">{{ tool.tool }}</th>
+              <td>{{ tool.serialnumber }}</td>
+              <td>{{ tool.loaned }}</td>
+              <td>{{ tool.active }}</td>
+              <td>{% if tool.active is sameas true %}<a
+                      href="/tool-active/0/{{ tool.tool_id }}">Deactivate</a>{% else %}<a
+                      href="/tool-active/1/{{ tool.tool_id }}">Activate</a>{% endif %}</td>
+          </tr>
+          {% endfor %}
+
+          {% endblock %}
+      </tbody>
+  </table>
+
+</div>
