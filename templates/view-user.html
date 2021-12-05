@@ -9,130 +9,128 @@
 
 {% block content %}
 
-    <div class="container" style="margin-top:30px">
+<div class="container" style="margin-top:30px">
 
 
-                <h2>Showing user information</h2>
-                <br>
-                <form action="/edit-user/{{ user.user_id }}" method='POST'><input class="btn btn-primary" id="edit-user"
-                        name="edit-user" type="submit" value="Edit user" /></form>
-                <br>
-                <form action="/{{ view }}"   method='GET'><input class="btn btn-primary" id="addnew" name="logout"
-                        type="submit" value="Back" /></form>
+    <h1>Showing information for {{ user.firstname }} {{ user.lastname }}</h1>
+    <a href="/{{ view }}">Return back to userlist</a>
+    <p>In this page you can review the information of the selected user. By clicking 'edit user information' you can edit information seen on this page.</p>
+    <p>You can also review and submit additional completed trainings or equipment loaned to the volunteer.</p>
+    
+</div>
+<div class="container" style="margin-top:30px">
+    <form align=right action="/edit-user/{{ user.user_id }}" method='POST'><input class="btn btn-link" id="edit-user"
+        name="edit-user" type="submit" value="Edit user information" /></form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Lastname: </td>
+                <td>{{ user.lastname }}</td>
+            </tr>
+            <tr>
+                <td>Firstname: </td>
+                <td>{{ user.firstname }}</td>
+            </tr>
+            <tr>
+                <td>Email: </td>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <td>Phone: </td>
+                <td>{{ user.phone }}</td>
+            </tr>
+            <tr>
+                <td>Role: </td>
+                <td>{{ user.role }}</td>
+            </tr>
+            <tr>
+                <td>Current activity: </td>
+                <td>{{ currentactivity.level }}</td>
+            </tr>
+            <tr>
+                <td>Qualifications: </td>
+                <td>
+                    {% for qualification in qualifications %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}"
+                            name="qualification" {% if qualification.isqualified is sameas true %} checked {% else %}
+                            {% endif %} disabled>
+                        <label class="form-check-label" for="{{ qualification.task }}" class="text-info">
+                            {{ qualification.task }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td>Completed additional trainings modules:
+                    <br><a href="/add-training/{{ user.user_id }}">Add training</a>
+                </td>
+                <td>{% for training in trainings %}
+                    {{ training.training }}, {{ training.training_date }} <br>
+                    {% endfor %}
+                    <br>
 
-                <br />
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Field</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Lastname: </td>
-                            <td>{{ user.lastname }}</td>
-                        </tr>
-                        <tr>
-                            <td>Firstname: </td>
-                            <td>{{ user.firstname }}</td>
-                        </tr>
-                        <tr>
-                            <td>Email: </td>
-                            <td>{{ user.email }}</td>
-                        </tr>
-                        <tr>
-                            <td>Phone: </td>
-                            <td>{{ user.phone }}</td>
-                        </tr>
-                        <tr>
-                            <td>Role: </td>
-                            <td>{{ user.role }}</td>
-                        </tr>
-                        <tr>
-                            <td>Current activity: </td>
-                            <td>{{ currentactivity.level }}</td>
-                        </tr>
-                        <tr>
-                            <td>Qualifications: </td>
-                            <td>
-                                {% for qualification in qualifications %}
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="{{ qualification.task_id }}"
-                                        name="qualification" {% if qualification.isqualified is sameas true %} checked
-                                        {% else %} {% endif %} disabled>
-                                    <label class="form-check-label" for="{{ qualification.task }}" class="text-info">
-                                        {{ qualification.task }}
-                                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>Loaned tools:
+                    <br>
+                    <a href="/add-loan/{{ user.user_id }}">Add new loaned tool</a>
+                </td>
+                <td>{% for tool in tools %}
+                    Tool: {{ tool.tool }} <br>
+                    Serialnumber: {{ tool.serialnumber }} <br>
+                    Loaned: {{ tool.loandate }}<br>
+
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-link" data-toggle="modal"
+                        data-target="#exampleModalCenter{{ tool.tool_id }}">
+                        Return loan
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModalCenter{{ tool.tool_id }}">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle{{ tool.tool_id }}">
+                                        Confirm</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Completed additional trainings modules: 
-                                <br><a href="/add-training/{{ user.user_id }}">Add training</a>
-                            </td>
-                            <td>{% for training in trainings %}
-                                {{ training.training }}, {{ training.training_date }} <br>
-                                {% endfor %}
-                                <br>
-                                
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Loaned tools: 
-                                <br>
-                                <a href="/add-loan/{{ user.user_id }}">Add new loaned tool</a>
-                            </td>
-                            <td>{% for tool in tools %}
-                                Tool: {{ tool.tool }} <br>
-                                Serialnumber: {{ tool.serialnumber }} <br>
-                                Loaned: {{ tool.loandate }}<br>
-                                
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-link" data-toggle="modal"
-                                    data-target="#exampleModalCenter{{ tool.tool_id }}">
-                                    Return loan
-                                </button>
-                                <!-- Modal -->
-                                <div class="modal fade" id="exampleModalCenter{{ tool.tool_id }}">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLongTitle{{ tool.tool_id }}">
-                                                    Confirm</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Please confirm that you wish to return a loaned tool.</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Cancel</button>
-
-                                                <form action="/return-loan/{{ tool.tool_id }}" method="post">
-                                                    <input type="submit" value="Confirm" class="btn btn-primary">
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="modal-body">
+                                    <p>Please confirm that you wish to return a loaned tool.</p>
                                 </div>
-                                <br><br>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="alert alert-warning" role="alert">
-                    <b>To-Do: </b>
-                    <ul>
-                        <li>Add user activity</li>
-                    </ul>
-                </div>
-            </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+
+                                    <form action="/return-loan/{{ tool.tool_id }}" method="post">
+                                        <input type="submit" value="Confirm" class="btn btn-primary">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br><br>
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="alert alert-warning" role="alert">
+        <b>To-Do: </b>
+        <ul>
+            <li>Add user activity</li>
+        </ul>
+    </div>
+</div>
 
 
 {% endblock %}

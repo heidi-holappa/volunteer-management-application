@@ -187,7 +187,10 @@ def viewuser(u_id):
     currentactivity = hrqueries.get_currentactivity(u_id)
     trainings = hrqueries.get_additionaltrainings(u_id)
     tools = hrqueries.get_loanedtools(u_id)
-    view='view-volunteers'
+    if user[1] == 'volunteer':
+        view='view-volunteers'
+    else:
+        view='view-coordinators'
     return render_template("view-user.html", user=user, qualifications=qualifications, 
         currentactivity=currentactivity, trainings=trainings, tools=tools, view=view, 
         role=users.get_role())
