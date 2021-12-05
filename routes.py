@@ -249,7 +249,7 @@ def submit_edit_account():
 @app.route("/return-loan/<int:tool_id>", methods=["POST"])
 def return_loan(tool_id: int):
     user_id = hrqueries.loan_return(tool_id)
-    return redirect("../view-user/" + str(user_id), role=users.get_role())
+    return redirect("../view-user/" + str(user_id))
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
 def add_training(u_id):
@@ -269,7 +269,7 @@ def add_training(u_id):
             return error("missing_value")
         training = [training_id, u_id, participation_date]
         hrqueries.add_training_participation(training)
-        return redirect("../view-user/" + str(u_id), role=users.get_role())
+        return redirect("../view-user/" + str(u_id))
 
 @app.route("/add-loan/<int:u_id>", methods=["GET", "POST"])
 def add_loaned_tool(u_id):
@@ -281,7 +281,7 @@ def add_loaned_tool(u_id):
     if request.method == "POST":
         loaned_tool = [request.form["tool_id"], u_id, request.form["date"]]
         hrqueries.add_loan(loaned_tool)
-        return redirect("../view-user/" + str(u_id), role=users.get_role())
+        return redirect("../view-user/" + str(u_id))
 
 @app.route("/edit-user/<int:u_id>", methods=["GET", "POST"])
 def edituser(u_id):
