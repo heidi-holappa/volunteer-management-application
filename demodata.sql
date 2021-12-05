@@ -118,6 +118,9 @@ ORDER BY messages.activity_date DESC
 
 /* To run Flask in development server mode */
 export FLASK_ENV=development && flask run
+postgres
+psql
+
 
 /* Fixed message query */
 SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
@@ -202,4 +205,6 @@ FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON users.user_id = messa
 WHERE messages.volunteer_id=7 
 ORDER BY messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC 
 LIMIT 5 OFFSET 0;
+
+
 

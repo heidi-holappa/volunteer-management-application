@@ -68,7 +68,7 @@ def search_userlist(u_query: str, role: str):
         FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
         ON (users.user_id = messages.sender_id) \
         WHERE role=:role AND isactive='true' \
-        AND (lastname || ' ' || firstname || ' ' || email) LIKE :query \
+        AND LOWER(lastname || ' ' || firstname || ' ' || email) LIKE LOWER(:query) \
         GROUP BY users.user_id;"
     result = db.session.execute(sql, {"query":'%' + u_query + '%', "role":role})
     return result.fetchall()
