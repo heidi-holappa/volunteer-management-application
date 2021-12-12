@@ -174,12 +174,9 @@ FROM (SELECT user_id, lastname || ' ' || firstname || ' ' || username || ' ' || 
 WHERE role='volunteer' AND isactive='true' AND LOWER(document) LIKE LOWER('%jes%')
 GROUP BY users.user_id;
 
-
-
 SELECT messages.thread_id, messages.msg_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
 FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
 ORDER BY messages.thread_id DESC, messages.activity_date ASC;
-
 
 /* Searching users without a subquery */
 
@@ -188,23 +185,28 @@ FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON (users.user_id = mess
 WHERE role='volunteer' AND isactive='true' AND (lastname || ' ' || firstname || ' ' || email) LIKE '%a%' 
 GROUP BY users.user_id;
 
-
-ALTER TABLE tsohaproject.feedback RENAME COLUMN feedback_given TO feedback_date;
-
-
-
 SELECT messages.activity_date, messages.content, tasks.task 
 FROM tsohaproject.messages LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
 WHERE messages.volunteer_id=7 
 ORDER BY messages.activity_date DESC 
 LIMIT 5 OFFSET 0
 
-
+/* Testing out features of ORDER BY */
 SELECT users.user_id, messages.activity_date, messages.content, tasks.task, thread_id, msg_id, sender_id 
 FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON users.user_id = messages.sender_id LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
 WHERE messages.volunteer_id=7 
 ORDER BY messages.activity_date DESC, messages.thread_id DESC, messages.msg_id ASC 
 LIMIT 5 OFFSET 0;
 
+SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 
+        FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
+        ORDER BY activity_date DESC, thread_id, msg_id ASC;
 
 
+
+
+
+SELECT currentactivity.activity_id AS a_id, activitylevel.level AS level, MAX(currentactivity.level_date) AS a_date 
+FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel ON currentactivity.activity_id =activitylevel.activity_id 
+WHERE users.user_id=7
+GROUP BY a_id, level

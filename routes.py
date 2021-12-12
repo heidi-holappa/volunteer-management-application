@@ -129,9 +129,11 @@ def submituser():
         else:
             role = None
         qualifications = list(request.form.getlist("qualification"))
+        time_stamp = datetime.now(timezone.utc)
         params = [request.form["lastname"], request.form["firstname"], \
             request.form["email"], request.form["startdate"], \
-                role, request.form["username"]]
+                role, request.form["username"], time_stamp ]
+        print(params)
         # Check that all fields have information
         userinfo_is_valid = users.validate_userinfo(params, qualifications)
         if not userinfo_is_valid[0]:
@@ -156,6 +158,11 @@ def update_user(u_id):
     """Old userinfo is fetched from database and updated for those fields that can be updated."""
     # Get basic information TO-DO: REPLACE * WITH COLUMNS NEEDED!
     oldinfo = hrqueries.get_userinfo(u_id)
+    if users.is_volunteer_with_id(u_id):
+        a_id = request.form['activity']
+        # print(f"Submitted activity-id: {a_id}, old activity-id: {hrqueries.get_current_activity_level(u_id)[0]}")
+        if int(a_id) != int(hrqueries.get_current_activity_level(u_id)[0]):
+            hrqueries.update_activity_level(datetime.now(timezone.utc), u_id, a_id)
     isactive = True
     if request.form.get("terminate") is not None:
         isactive = False
@@ -186,7 +193,7 @@ def viewuser(u_id):
         return error("notauthorized")
     user = hrqueries.get_userinfo(u_id)
     qualifications = hrqueries.get_qualifiations(u_id)
-    currentactivity = hrqueries.get_currentactivity(u_id)
+    currentactivity = hrqueries.get_current_activity_level(u_id)
     trainings = hrqueries.get_additionaltrainings(u_id)
     tools = hrqueries.get_loanedtools(u_id)
     if user[1] == 'volunteer':
@@ -205,7 +212,7 @@ def view_account():
         return error("notauthorized")
     user = hrqueries.get_userinfo(u_id)
     qualifications = hrqueries.get_qualifiations(u_id)
-    currentactivity = hrqueries.get_currentactivity(u_id)
+    currentactivity = hrqueries.get_current_activity_level(u_id)
     trainings = hrqueries.get_additionaltrainings(u_id)
     tools = hrqueries.get_loanedtools(u_id)
     return render_template("user-account.html", user=user, qualifications=qualifications, 
@@ -275,22 +282,41 @@ def edituser(u_id):
     """Render edit-user page"""
     if not users.is_coordinator():
         return error("notauthorized")
-    if request.method == "POST":
+    if request.method == "GET":
         user = hrqueries.get_userinfo(u_id)
         qualifications = hrqueries.get_qualifiations(u_id)
-        activity = hrqueries.get_activityinformation(u_id)
+        activity = hrqueries.get_current_activity_level(u_id)
+        print(activity)
         return render_template("edit-user.html", user=user, \
             qualifications=qualifications, activity=activity, role=users.get_role())
     return render_template("edit-user.html", role=users.get_role())
 
 
-@app.route("/view-activities/<int:set_offset>")
+@app.route("/view-activities/<int:set_offset>", methods=["GET","POST"])
 def supervisor_view_activities(set_offset):
     """View messages as supervisor"""
+    if 'sender' in request.args: 
+        sender = request.args['sender']
+        if sender != 'showall':
+            u_id = int(sender)
+            filter=u_id
+            filter_msg = f'Showing messages for {users.get_name(u_id)}'
+        else:
+            filter = "showall"
+            filter_msg = ""
+    else:
+        filter = "showall"
+        filter_msg = ""
+    if request.method == "POST":
+        if 'sender' in request.form:
+            if request.form['sender'] == 'showall':
+                filter = 'showall'
+            else:
+                u_id = request.form['sender']
+                filter=u_id
+                filter_msg = f'Showing messages for {users.get_name(u_id)}'
     if not users.is_coordinator():
         return error("notauthorized")
-    #TO-DO: ORDER BY is not yet doing what I want.
-    #Perhaps the activity_date (date) doesn't work for sorting as intended?
     limit = 5
     offset = set_offset * 5
     if 'query' in request.args and len(request.args["query"]) != 0:
@@ -299,15 +325,27 @@ def supervisor_view_activities(set_offset):
     else:
         query = ""
         active_query = False
-    fetched_messages = messages.fetch_all_messages(limit,offset, query)
-    count_messages = messages.fetch_message_count(query)
+    if filter == 'showall':
+        fetched_messages = messages.fetch_all_messages(limit,offset, query)
+        count_messages = messages.fetch_message_count(query)
+    else: 
+        fetched_messages = messages.fetch_volunteer_messages(u_id, limit, offset, query)
+        count_messages = messages.fetch_volunteer_message_count(u_id, query)
+    fetch_message_senders = messages.fetch_message_senders()
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
     no_messages = bool(len(fetched_messages) == 0)
     return render_template("message-view.html", messages=fetched_messages, \
         nomessages=no_messages, show_next=show_next, show_previous=show_previous, \
             offset=set_offset, msg_count=count_messages, active_query=active_query, \
-                query=query, role=users.get_role())
+                query=query, role=users.get_role(), users=fetch_message_senders, \
+                show=filter, show_msg=filter_msg)
+
+# @app.route("/filter-activities", methods=["POST"])
+# def supervisor_filter_activities():
+#     if 'sender' in request.form:
+#         print(request.form['sender'])
+#     return render_template("error.html")
 
 @app.route("/reply-msg/<int:m_id>")
 def reply_msg(m_id):
@@ -407,11 +445,12 @@ def volunteerview(set_offset):
     if not users.is_volunteer():
         return error("notauthorized")
     limit=5
+    query = ""
     offset = set_offset * limit
     u_id = users.get_user_id()
     user = hrqueries.get_userinfo(u_id)
     activities = hrqueries.get_activities(u_id)
-    volunteer_messages = messages.fetch_volunteer_messages(u_id, limit, offset)
+    volunteer_messages = messages.fetch_volunteer_messages(u_id, limit, offset, query)
     count_messages = messages.fetch_message_count_by_user(u_id)
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)

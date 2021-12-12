@@ -50,7 +50,10 @@
                         <td>{{ user.email }}</td>
                         <td>{{user.role}}</td>
                         <td>{{ user.activitycounter }}</td>
-                        <td><a href="view-user/{{ user.user_id }}">View details</a></td>
+                        <td>
+                            <a href="view-user/{{ user.user_id }}">View details</a> / 
+                            <a href="edit-user/{{ user.user_id }}">Edit details</a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

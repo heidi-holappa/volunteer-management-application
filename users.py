@@ -7,7 +7,7 @@ def login(username, password):
     sql = "SELECT users.user_id, users.role, password.password \
             FROM tsohaproject.users INNER JOIN tsohaproject.password \
             ON users.user_id = password.user_id \
-            WHERE users.username=:username"
+            WHERE users.username=:username AND isactive='True'"
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
     if not user:
@@ -37,16 +37,22 @@ def create_admin(username: str, hash_value: str):
         return False
 
 def is_admin():
-    """Returns true if user is admin"""
+    """Returns true if logged in user is admin"""
     return user_role() == 'admin'
 
 def is_coordinator():
-    """If user is either coordinator or admin returns true"""
+    """If logged in user is either coordinator or admin returns true"""
     return user_role() in ('admin', 'coordinator')
 
 def is_volunteer():
-    """If user is volunteer returns true"""
+    """If logged in user is volunteer returns true"""
     return user_role() == 'volunteer'
+
+def is_volunteer_with_id(u_id):
+    """Return true, if user with given id has role volunteer"""
+    sql = "SELECT role FROM tsohaproject.users WHERE user_id=:id"
+    result = db.session.execute(sql, {"id":u_id})
+    return bool(result.fetchone()[0] == 'volunteer')
 
 def get_user_id():
     """Return id of logged in user"""
@@ -67,6 +73,15 @@ def user_role():
         return result.fetchone()[0]
     return u_id
 
+def get_name(u_id):
+    """Return the first and lastname of the given user_id"""
+    sql = "SELECT firstname, lastname \
+        FROM tsohaproject.users \
+        WHERE user_id=:id"
+    result = db.session.execute(sql, {"id":u_id})
+    get_result = result.fetchone()
+    return f'{get_result[0]} {get_result[1]}'
+
 def logout():
     """Deletes user sessions"""
     del session["user_id"]
@@ -81,7 +96,7 @@ def password_valid(password1: str, password2: str):
 
 def validate_userinfo(params: list, qualifications: list):
     for i in params:
-        if i is None or len(i) == 0:
+        if i is None or len(str(i)) == 0:
             return [False, "One of the fields was empty. \
                     Please carefully fill in all fields."]
     qualifications_exists = False
@@ -115,9 +130,11 @@ def create_useraccount(params: list, qualifications: list, hash_value: str):
         db.session.execute(sqlpassword, {"user_id":user_id, "password":hash_value})
         sqlactivity = "INSERT INTO tsohaproject.currentactivity (level_date, user_id, activity_id) \
             VALUES (:level_date, :user_id, :activitylevel)"
-        db.session.execute(sqlactivity, {"level_date":params[3], "user_id":user_id, \
-            "activitylevel":4})
+        db.session.execute(sqlactivity, {"level_date":params[6], "user_id":user_id, \
+            "activitylevel":3})
         db.session.commit()
     except:
         return False
     return True
+
+

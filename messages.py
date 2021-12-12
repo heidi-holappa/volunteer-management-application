@@ -28,6 +28,14 @@ def fetch_message_count(query):
     count = result.fetchone()[0]
     return count
 
+def fetch_volunteer_message_count(u_id, query):
+    sql = "SELECT COUNT(*) FROM tsohaproject.messages \
+        WHERE LOWER(messages.content) LIKE LOWER(:query) \
+        AND volunteer_id=:id"
+    result = db.session.execute(sql, {"query":"%"+query+"%", "id":u_id})
+    count = result.fetchone()[0]
+    return count
+
 def fetch_message_count_by_user(u_id):
     sql = "SELECT COUNT(*) FROM tsohaproject.messages \
         WHERE messages.volunteer_id=:u_id"
@@ -35,17 +43,18 @@ def fetch_message_count_by_user(u_id):
     return result.fetchone()[0]
 
 
-def fetch_volunteer_messages(u_id: int, limit: int, offset: int):
+def fetch_volunteer_messages(u_id: int, limit: int, offset: int, query: str):
     sql = "SELECT users.username, users.lastname, users.firstname, users.role, \
-        messages.activity_date, messages.content, tasks.task \
+        messages.activity_date, messages.content, tasks.task, messages.msg_id \
         FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
         ON users.user_id = messages.sender_id \
         LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
-        WHERE messages.volunteer_id=:id \
+        WHERE messages.volunteer_id=:id AND LOWER(messages.content) LIKE LOWER(:query)\
         ORDER BY activity_date DESC, thread_id, msg_id ASC \
         LIMIT :limit OFFSET :offset"
-    result = db.session.execute(sql, {"id":u_id, "limit":limit, "offset":offset})
+    result = db.session.execute(sql, {"id":u_id, "limit":limit, "offset":offset, \
+        "query":"%"+query+"%"})
     return result.fetchall()
 
 def new_message(message: dict):
@@ -129,3 +138,11 @@ def get_op_date(m_id: int):
         WHERE msg_id=:m_id"
     result = db.session.execute(sql, {"m_id":m_id})
     return result.fetchone()[0]
+
+def fetch_message_senders():
+    sql = "SELECT DISTINCT(user_id), firstname, lastname \
+        FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
+        ON users.user_id = volunteer_id \
+        WHERE sender_id = users.user_id"
+    result = db.session.execute(sql)
+    return result.fetchall()

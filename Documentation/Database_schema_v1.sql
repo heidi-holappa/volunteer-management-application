@@ -20,7 +20,7 @@ CREATE TABLE "tsohaproject".ACTIVITYLEVEL (
 );
 
 CREATE TABLE "tsohaproject".CURRENTACTIVITY (
-  "level_date" date,
+  "level_date" TIMESTAMP,
   "user_id" integer,
   "activity_id" integer
 );

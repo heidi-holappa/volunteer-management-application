@@ -269,18 +269,25 @@ def get_activities(u_id):
     result = db.session.execute(sql, {"id":u_id})
     return result.fetchall()
 
-def get_activityinformation(u_id):
+def get_current_activity_level(u_id):
     """Get activityinformation"""
-    sql = "SELECT activitylevel.level, currentactivity.level_date \
+    sql = "SELECT currentactivity.activity_id AS a_id, activitylevel.level AS level, \
+        currentactivity.level_date AS a_date \
         FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity \
         ON users.user_id = currentactivity.user_id \
         LEFT JOIN tsohaproject.activitylevel \
         ON currentactivity.activity_id = activitylevel.activity_id \
-        WHERE users.user_id=:id \
-        ORDER BY currentactivity.level_date DESC"
+        WHERE currentactivity.user_id=:id \
+        ORDER BY a_date DESC \
+        LIMIT 1"
     result = db.session.execute(sql, {"id":u_id})
-    activity = result.fetchall
+    activity = result.fetchone()
     return activity
+
+def update_activity_level(a_date, u_id, a_id):
+    sql = "INSERT INTO tsohaproject.currentactivity (level_date, user_id, activity_id) VALUES (:a_date, :u_id, :a_id)"
+    db.session.execute(sql, {"a_date":a_date, "u_id":u_id, "a_id":a_id})
+    db.session.commit()
 
 def loan_return(tool_id):
     sql_a = "UPDATE tsohaproject.tools SET loaned='FALSE' WHERE tool_id=:id"
@@ -302,17 +309,17 @@ def add_training_participation(training_info: list):
     db.session.commit()
     return
 
-def get_currentactivity(u_id):
-    """Return selected users activity"""
-    sql = "SELECT currentactivity.user_id, currentactivity.level_date, activitylevel.level \
-        FROM tsohaproject.currentactivity LEFT JOIN tsohaproject.activitylevel \
-        ON (currentactivity.activity_id = activitylevel.activity_id) \
-        WHERE user_id =:id \
-        ORDER BY level_date DESC \
-        LIMIT 1"
-    result = db.session.execute(sql, {"id":u_id})
-    currectactivity = result.fetchone()
-    return currectactivity
+# def get_currentactivity(u_id):
+#     """Return selected users activity"""
+#     sql = "SELECT currentactivity.user_id, currentactivity.level_date, activitylevel.level \
+#         FROM tsohaproject.currentactivity LEFT JOIN tsohaproject.activitylevel \
+#         ON (currentactivity.activity_id = activitylevel.activity_id) \
+#         WHERE user_id =:id \
+#         ORDER BY level_date DESC \
+#         LIMIT 1"
+#     result = db.session.execute(sql, {"id":u_id})
+#     currectactivity = result.fetchone()
+#     return currectactivity
 
 def log_mark(log: list):
     sql = "INSERT INTO tsohaproject.applog (user_id, timestamp, description) \
