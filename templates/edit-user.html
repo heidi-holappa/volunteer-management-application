@@ -102,8 +102,10 @@
                         </tr>
                         <tr>
                             <td><a href="/view-user/{{ user.user_id }}" method='GET' class="btn btn-primary">Cancel</a></td>
-                            <td align="right"><input class="btn btn-primary" id="submit" name="submit"
-                                    type="submit" value="submit" /></td>
+                            <td class="text-end">
+                                <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            </td>
                         </tr>
                     </table>
                 </form>

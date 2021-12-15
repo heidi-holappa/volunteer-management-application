@@ -32,6 +32,7 @@
           <input type="text" class="form-control" id="add-training-module" name="serialnumber" placeholder="Type in the serial number or other unique id-number for the tool.">  
         </div>
         <div align=right class="mb-3">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
         

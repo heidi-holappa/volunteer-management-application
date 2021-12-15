@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
-{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -17,7 +17,6 @@
                     <p>In this view you can create new user accounts. Once a user account is created you can log in with this new account to test different functonalities in different roles.<br><br><b>Note:</b>An admin can create all roles in this demo. A coordinator can create only volunteers.</p>
                     {% if show is sameas true %}
                     <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-                    {% else %}
                     {% endif %}
                 </div>
 
@@ -68,10 +67,9 @@
                             <td>
                                 <select class="form-select" name='role'>
                                     <option value="" selected disabled>Choose role</option>
-                                    {% if role == 'admin' %}
+                                    {% if session.role == 'admin' %}
                                     <option value="admin">Administrator</option>
                                     <option value="coordinator">Coordinator</option>
-                                    {% else %}
                                     {% endif %}
                                     <option value="volunteer">Volunteer</option>
                                 </select>
@@ -109,6 +107,7 @@
                         <tr>
                             <td colspan="2" class="text-end">
                                 <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                             </td>
                         </tr>
                     </table>

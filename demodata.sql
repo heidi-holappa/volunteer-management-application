@@ -15,7 +15,6 @@ INSERT INTO tsohaproject.tasks (task) VALUES ('child helpline chat');
 INSERT INTO tsohaproject.tasks (task) VALUES ('parent helpline phone');
 INSERT INTO tsohaproject.tasks (task) VALUES ('parent helpline chat');
 
-INSERT INTO tsohaproject.activitylevel (level) VALUES ('quit');
 INSERT INTO tsohaproject.activitylevel (level) VALUES ('break');
 INSERT INTO tsohaproject.activitylevel (level) VALUES ('one');
 INSERT INTO tsohaproject.activitylevel (level) VALUES ('two');
@@ -206,7 +205,13 @@ SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.sen
 
 
 
-SELECT currentactivity.activity_id AS a_id, activitylevel.level AS level, MAX(currentactivity.level_date) AS a_date 
+SELECT currentactivity.activity_id AS a_id, activitylevel.level AS level, currentactivity.level_date AS a_date 
 FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel ON currentactivity.activity_id =activitylevel.activity_id 
-WHERE users.user_id=7
-GROUP BY a_id, level
+WHERE currentactivity.user_id=7
+ORDER BY a_date DESC LIMIT 1
+
+
+
+SELECT user_id, firstname, lastname
+FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON users.user_id = volunteer_id 
+WHERE sender_id = users.user_id

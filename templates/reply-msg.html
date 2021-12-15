@@ -34,8 +34,10 @@
                                 type='text' name='content' rows="4" cols="50"></textarea></td>
                     </tr>
                     <tr>
-                        <td colspan="2" align="right"><input class="btn btn-primary" id="submit" name="submit"
-                                type="submit" value="submit" /></td>
+                        <td colspan="2" align="right">
+                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        </td>
                     </tr>
                 </table>
             </form>

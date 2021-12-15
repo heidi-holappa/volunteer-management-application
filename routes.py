@@ -1,3 +1,4 @@
+import re
 from app import app
 from datetime import datetime, date, timezone
 from flask import Flask
@@ -123,7 +124,7 @@ def submituser():
         return error("notauthorized")
     if request.method == "GET":
         return render_template("add-user.html", role=users.get_role())
-    if request.method == "POST":
+    if request.method == "POST":            
         if 'role' in request.form:
             role = request.form["role"]
         else:
@@ -133,7 +134,10 @@ def submituser():
         params = [request.form["lastname"], request.form["firstname"], \
             request.form["email"], request.form["startdate"], \
                 role, request.form["username"], time_stamp ]
-        print(params)
+        if session["csrf_token"] != request.form["csrf_token"]:
+            return render_template("add-user.html", show=True, \
+                message="An error has occured. Try again. If the problem persists, contact site administration"\
+                        , filled=params, role=users.get_role())
         # Check that all fields have information
         userinfo_is_valid = users.validate_userinfo(params, qualifications)
         if not userinfo_is_valid[0]:
@@ -176,9 +180,9 @@ def update_user(u_id):
     if 'qualification' in request.values:
         qualifications = request.form.getlist("qualification")
         hrqueries.add_qualifications(qualifications, newinfo[0])
-    if not hrqueries.update_userinfo(newinfo):
-        return render_template("error.html", logged=True, error="Something bad has happened, \
-            but at this demo-stage I do not exactly know what. Try again.", 
+    if session["csrf_token"] == request.form["csrf_token"] and not hrqueries.update_userinfo(newinfo):
+        return render_template("error.html", logged=True, error="Something went wrong, \
+            try again.", 
             role=users.get_role())
     if not isactive:
         if newinfo[1] == 'volunteer':
@@ -227,14 +231,26 @@ def edit_account():
         return error("notauthorized")
     user = hrqueries.get_userinfo(u_id)
     return render_template("edit-account.html", user=user, 
-        role=users.get_role())
+        role=users.get_role(), show_msg=False, msg="")
 
 @app.route("/submit-edit-account", methods=["POST"])
 def submit_edit_account():
     """Save changes to account"""
     u_id = users.get_user_id()
-    if u_id == 0:
+    if u_id == 0 or session["csrf_token"] != request.form["csrf_token"]:
+        #FIX THIS - NEEDS TO SHOW ERROR ON THE SAME PAGE OR DOES IT? ASK ABOUT THIS! 
         return error("notauthorized")
+    old_password = request.form["password0"]
+    new_password = request.form["password1"]
+    retype_new_password = request.form["password2"]
+    change_password = bool(len(old_password) != 0) or bool(len(new_password) != 0) or bool(len(retype_new_password) != 0)
+    print(change_password)
+    if change_password:
+        try_update = users.update_password(old_password, new_password, retype_new_password)
+        if not try_update[0]:
+            user = hrqueries.get_userinfo(u_id)
+            return render_template("/edit-account.html", user=user, role=users.get_role(), \
+                show_msg=True, msg=try_update[1])
     newinfo = [u_id, request.form["lastname"], request.form["firstname"],
             request.form["email"], request.form["phone"]]
     hrqueries.submit_account_edit(newinfo)
@@ -242,6 +258,8 @@ def submit_edit_account():
 
 @app.route("/return-loan/<int:tool_id>", methods=["POST"])
 def return_loan(tool_id: int):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        return error("notauthorized")
     user_id = hrqueries.loan_return(tool_id)
     return redirect("../view-user/" + str(user_id))
 
@@ -253,8 +271,10 @@ def add_training(u_id):
         user = hrqueries.get_userinfo(u_id)
         trainings = hrqueries.get_possible_trainings()
         return render_template("add-training.html", user=user, \
-            trainings=trainings, role=users.get_role())
+            trainings=trainings, role=users.get_role(), notification="")
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
         if not ('training_id' in request.form and 'date' in request.form):
             return error("missing_value")
         training_id = request.form["training_id"]
@@ -273,6 +293,8 @@ def add_loaned_tool(u_id):
         return render_template("add-loan.html", user=user, \
             tools=tools, role=users.get_role())
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
         loaned_tool = [request.form["tool_id"], u_id, request.form["date"]]
         hrqueries.add_loan(loaned_tool)
         return redirect("../view-user/" + str(u_id))
@@ -308,6 +330,8 @@ def supervisor_view_activities(set_offset):
         filter = "showall"
         filter_msg = ""
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
         if 'sender' in request.form:
             if request.form['sender'] == 'showall':
                 filter = 'showall'
@@ -357,6 +381,8 @@ def reply_msg(m_id):
 @app.route("/submit-reply/<int:u_id>", methods=["POST"])
 def submit_reply(u_id):
     """Submit reply"""
+    if session["csrf_token"] != request.form["csrf_token"]:
+        return error("notauthorized")
     volunteer_id = messages.get_op_id(u_id)
     sender_id = users.get_user_id()
     thread_id = u_id
@@ -376,6 +402,8 @@ def add_new_training():
         return render_template("add-training-module.html", trainings=current_trainings, show=False, \
             message="", error=False, role=users.get_role())
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
         if not ('training' in request.form and 'description' in request.form):
             error("missing_values")
         new_training = request.form["training"]
@@ -412,6 +440,8 @@ def add_new_tool():
         tools = hrqueries.get_all_tools()
         return render_template("add-tool.html", show=False, tools=tools, role=users.get_role())
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
         if len(request.form["tool"]) == 0 or len(request.form["serialnumber"])== 0:
             session["error"] = True
             return redirect("/tool-submission")
@@ -463,6 +493,8 @@ def volunteerview(set_offset):
 @app.route("/submit-message-volunteer/<int:u_id>", methods=["POST"])
 def submit_message_volunteer(u_id):
     """This function stores a new message."""
+    if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
     if not users.is_volunteer():
         return error("notauthorized")
     message = {"activity_date":request.form["date"], \
@@ -482,37 +514,27 @@ def success():
 @app.route("/docs/aboutus")
 def about_us():
     """Render About Us view"""
-    u_id = users.get_user_id()
-    logged = bool(u_id != 0)
-    role = users.get_role()
-    return render_template("docs/aboutus.html", logged=logged, role=role)
+    return render_template("docs/aboutus.html")
 
 @app.route("/docs/feedback")
 def feedback():
     """Render feedback view"""
-    u_id = users.get_user_id()
-    logged = bool(u_id != 0)
-    role = users.get_role()
-    return render_template("docs/feedback.html", logged=logged, role=role)
+    return render_template("docs/feedback.html")
 
 @app.route("/submit-feedback", methods=["POST"])
 def submit_feedback():
     """Handle feedback submissions and render thank you view"""
+    if session["csrf_token"] != request.form["csrf_token"]:
+            return error("notauthorized")
     content = request.form["content"]
     fb_date = date.today()
-    u_id = users.get_user_id()
-    logged = bool(u_id != 0)
     if len(content) == 0:
         return error('missing_value')
     messages.submit_feedback(fb_date, content)
-    return render_template("/docs/thank-you.html", role=users.get_role(), 
-        logged=logged)
+    return render_template("/docs/thank-you.html")
 
 def error(description):
     """Render Error view"""
-    u_id = users.get_user_id()
-    logged = bool(u_id != 0)
-    role = users.get_role()
     message = "This is a general error message. Something caused an error, but there is not \
         enough information to tell what. Feedback on the error would be appreciated! \
             We apologize for the inconvenience."
@@ -523,7 +545,7 @@ def error(description):
     if description == 'missing_value':
         message = 'One or more fields were left empty. Please fill in all fields carefully.'
     log_action(f"Landed on errorpage. Errormessage received: {message}")
-    return render_template("error.html", error=message, logged=logged, role=role)
+    return render_template("error.html", error=message)
 
 
 def log_action(content: str):

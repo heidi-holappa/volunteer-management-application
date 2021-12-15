@@ -114,6 +114,7 @@
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
                                     <form action="/return-loan/{{ tool.tool_id }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                         <input type="submit" value="Confirm" class="btn btn-primary">
                                     </form>
                                 </div>

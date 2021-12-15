@@ -10,55 +10,59 @@
 
 {% block content %}
 <div class="container" style="margin-top:30px">
-            <h1>User list: {% if volunteer_view is sameas true %}volunteers{% else %}coordinators{% endif %}</h1>
-            <p>As an admin you can create new users. Volunteers can report on activities done, coordinators can create and manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple reporting data on helpline performance.</p>
-            <br>
-            <p>As an admin or a coordinator you can also view activitities volunteers have reported on. You can post a reply to a volunteer's message.</p>
+    <h1>User list: {% if volunteer_view is sameas true %}volunteers{% else %}coordinators{% endif %}</h1>
+    <p>As an admin you can create new users. Volunteers can report on activities done, coordinators can create and
+        manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple
+        reporting data on helpline performance.</p>
+    <br>
+    <p>As an admin or a coordinator you can also view activitities volunteers have reported on. You can post a reply to
+        a volunteer's message.</p>
 </div>
 <div class="container" style="margin-top:30px">
-            <h2>Search users: </h2>
-            <form action="{% if volunteer_view is sameas true %}/search-volunteers{% else %}/search-coordinators{% endif %}" method="GET">
-                <table class="table">
-                    <tr>
-                        <td><input class="form-control" autocomplete="off" type="text" name="query"
-                                placeholder="Search by firstname, lastname, email address"></td>
-                        <td><input class="btn btn-primary" type="submit" value="Submit"></td>
-                    </tr>
-                </table>
-            </form>
-            
+    <h2>Search users: </h2>
+    <form action="{% if volunteer_view is sameas true %}/search-volunteers{% else %}/search-coordinators{% endif %}"
+        method="GET">
+        <table class="table">
+            <tr>
+                <td><input class="form-control" autocomplete="off" type="text" name="query"
+                        placeholder="Search by firstname, lastname, email address"></td>
+                <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+            </tr>
+        </table>
+    </form>
+
 </div>
 <div class="container">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">User-ID</th>
-                        <th scope="col">Lastname</th>
-                        <th scope="col">Firstname</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Activites done</th>
-                        <th scope="col">Modify</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in users %}
-                    <tr>
-                        <th scope="row">{{ user.user_id }}</th>
-                        <td>{{ user.lastname }}</td>
-                        <td>{{ user.firstname }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{user.role}}</td>
-                        <td>{{ user.activitycounter }}</td>
-                        <td>
-                            <a href="view-user/{{ user.user_id }}">View details</a> / 
-                            <a href="edit-user/{{ user.user_id }}">Edit details</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <a href="/add-user" method='GET'>Create new user</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">User-ID</th>
+                <th scope="col">Lastname</th>
+                <th scope="col">Firstname</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Activites done</th>
+                <th scope="col">Modify</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <th scope="row">{{ user.user_id }}</th>
+                <td>{{ user.lastname }}</td>
+                <td>{{ user.firstname }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{user.role}}</td>
+                <td>{{ user.activitycounter }}</td>
+                <td>
+                    <a href="view-user/{{ user.user_id }}">View details</a> /
+                    <a href="edit-user/{{ user.user_id }}">Edit details</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add-user" method='GET'>Create new user</a>
 </div>
 
 {% endblock %}

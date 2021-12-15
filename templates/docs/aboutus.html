@@ -3,37 +3,35 @@
 {% block headername %}Volunteer Management App{% endblock %}
 
 
-{% block adminnav %}{% if (role == 'admin') %}{{ super() }}{% else %}{% endif %}{% endblock %}
-{% block coordinatornav %}{% if (role == 'coordinator') %}{{ super() }}{% else %}{% endif %}{% endblock %}
+{% block adminnav %}{% if (session.role == 'admin') %}{{ super() }}{% else %}{% endif %}{% endblock %}
+{% block coordinatornav %}{% if (session.role == 'coordinator') %}{{ super() }}{% else %}{% endif %}{% endblock %}
 {% block volunteer_nav %}
-    {% if (role == 'volunteer') %}
+    {% if (session.role == 'volunteer') %}
         {{ super() }}
     {% else %}
     {% endif %}
 {% endblock%}
 {% block custom_navitems %}
-    {% if logged is sameas true %}
-    {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="/">Back to front page</a>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Project Info
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="/docs/aboutus">About Us</a>
-                <a class="dropdown-item" href="/docs/feedback">Leave Feedback</a>
-                <a class="dropdown-item"
-                    href="https://github.com/heidi-holappa/volunteer-management-application"
-                    target="_blank">Project at GitHub</a>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
-        </li>    
-    {% endif %}
+{% if session.user_id == null %}
+<li class="nav-item">
+    <a class="nav-link" href="/">Back to front page</a>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        Project Info
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+        <a class="dropdown-item" href="/docs/aboutus">About Us</a>
+        <a class="dropdown-item" href="/docs/feedback">Leave Feedback</a>
+        <a class="dropdown-item" href="https://github.com/heidi-holappa/volunteer-management-application"
+            target="_blank">Project at GitHub</a>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/login">Login</a>
+</li>
+{% endif %}
 {% endblock %}
 
 

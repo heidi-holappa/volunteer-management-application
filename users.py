@@ -1,5 +1,6 @@
 from db import db
 from flask import session
+import secrets
 from werkzeug.security import check_password_hash, generate_password_hash
 
 def login(username, password):
@@ -16,10 +17,12 @@ def login(username, password):
         if check_password_hash(user.password, password):
             session["user_id"] = user.user_id
             session["role"] = user.role
+            session["csrf_token"] = secrets.token_hex(16)
             return True
         else:
             return False
     
+
 def create_admin(username: str, hash_value: str):
     """Create an admin level account"""
     try:
@@ -107,6 +110,23 @@ def validate_userinfo(params: list, qualifications: list):
         return [False, "Please select \
                 atleast one qualification."]
     return [True, ""]
+
+def update_password(old: str, new: str, new_confirmed: str):
+    validate_pw = password_valid(new, new_confirmed)
+    if not validate_pw[0]:
+        validate_pw[1]= validate_pw[1] + ' [Issue regards new password]'
+        return validate_pw
+    u_id = get_user_id()
+    sql = "SELECT password FROM tsohaproject.password \
+        WHERE user_id=:id"
+    old_fetched = db.session.execute(sql, {"id":u_id}).fetchone()[0]
+    if check_password_hash(old, old_fetched):
+        return [False, "Current password was incorrect.Try again."]
+    hash_value = generate_password_hash(new)
+    sql = "UPDATE tsohaproject.password SET password=:password WHERE user_id=:id"
+    db.session.execute(sql, {"password":hash_value, "id":u_id})
+    db.session.commit()
+    return [True, "Password updated successfully"]
 
 def create_useraccount(params: list, qualifications: list, hash_value: str):
     """Try is used here because one of the tables (users) has an unique column (username)."""
