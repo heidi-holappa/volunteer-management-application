@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
-{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -10,20 +10,18 @@
 
 <div class="container" style="margin-top:30px">
     <h1>Training modules</h1>
-    <p>On this page you can add and manage training modules. Use the form below to submit new training modules. Training needs to have a name and a description.</p>
+    <p>On this page you can add and manage training modules. Use the form below to submit new training modules. Training
+        needs to have a name and a description.</p>
     {% if show is sameas true %}
     {% if error is sameas true %}
     <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
     {% else %}
     <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
     {% endif %}
-    {% else %}
     {% endif %}
 </div>
 
 <div class="container">
-
-
 
 </div>
 
@@ -49,7 +47,8 @@
 
 <div class="container">
     <h2>Current training modules</h2>
-    <p>Below you can see submitted training modules. Volunteers can take active training modules. Modules can be deactivated and activated.</p>
+    <p>Below you can see submitted training modules. Volunteers can take active training modules. Modules can be
+        deactivated and activated.</p>
     <table class="table">
         <thead>
             <tr>

@@ -3,9 +3,9 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
 
-{% block adminnav %}{% if role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
-{% block volunteer_nav %}{% if role == 'volunteer' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% endif %}{% endblock%}
+{% block volunteer_nav %}{% if session.role == 'volunteer' %}{{ super() }}{% endif %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
 

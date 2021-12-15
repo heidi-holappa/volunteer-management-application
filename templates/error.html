@@ -2,37 +2,31 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block adminnav %}{% if (role == 'admin') %}{{ super() }}{% else %}{% endif %}{% endblock %}
-{% block coordinatornav %}{% if (role == 'coordinator') %}{{ super() }}{% else %}{% endif %}{% endblock %}
-{% block volunteer_nav %}
-    {% if (role == 'volunteer') %}
-        {{ super() }}
-    {% else %}
-    {% endif %}
+{% block adminnav %}{% if (session. role == 'admin') %}{{ super() }}{% endif %}{% endblock %}
+{% block coordinatornav %}{% if (session.role == 'coordinator') %}{{ super() }}{% endif %}{% endblock %}
+{% block volunteer_nav %}{% if (session.role == 'volunteer') %}{{ super() }}{% endif %}
 {% endblock%}
 {% block custom_navitems %}
-    {% if logged is sameas true %}
-    {% else %}
-    <li class="nav-item">
-        <a class="nav-link" href="/">Back to front page</a>
-    </li>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Project Info
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="/docs/aboutus">About Us</a>
-            <a class="dropdown-item" href="/docs/feedback">Leave Feedback</a>
-            <a class="dropdown-item"
-                href="https://github.com/heidi-holappa/volunteer-management-application"
-                target="_blank">Project at GitHub</a>
-        </div>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/login">Login</a>
-    </li>   
-    {% endif %}
+{% if session.user_id == null %}
+<li class="nav-item">
+    <a class="nav-link" href="/">Back to front page</a>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        Project Info
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+        <a class="dropdown-item" href="/docs/aboutus">About Us</a>
+        <a class="dropdown-item" href="/docs/feedback">Leave Feedback</a>
+        <a class="dropdown-item" href="https://github.com/heidi-holappa/volunteer-management-application"
+            target="_blank">Project at GitHub</a>
+    </div>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="/login">Login</a>
+</li>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -40,11 +34,23 @@
         <div class="container" style="margin-top:30px">
             <div class="row">
                 <div class="col-sm-8">
-                    <h1>General Error Page</h1>
+                    <h1>Something went wrong</h1>
                     <br>    
                     <p>Dear user, <br><br> you have landed here because of an error. Below you see details of the error encountered and instructions on how to proceed. We apologize for the inconvenience.</p>
 
-                    <div class="alert alert-danger" role="alert">{{ error }}</div>
+                    <div class="alert alert-danger" role="alert">
+                        <b>Error message: </b>{{ error }}
+                        {% if details != "" %}
+                        <br><br>
+                        <b>Details: </b> 
+                        <br>{{ details }}
+                        <br>Timestamp: {{ error_time }}
+                        {% endif %}
+                        {% if instructions != "" %}
+                        <br><br><b>Additional intructions: </b><br>{{ instructions }}
+                        {% endif%}
+                    </div>
+                   
                 </div>
             </div>
         </div>

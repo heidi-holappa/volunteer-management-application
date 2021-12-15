@@ -1,9 +1,6 @@
-from app import app
-from os import getenv
 import os
 from flask_sqlalchemy import SQLAlchemy
-# from flask import session
-from sqlalchemy.sql.elements import False_, Null
+from app import app
 
 uri = os.getenv("DATABASE_URL")  # or other relevant config var
 if uri.startswith("postgres://"):

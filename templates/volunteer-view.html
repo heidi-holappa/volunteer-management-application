@@ -8,101 +8,114 @@
 
 {% block content %}
 
-        <div class="container" style="margin-top:30px">
+<div class="container" style="margin-top:30px">
+    <div class="row">
+        <div class="col-sm-8">
+            <h1>Volunteer view</h1>
+
+
+            <br>
+            <p>Hello {{ user.firstname }}, welcome to the volunteer app!.</p>
+
+            <p>Would you like to submit a new event?</p>
+            {% if error_msg != "" %}
+            <div class="alert alert-warning">
+                <b>Submission failed:</b> {{ error_msg }}
+            </div>
+            {% endif %}
+
+            <form action="/submit-message-volunteer/{{ user.user_id }}" method="POST">
+                <table>
+                    <tr>
+                        <td>Choose date:</td>
+                        <td>
+                            <input class="form-control" id="date" placeholder="Enter date of activity" type='date' name='date' required/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Select activity:</td>
+                        <td>
+                            <select class="form-select form-control-sm" name='doneactivity' required>
+                                <option value="" selected disabled>Choose activity</option>
+                                {% for activity in activities %}
+                                <option value="{{ activity.task_id }}">{{ activity.task }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Description:</td>
+                        <td><textarea class="form-control" id='content' placeholder="Write a summary of activity"
+                                type='text' name='content' rows="4" cols="50" minlength="10" required></textarea></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right">
+                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <h2>My activities</h2>
             <div class="row">
-                <div class="col-sm-8">
-                    <h1>Volunteer view</h1>
-
-
-                    <br>
-                    <p>Hello {{ user.firstname }}, welcome to the volunteer app!.</p>
-
-                    <p>Would you like to submit a new event?</p>
-
-                    <form action="/submit-message-volunteer/{{ user.user_id }}" method="POST">
-                        <table>
-                            <tr>
-                                <td>Choose date:</td>
-                                <td><input class="form-control" id="date" placeholder="Enter date of activity" type='date' name='date' /></td>
-                            </tr>
-                            <tr>
-                                <td>Select activity:</td>
-                                <td>
-                                    <select class="form-select form-control-sm" name='doneactivity'>
-                                        <option value="" selected disabled>Choose activity</option>
-                                        {% for activity in activities %}
-                                            <option value="{{ activity.task_id }}">{{ activity.task }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Description:</td>
-                                <td><textarea  class="form-control" id='content' placeholder="Write a summary of activity" type='text' name='content' rows="4" cols="50"></textarea></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" align ="right"><input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" /></td>
-                            </tr>
-                        </table>
+                <div class="col-sm-6">
+                    {% if show_previous is sameas true %}
+                    <form action="/volunteer-view/{{ offset - 1 }}" method='GET'>
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
                     </form>
-
-                    <h2>My activities</h2>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            {% if show_previous is sameas true %}
-                            <form action="/volunteer-view/{{ offset - 1 }}" method='GET'>
-                                <input type="hidden" name="query" value="{{ query }}">
-                                <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
-                            </form>
-                            {% else %}
-                            {% endif %}
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            {% if show_next is sameas true %}
-                            <form action="/volunteer-view/{{ offset + 1 }}" method='GET'>
-                                <input type="hidden" name="query" value="{{ query }}">
-                                <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
-                            </form>
-                            {% else %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% if nomessages is sameas false %} 
-                        
-                        {% for message in messages %}  
-                        
-                            {% if message.role=='volunteer' %}
-                                <div class="alert alert-primary">
-                                    <b>Date: </b>{{ message.activity_date }}<br>
-                                    <b>Activity: </b>{{ message.task }}<br>
-                                    <br>
-                                    <b>Content: </b>{{ message.content }}
-                                </div>
-                            {% else %}
-                                <div class="alert alert-dark">
-                                    <b>Reply: </b><br>
-                                    <b>Date: </b>{{ message.activity_date }}<br>
-                                    <b>Sender: </b> {{ message.username }}<br>
-                                    <br>
-                                    <b>Content: </b>{{ message.content }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        
                     {% else %}
                     {% endif %}
-
-                    <div class="alert alert-warning" role="alert">
-                        <b>To-Do: </b>
-                        <ul>
-                            <li>If time: Volunteers have an opportunity to click a checkbox indicating they want a reply to a sent message.</li>
-                            <li><b>Fix bug: </b>Message can be sent multiple times in Heroku by cliking submit-button more than once.</li>
-                        </ul>
-                    </div>
-    
-
+                </div>
+                <div class="col-sm-6 text-right">
+                    {% if show_next is sameas true %}
+                    <form action="/volunteer-view/{{ offset + 1 }}" method='GET'>
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
+                    </form>
+                    {% else %}
+                    {% endif %}
                 </div>
             </div>
+            {% if nomessages is sameas false %}
+
+            {% for message in messages %}
+
+            {% if message.role=='volunteer' %}
+            <div class="alert alert-primary">
+                <b>Date: </b>{{ message.activity_date }}<br>
+                <b>Activity: </b>{{ message.task }}<br>
+                <br>
+                <b>Content: </b>{{ message.content }}
+            </div>
+            {% else %}
+            <div class="alert alert-dark">
+                <b>Reply: </b><br>
+                <b>Date: </b>{{ message.activity_date }}<br>
+                <b>Sender: </b> {{ message.username }}<br>
+                <br>
+                <b>Content: </b>{{ message.content }}
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            {% else %}
+            {% endif %}
+
+            <div class="alert alert-warning" role="alert">
+                <b>To-Do: </b>
+                <ul>
+                    <li>If time: Volunteers have an opportunity to click a checkbox indicating they want a reply to a
+                        sent message.</li>
+                    <li><b>Fix bug: </b>Message can be sent multiple times in Heroku by cliking submit-button more than
+                        once.</li>
+                </ul>
+            </div>
+
+
         </div>
+    </div>
+</div>
 
 {% endblock %}
