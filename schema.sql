@@ -86,7 +86,9 @@ CREATE TABLE "tsohaproject".MESSAGES (
   "task_id" integer,
   "activity_date" date,
   "send_date" timestamp,
-  "content" varchar
+  "title" varchar,
+  "content" varchar,
+  "reply_request" boolean
 );
 
 CREATE TABLE "tsohaproject".PASSWORD (

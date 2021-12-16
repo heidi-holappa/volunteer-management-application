@@ -3,7 +3,6 @@ from flask import render_template, request
 from datetime import datetime, timezone
 import hrqueries, users
 
-
 @app.errorhandler(404)
 def not_found(e):
     """Shown when user tries to access a path that does not exist. Logs url, user_id"""
@@ -21,7 +20,6 @@ def forbidden(e):
         Contact system administrator for more support."
     return render_template("error.html", error="The content you tried to access is forbidden", 
     error_time=datetime.now(timezone.utc), details=e, instructions=instructions)
-
 
 def error(description):
     """Render Error view"""

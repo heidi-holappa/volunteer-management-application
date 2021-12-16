@@ -18,6 +18,8 @@ def login(username, password):
             session["user_id"] = user.user_id
             session["role"] = user.role
             session["csrf_token"] = secrets.token_hex(16)
+            session["validation_error"] = False
+            session["success"] = False
             return True
         else:
             return False

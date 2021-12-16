@@ -23,45 +23,52 @@
                 <b>Submission failed:</b> {{ error_msg }}
             </div>
             {% endif %}
+            {% if success_msg != "" %}
+            <div class="alert alert-success">
+                <b>Success: </b> {{ success_msg }}
+            </div>
+            {% endif %}
 
             <form action="/submit-message-volunteer/{{ user.user_id }}" method="POST">
-                <table>
-                    <tr>
-                        <td>Choose date:</td>
-                        <td>
-                            <input class="form-control" id="date" placeholder="Enter date of activity" type='date' name='date' required/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Select activity:</td>
-                        <td>
-                            <select class="form-select form-control-sm" name='doneactivity' required>
-                                <option value="" selected disabled>Choose activity</option>
-                                {% for activity in activities %}
-                                <option value="{{ activity.task_id }}">{{ activity.task }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Description:</td>
-                        <td><textarea class="form-control" id='content' placeholder="Write a summary of activity"
-                                type='text' name='content' rows="4" cols="50" minlength="10" required></textarea></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" align="right">
-                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
-                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        </td>
-                    </tr>
-                </table>
+                <div class="form-group mb-3">
+                    <label for="date">Choose date</label>
+                    <input class="form-control" id="date" placeholder="Enter date of activity" type='date' name='date' required/>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="activity">Select activity</label>
+                    <select class="form-select form-control-sm" name='doneactivity' required>
+                        <option value="" selected disabled>Choose activity</option>
+                        {% for activity in activities %}
+                        <option value="{{ activity.task_id }}">{{ activity.task }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="title">Title: </label>
+                    <input class="form-control" id="title" placeholder="Write title" type='text' name='title' required/>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="content">Description: </label>
+                    <textarea class="form-control" id='content' placeholder="Write a summary of activity"
+                                type='text' name='content' rows="4" cols="50" minlength="10" required></textarea>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="request-reply" name="request-reply">
+                    <label class="form-check-label" for="request-reply">
+                      I want a reply from a coordinator
+                    </label>
+                </div>
+                <div class="mb-3 text-end">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
             </form>
 
             <h2>My activities</h2>
             <div class="row">
                 <div class="col-sm-6">
                     {% if show_previous is sameas true %}
-                    <form action="/volunteer-view/{{ offset - 1 }}" method='GET'>
+                    <form action="/volunteer-view/{{ offset - 1 }}" method='GET' class="text-start">
                         <input type="hidden" name="query" value="{{ query }}">
                         <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
                     </form>
@@ -70,7 +77,7 @@
                 </div>
                 <div class="col-sm-6 text-right">
                     {% if show_next is sameas true %}
-                    <form action="/volunteer-view/{{ offset + 1 }}" method='GET'>
+                    <form action="/volunteer-view/{{ offset + 1 }}" method='GET' class="text-end">
                         <input type="hidden" name="query" value="{{ query }}">
                         <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
                     </form>
@@ -106,8 +113,6 @@
             <div class="alert alert-warning" role="alert">
                 <b>To-Do: </b>
                 <ul>
-                    <li>If time: Volunteers have an opportunity to click a checkbox indicating they want a reply to a
-                        sent message.</li>
                     <li><b>Fix bug: </b>Message can be sent multiple times in Heroku by cliking submit-button more than
                         once.</li>
                 </ul>

@@ -201,16 +201,10 @@ SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.sen
         FROM tsohaproject.users INNER JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks ON (messages.task_id = tasks.task_id) 
         ORDER BY activity_date DESC, thread_id, msg_id ASC;
 
-
-
-
-
 SELECT currentactivity.activity_id AS a_id, activitylevel.level AS level, currentactivity.level_date AS a_date 
 FROM tsohaproject.users LEFT JOIN tsohaproject.currentactivity ON users.user_id = currentactivity.user_id LEFT JOIN tsohaproject.activitylevel ON currentactivity.activity_id =activitylevel.activity_id 
 WHERE currentactivity.user_id=7
 ORDER BY a_date DESC LIMIT 1
-
-
 
 SELECT user_id, firstname, lastname
 FROM tsohaproject.users LEFT JOIN tsohaproject.messages ON users.user_id = volunteer_id 

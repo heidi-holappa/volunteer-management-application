@@ -1,7 +1,7 @@
-import re
+# import re
 from app import app
 from datetime import datetime, date, timezone
-from flask import Flask
+# from flask import Flask
 from flask import redirect, render_template, request, session, abort
 from werkzeug.security import generate_password_hash
 import users, hrqueries, messages, error_handlers
@@ -242,7 +242,6 @@ def submit_edit_account():
     new_password = request.form["password1"]
     retype_new_password = request.form["password2"]
     change_password = bool(len(old_password) != 0) or bool(len(new_password) != 0) or bool(len(retype_new_password) != 0)
-    print(change_password)
     if change_password:
         try_update = users.update_password(old_password, new_password, retype_new_password)
         if not try_update[0]:
@@ -319,11 +318,9 @@ def edituser(u_id):
         user = hrqueries.get_userinfo(u_id)
         qualifications = hrqueries.get_qualifiations(u_id)
         activity = hrqueries.get_current_activity_level(u_id)
-        print(activity)
         return render_template("edit-user.html", user=user, 
             qualifications=qualifications, activity=activity)
     return render_template("edit-user.html")
-
 
 @app.route("/view-activities/<int:set_offset>", methods=["GET","POST"])
 def supervisor_view_activities(set_offset):
@@ -386,21 +383,23 @@ def reply_msg(m_id):
         error_msg = "Reply must be at least 10 characters long."
     return render_template("reply-msg.html", id=m_id, message=message, error_msg=error_msg)
 
-@app.route("/submit-reply/<int:u_id>", methods=["POST"])
-def submit_reply(u_id):
+@app.route("/submit-reply/<int:m_id>", methods=["POST"])
+def submit_reply(m_id):
     """Submit reply"""
     if session["csrf_token"] != request.form["csrf_token"]:
         return abort(403)
     if len(request.form["content"]) < 10:
         session["validation_error"]=True
-        return redirect("/reply-msg/" + str(u_id))
-    volunteer_id = messages.get_op_id(u_id)
+        return redirect("/reply-msg/" + str(m_id))
+    volunteer_id = messages.get_op_id(m_id)
     sender_id = users.get_user_id()
-    thread_id = u_id
+    thread_id = m_id
+    if messages.get_reply_requested(m_id):
+        messages.remove_reply_request(m_id)
     task_id = request.form["task_id"]
     content = request.form["content"]
     msg_sent = datetime.now(timezone.utc)
-    msg_sent_date = messages.get_op_date(u_id)
+    msg_sent_date = messages.get_op_date(m_id)
     new_reply = [thread_id, volunteer_id, sender_id, task_id, msg_sent, content, msg_sent_date]    
     messages.submit_reply(new_reply)
     return redirect("/view-activities/0")
@@ -435,7 +434,6 @@ def training_submission_handling():
                     trainings=current_trainings)
     return render_template("add-training-module.html", show=True, error=False, 
             message="New module successfully added.", trainings=current_trainings)
-
 
 @app.route("/training-active/<int:isactive>/<int:t_id>")
 def training_active(isactive: int, t_id: int):
@@ -481,6 +479,10 @@ def volunteerview(set_offset):
     if not users.is_volunteer():
         return abort(403)
     error_msg=""
+    success_msg=""
+    if session.get('success'):
+        session["success"]=False
+        success_msg="Message submitted"
     if session.get("validation_error", 0):
         session["validation_error"] = False
         error_msg="Please carefully fill all fields"
@@ -498,7 +500,7 @@ def volunteerview(set_offset):
     return render_template("volunteer-view.html", user=user, 
         activities=activities, messages=volunteer_messages, nomessages=nomessages, 
             show_previous=show_previous, show_next=show_next, offset=set_offset,
-            error_msg=error_msg)
+            error_msg=error_msg, success_msg=success_msg)
 
 @app.route("/submit-message-volunteer/<int:u_id>", methods=["POST"])
 def submit_message_volunteer(u_id):
@@ -508,14 +510,17 @@ def submit_message_volunteer(u_id):
     if not users.is_volunteer():
         return abort(403)
     if len(request.form['date']) == 0 or len(request.form['doneactivity']) == 0 \
-        or len(request.form['content']) < 10:
+        or len(request.form['content']) < 10 or len(request.form['title']) == 0:
         session["validation_error"] = True
         return redirect("/volunteer-view/0")
     message = {"activity_date":request.form["date"], 
         "sender_id":u_id, 
         "volunteer_id":u_id, 
         "task_id":int(request.form["doneactivity"]), 
+        "title": request.form["title"],
         "content": request.form["content"], 
-        "msg_sent":datetime.now(timezone.utc)}
+        "msg_sent":datetime.now(timezone.utc), 
+        "reply_request": bool("request-reply" in request.form)}
     messages.new_message(message)
+    session["success"] = True
     return redirect("/volunteer-view/0")

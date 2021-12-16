@@ -70,7 +70,7 @@
             {% endif %}
 
             <div class="row">
-                <div class="col-sm-4">
+                <div class="col-sm-4 text-start">
                     {% if show_previous is sameas true %}
                     <form action="/view-activities/{{ offset - 1 }}" method='GET'>
                         <input type="hidden" name="query" value="{{ query }}">
@@ -98,9 +98,13 @@
                 <tr class="table-primary">
                     <td colspan="2">
                         <div>
+                            <h3>{{ message.title }} </h3><br>
                             <b>Sent by: </b> {{ message.firstname }} {{ message.lastname }} <br>
                             <b>Task: </b> {{ message.task }}
                             <b>Date of activity: </b> {{ message.activity_date }} <br>
+                            {% if message.reply_request is sameas true %}
+                            <span class="text-danger">{{ message.firstname}} has requested a reply</span><br>
+                            {% endif %}
                             <b>Message sent: </b> {{ message.send_date  }} <br>
                             <br>
                             {{ message.content }}
@@ -130,7 +134,7 @@
             <p>There are no messages.</p>
             {% endif %}
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-6 text-start">
                     {% if show_previous is sameas true %}
                     <form action="/view-activities/{{ offset - 1 }}" method='GET'>
                         <input type="hidden" name="query" value="{{ query }}">
@@ -139,11 +143,11 @@
                     {% else %}
                     {% endif %}
                 </div>
-                <div class="col-sm-6 text-right">
+                <div class="col-sm-6 text-end">
                     {% if show_next is sameas true %}
                     <form action="/view-activities/{{ offset + 1 }}" method='GET'>
                         <input type="hidden" name="query" value="{{ query }}">
-                        <input class="btn btn-link" id="previous" name="previous" type="submit" value="Next" />
+                        <input class="btn btn-link" id="previous" name="next" type="submit" value="Next" />
                     </form>
                     {% else %}
                     {% endif %}

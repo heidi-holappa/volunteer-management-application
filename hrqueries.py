@@ -51,16 +51,6 @@ def submit_account_edit(newinfo: list):
 
 def search_userlist(u_query: str, role: str):
     """ Return searched string from columns firstname, lastname, email"""
-    # sql = "SELECT users.user_id, users.role, users.lastname, \
-    #     users.firstname, users.username, users.email, \
-    #     users.phone, startdate, COUNT(messages.sender_id) AS activitycounter \
-    #     FROM (SELECT user_id, lastname || ' ' || firstname || ' ' || email \
-    #     AS document FROM tsohaproject.users WHERE role='volunteer') as subset \
-    #     LEFT JOIN tsohaproject.users ON (subset.user_id = users.user_id) \
-    #     LEFT JOIN tsohaproject.messages ON (users.user_id = messages.sender_id) \
-    #     WHERE role='volunteer' AND isactive='true' \
-    #     AND LOWER(document) LIKE LOWER(:query) \
-    #     GROUP BY users.user_id"
     sql = "SELECT users.user_id, users.role, users.lastname, users.firstname, \
         users.username, users.email, users.phone, startdate, \
         COUNT(messages.sender_id) AS activitycounter, user_id, \
@@ -142,15 +132,8 @@ def get_report_data():
     result['active_loans'] = active_loans.fetchall()
     return result
     
-
-
 def get_qualifiations(u_id):
     """Return qualifications"""
-    # sql = "SELECT tasks.task_id, tasks.task  \
-    # FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification \
-    # ON users.user_id = volunteerqualification.user_id \
-    # LEFT JOIN tsohaproject.tasks on volunteerqualification.task_id = tasks.task_id \
-    # WHERE users.user_id=:id"
     sql = "SELECT tasks.task, tasks.task_id, CASE \
         WHEN tasks.task_id IN (SELECT tasks.task_id \
         FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification \
@@ -308,18 +291,6 @@ def add_training_participation(training_info: list):
     "user_id":training_info[1], "training_date":training_info[2]})
     db.session.commit()
     return
-
-# def get_currentactivity(u_id):
-#     """Return selected users activity"""
-#     sql = "SELECT currentactivity.user_id, currentactivity.level_date, activitylevel.level \
-#         FROM tsohaproject.currentactivity LEFT JOIN tsohaproject.activitylevel \
-#         ON (currentactivity.activity_id = activitylevel.activity_id) \
-#         WHERE user_id =:id \
-#         ORDER BY level_date DESC \
-#         LIMIT 1"
-#     result = db.session.execute(sql, {"id":u_id})
-#     currectactivity = result.fetchone()
-#     return currectactivity
 
 def log_mark(log: list):
     sql = "INSERT INTO tsohaproject.applog (user_id, timestamp, description) \
