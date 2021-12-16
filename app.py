@@ -9,3 +9,4 @@ app.secret_key = getenv("SECRET_KEY")
 
 import routes
 import error_handlers
+import info_routes

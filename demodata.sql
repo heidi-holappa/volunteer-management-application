@@ -35,8 +35,8 @@ INSERT INTO tsohaproject.volunteerqualification (user_id, task_id) VALUES (2,4);
 INSERT INTO tsohaproject.volunteerqualification (user_id, task_id) VALUES (3,1);
 INSERT INTO tsohaproject.volunteerqualification (user_id, task_id) VALUES (3,3);
 
-INSERT INTO tsohaproject.currentactivity (user_id, activity_id, level_date) VALUES (1,4,'11-11-2021');
-INSERT INTO tsohaproject.currentactivity (user_id, activity_id, level_date) VALUES (2,4,'12-7-2021');
+INSERT INTO tsohaproject.currentactivity (user_id, activity_id, level_date) VALUES (1,3,'11-11-2021');
+INSERT INTO tsohaproject.currentactivity (user_id, activity_id, level_date) VALUES (2,3,'12-7-2021');
 
 /* Some generic activities - volunteers */
 Parent helpline:
@@ -119,7 +119,7 @@ ORDER BY messages.activity_date DESC
 export FLASK_ENV=development && flask run
 postgres
 psql
-
+git ls-files | grep '\.py' | xargs wc -l
 
 /* Fixed message query */
 SELECT messages.msg_id, messages.thread_id, messages.activity_date, messages.send_date, messages.content, tasks.task, users.username, users.role, users.lastname, users.firstname 

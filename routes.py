@@ -76,7 +76,7 @@ def createadmin():
 def view_volunteers():
     """Check validation and fetch userinformation"""
     if not users.is_coordinator():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     volunteer_info = hrqueries.get_active_user_list('volunteer')
     return render_template("users.html", count=len(volunteer_info), users=volunteer_info,
         volunteer_view = True)
@@ -85,7 +85,7 @@ def view_volunteers():
 def view_coordinators():
     """Check validation and fetch userinformation"""
     if not users.is_admin():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     coordinator_info = hrqueries.get_active_user_list('coordinator')
     return render_template("users.html", count=len(coordinator_info), users=coordinator_info,
         volunteer_view = False)
@@ -94,7 +94,7 @@ def view_coordinators():
 def search_volunteers():
     """Search volunteers by firstname, lastname, email"""
     if not users.is_coordinator():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     query = request.args["query"]
     content = hrqueries.search_userlist(query, 'volunteer')
     nousers = bool(len(content) == 0)
@@ -105,7 +105,7 @@ def search_volunteers():
 def search_coordinators():
     """Search coordinators by firstname, lastname, email"""
     if not users.is_admin():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     query = request.args["query"]
     content = hrqueries.search_userlist(query, 'coordinator')
     nousers = bool(len(content) == 0)
@@ -115,7 +115,7 @@ def search_coordinators():
 @app.route("/reporting", methods=["GET"])
 def reporting():
     if not users.is_admin():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     report_data = hrqueries.get_report_data()
     return render_template("reporting.html", data = report_data)
 
@@ -195,7 +195,7 @@ def update_user(u_id):
 def viewuser(u_id):
     """Render singe user's informationpage"""
     if not users.is_coordinator():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     user = hrqueries.get_userinfo(u_id)
     qualifications = hrqueries.get_qualifiations(u_id)
     currentactivity = hrqueries.get_current_activity_level(u_id)
@@ -213,7 +213,7 @@ def view_account():
     """Render logged in user's informationpage"""
     u_id = users.get_user_id()
     if u_id == 0:
-        return error_handlers.error("notauthorized")
+        return abort(403)
     user = hrqueries.get_userinfo(u_id)
     qualifications = hrqueries.get_qualifiations(u_id)
     currentactivity = hrqueries.get_current_activity_level(u_id)
@@ -227,7 +227,7 @@ def edit_account():
     """Render page for editing basic personal information"""
     u_id = users.get_user_id()
     if u_id == 0:
-        return error_handlers.error("notauthorized")
+        return abort(403)
     user = hrqueries.get_userinfo(u_id)
     return render_template("edit-account.html", user=user, show_msg=False, msg="")
 
@@ -237,7 +237,7 @@ def submit_edit_account():
     u_id = users.get_user_id()
     if u_id == 0 or session["csrf_token"] != request.form["csrf_token"]:
         #FIX THIS - NEEDS TO SHOW ERROR ON THE SAME PAGE OR DOES IT? ASK ABOUT THIS! 
-        return error_handlers.error("notauthorized")
+        return abort(403)
     old_password = request.form["password0"]
     new_password = request.form["password1"]
     retype_new_password = request.form["password2"]
@@ -257,28 +257,34 @@ def submit_edit_account():
 @app.route("/return-loan/<int:tool_id>", methods=["POST"])
 def return_loan(tool_id: int):
     if session["csrf_token"] != request.form["csrf_token"]:
-        return error_handlers.error("notauthorized")
+        return abort(403)
     user_id = hrqueries.loan_return(tool_id)
     return redirect("../view-user/" + str(user_id))
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
 def add_training(u_id):
     if not users.is_coordinator():
-        return error_handlers.error("notauthorized")
+        return abort(403)
+    error_msg=""
     if request.method == "GET":
+        if session.get('validation_error'):
+            session['validation_error'] = False
+            error_msg = "One or more fields were empty. Please be sure to fill in all fields."
         user = hrqueries.get_userinfo(u_id)
         trainings = hrqueries.get_possible_trainings()
         return render_template("add-training.html", user=user, \
-            trainings=trainings, notification="")
+            trainings=trainings, notification="", error_msg=error_msg)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
-        if not ('training_id' in request.form and 'date' in request.form):
-            return error_handlers.error("missing_value")
+            return abort(403)
+        if not ('training_id' in request.form and len(request.form['date']) != 0):
+            session['validation_error'] = True
+            return redirect("/add-training/" + str(u_id))
         training_id = request.form["training_id"]
         participation_date = request.form["date"]
         if len(training_id) == 0 or len(participation_date) == 0:
-            return error_handlers.error("missing_value")
+            session['validation_error'] = True
+            return redirect("/add-training/" + str(u_id))
         training = [training_id, u_id, participation_date]
         hrqueries.add_training_participation(training)
         return redirect("../view-user/" + str(u_id))
@@ -286,13 +292,20 @@ def add_training(u_id):
 @app.route("/add-loan/<int:u_id>", methods=["GET", "POST"])
 def add_loaned_tool(u_id):
     if request.method == "GET":
+        error_msg=""
+        if session.get('validation_error'):
+            session['validation_error'] = False
+            error_msg = "One or more fields were empty. Please be sure to fill in all fields."
         user = hrqueries.get_userinfo(u_id)
         tools = hrqueries.get_available_tools()
         return render_template("add-loan.html", user=user, 
-            tools=tools)
+            tools=tools, error_msg=error_msg)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
+            return abort(403)
+        if not ('tool_id' in request.form and len(request.form['date']) != 0):
+            session['validation_error'] = True
+            return redirect("/add-loan/" + str(u_id))
         loaned_tool = [request.form["tool_id"], u_id, request.form["date"]]
         hrqueries.add_loan(loaned_tool)
         return redirect("../view-user/" + str(u_id))
@@ -301,7 +314,7 @@ def add_loaned_tool(u_id):
 def edituser(u_id):
     """Render edit-user page"""
     if not users.is_coordinator():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     if request.method == "GET":
         user = hrqueries.get_userinfo(u_id)
         qualifications = hrqueries.get_qualifiations(u_id)
@@ -329,7 +342,7 @@ def supervisor_view_activities(set_offset):
         filter_msg = ""
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
+            return abort(403)
         if 'sender' in request.form:
             if request.form['sender'] == 'showall':
                 filter = 'showall'
@@ -338,7 +351,7 @@ def supervisor_view_activities(set_offset):
                 filter=u_id
                 filter_msg = f'Showing messages for {users.get_name(u_id)}'
     if not users.is_coordinator():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     limit = 5
     offset = set_offset * 5
     if 'query' in request.args and len(request.args["query"]) != 0:
@@ -377,7 +390,7 @@ def reply_msg(m_id):
 def submit_reply(u_id):
     """Submit reply"""
     if session["csrf_token"] != request.form["csrf_token"]:
-        return error_handlers.error("notauthorized")
+        return abort(403)
     if len(request.form["content"]) < 10:
         session["validation_error"]=True
         return redirect("/reply-msg/" + str(u_id))
@@ -400,7 +413,7 @@ def add_new_training():
             message="", error=False)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
+            return abort(403)
         if not ('training' in request.form and 'description' in request.form):
             error_handlers.error("missing_values")
         new_training = request.form["training"]
@@ -437,7 +450,7 @@ def add_new_tool():
         return render_template("add-tool.html", show=False, tools=tools)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
+            return abort(403)
         if len(request.form["tool"]) == 0 or len(request.form["serialnumber"])== 0:
             session["error"] = True
             return redirect("/tool-submission")
@@ -466,7 +479,7 @@ def tool_submission():
 def volunteerview(set_offset):
     """Render volunteer's view"""
     if not users.is_volunteer():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     error_msg=""
     if session.get("validation_error", 0):
         session["validation_error"] = False
@@ -491,9 +504,9 @@ def volunteerview(set_offset):
 def submit_message_volunteer(u_id):
     """This function stores a new message."""
     if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
+            return abort(403)
     if not users.is_volunteer():
-        return error_handlers.error("notauthorized")
+        return abort(403)
     if len(request.form['date']) == 0 or len(request.form['doneactivity']) == 0 \
         or len(request.form['content']) < 10:
         session["validation_error"] = True
@@ -506,35 +519,3 @@ def submit_message_volunteer(u_id):
         "msg_sent":datetime.now(timezone.utc)}
     messages.new_message(message)
     return redirect("/volunteer-view/0")
-
-#INFORMATIONROUTES
-@app.route("/success")
-def success():
-    return render_template("success.html")
-
-@app.route("/docs/aboutus")
-def about_us():
-    """Render About Us view"""
-    return render_template("docs/aboutus.html")
-
-@app.route("/docs/feedback")
-def feedback():
-    """Render feedback view"""
-    return render_template("docs/feedback.html")
-
-@app.route("/submit-feedback", methods=["POST"])
-def submit_feedback():
-    """Handle feedback submissions and render thank you view"""
-    if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
-    content = request.form["content"]
-    fb_date = date.today()
-    if len(content) == 0:
-        return error_handlers.error('missing_value')
-    messages.submit_feedback(fb_date, content)
-    return render_template("/docs/thank-you.html")
-
-
-
-
-
