@@ -98,14 +98,14 @@
                 <tr class="table-primary">
                     <td colspan="2">
                         <div>
-                            <h3>{{ message.title }} </h3><br>
+                            <b>{{ message.title }} </b><br><br>
                             <b>Sent by: </b> {{ message.firstname }} {{ message.lastname }} <br>
-                            <b>Task: </b> {{ message.task }}
-                            <b>Date of activity: </b> {{ message.activity_date }} <br>
+                            <b>Task: </b> {{ message.task }} <br>
+                            <b>Date of activity: </b> {{ message.activity_date.strftime('%d.%m.%Y') }} <br>
                             {% if message.reply_request is sameas true %}
                             <span class="text-danger">{{ message.firstname}} has requested a reply</span><br>
                             {% endif %}
-                            <b>Message sent: </b> {{ message.send_date  }} <br>
+                            <b>Message sent: </b> {{ message.send_date.strftime('%d.%m.%Y %H:%M:%S') }} <br>
                             <br>
                             {{ message.content }}
                             <br><br>
@@ -119,7 +119,7 @@
                     <td>
                         <div class="text-left">
                             <b>Reply by: </b> {{ message.username }} <br>
-                            <b>Sent: </b> {{ message.send_date }} <br>
+                            <b>Sent: </b> {{ message.send_date.strftime('%d.%m.%Y %H:%M:%S') }} <br>
                             <br>
                             {{ message.content }}
                         </div>

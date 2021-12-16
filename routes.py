@@ -367,6 +367,8 @@ def supervisor_view_activities(set_offset):
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
     no_messages = bool(len(fetched_messages) == 0)
+    # for message in fetched_messages:
+    #     print(message[2].strftime('%d.%m.%Y - %H:%M:%S'))
     return render_template("message-view.html", messages=fetched_messages, 
         nomessages=no_messages, show_next=show_next, show_previous=show_previous, 
             offset=set_offset, msg_count=count_messages, active_query=active_query, 

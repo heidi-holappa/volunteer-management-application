@@ -91,15 +91,19 @@
 
             {% if message.role=='volunteer' %}
             <div class="alert alert-primary">
-                <b>Date: </b>{{ message.activity_date }}<br>
+                <b>{{ message.title }}</b><br>
+                <b>Date: </b>{{ message.activity_date.strftime('%d.%m.%Y') }}<br>
                 <b>Activity: </b>{{ message.task }}<br>
+                {% if message.reply_request is sameas true %}
+                <span class="text-danger">You have requested a reply</span><br>
+                {% endif %}
                 <br>
                 <b>Content: </b>{{ message.content }}
             </div>
             {% else %}
             <div class="alert alert-dark">
-                <b>Reply: </b><br>
-                <b>Date: </b>{{ message.activity_date }}<br>
+                <b>Reply </b><br>
+                <b>Date: </b>{{ message.activity_date.strftime('%d.%m.%Y') }}<br>
                 <b>Sender: </b> {{ message.username }}<br>
                 <br>
                 <b>Content: </b>{{ message.content }}
