@@ -76,56 +76,63 @@ def createadmin():
 def view_volunteers():
     """Check validation and fetch userinformation"""
     if not users.is_coordinator():
-        return abort(403)
+        abort(403)
+    rply_requests = messages.check_reply_requests()
     volunteer_info = hrqueries.get_active_user_list('volunteer')
     return render_template("users.html", count=len(volunteer_info), users=volunteer_info,
-        volunteer_view = True)
+        volunteer_view = True, rply_requests=rply_requests)
 
 @app.route("/view-coordinators")
 def view_coordinators():
     """Check validation and fetch userinformation"""
     if not users.is_admin():
-        return abort(403)
+        abort(403)
+    rply_requests = messages.check_reply_requests()
     coordinator_info = hrqueries.get_active_user_list('coordinator')
     return render_template("users.html", count=len(coordinator_info), users=coordinator_info,
-        volunteer_view = False)
+        volunteer_view = False, rply_requests=rply_requests)
 
 @app.route("/search-volunteers")
 def search_volunteers():
     """Search volunteers by firstname, lastname, email"""
     if not users.is_coordinator():
-        return abort(403)
+        abort(403)
+    rply_requests = messages.check_reply_requests()
     query = request.args["query"]
     content = hrqueries.search_userlist(query, 'volunteer')
     nousers = bool(len(content) == 0)
     return render_template("users.html", \
-        users=content, count=len(content) ,nousers=nousers, volunteer_view = True)
+        users=content, count=len(content) ,nousers=nousers, volunteer_view = True, \
+            rply_requests=rply_requests)
 
 @app.route("/search-coordinators")
 def search_coordinators():
     """Search coordinators by firstname, lastname, email"""
     if not users.is_admin():
-        return abort(403)
+        abort(403)
+    rply_requests = messages.check_reply_requests()
     query = request.args["query"]
     content = hrqueries.search_userlist(query, 'coordinator')
     nousers = bool(len(content) == 0)
     return render_template("users.html", \
-        users=content, count=len(content) ,nousers=nousers)
+        users=content, count=len(content) ,nousers=nousers, rply_requests=rply_requests)
 
 @app.route("/reporting", methods=["GET"])
 def reporting():
     if not users.is_admin():
-        return abort(403)
+        abort(403)
     report_data = hrqueries.get_report_data()
-    return render_template("reporting.html", data = report_data)
+    rply_requests = messages.check_reply_requests()
+    return render_template("reporting.html", data = report_data, rply_requests=rply_requests)
 
 @app.route("/add-user", methods=["POST", "GET"])
 def submituser():
     """Check validation, add a new user"""
     if not users.is_coordinator():
-        return abort(403)
+        abort(403)
     if request.method == "GET":
-        return render_template("add-user.html")
+        rply_requests = messages.check_reply_requests()
+        return render_template("add-user.html", rply_requests=rply_requests)
     if request.method == "POST":            
         if 'role' in request.form:
             role = request.form["role"]
@@ -195,7 +202,8 @@ def update_user(u_id):
 def viewuser(u_id):
     """Render singe user's informationpage"""
     if not users.is_coordinator():
-        return abort(403)
+        abort(403)
+    rply_requests = messages.check_reply_requests()
     user = hrqueries.get_userinfo(u_id)
     qualifications = hrqueries.get_qualifiations(u_id)
     currentactivity = hrqueries.get_current_activity_level(u_id)
@@ -206,30 +214,34 @@ def viewuser(u_id):
     else:
         view='view-coordinators'
     return render_template("view-user.html", user=user, qualifications=qualifications, 
-        currentactivity=currentactivity, trainings=trainings, tools=tools, view=view)
+        currentactivity=currentactivity, trainings=trainings, tools=tools, view=view, \
+        rply_requests=rply_requests)
 
 @app.route("/view-account")
 def view_account():
     """Render logged in user's informationpage"""
     u_id = users.get_user_id()
     if u_id == 0:
-        return abort(403)
+        abort(403)
     user = hrqueries.get_userinfo(u_id)
+    rply_requests = messages.check_reply_requests()
     qualifications = hrqueries.get_qualifiations(u_id)
     currentactivity = hrqueries.get_current_activity_level(u_id)
     trainings = hrqueries.get_additionaltrainings(u_id)
     tools = hrqueries.get_loanedtools(u_id)
     return render_template("user-account.html", user=user, qualifications=qualifications, 
-        currentactivity=currentactivity, trainings=trainings, tools=tools)
+        currentactivity=currentactivity, trainings=trainings, tools=tools, rply_requests=rply_requests)
 
 @app.route("/edit-account")
 def edit_account():
     """Render page for editing basic personal information"""
+    rply_requests = messages.check_reply_requests()
     u_id = users.get_user_id()
     if u_id == 0:
-        return abort(403)
+        abort(403)
     user = hrqueries.get_userinfo(u_id)
-    return render_template("edit-account.html", user=user, show_msg=False, msg="")
+    return render_template("edit-account.html", user=user, show_msg=False, msg="", \
+        rply_requests=rply_requests)
 
 @app.route("/submit-edit-account", methods=["POST"])
 def submit_edit_account():
@@ -237,7 +249,7 @@ def submit_edit_account():
     u_id = users.get_user_id()
     if u_id == 0 or session["csrf_token"] != request.form["csrf_token"]:
         #FIX THIS - NEEDS TO SHOW ERROR ON THE SAME PAGE OR DOES IT? ASK ABOUT THIS! 
-        return abort(403)
+        abort(403)
     old_password = request.form["password0"]
     new_password = request.form["password1"]
     retype_new_password = request.form["password2"]
@@ -256,14 +268,14 @@ def submit_edit_account():
 @app.route("/return-loan/<int:tool_id>", methods=["POST"])
 def return_loan(tool_id: int):
     if session["csrf_token"] != request.form["csrf_token"]:
-        return abort(403)
+        abort(403)
     user_id = hrqueries.loan_return(tool_id)
     return redirect("../view-user/" + str(user_id))
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
 def add_training(u_id):
     if not users.is_coordinator():
-        return abort(403)
+        abort(403)
     error_msg=""
     if request.method == "GET":
         if session.get('validation_error'):
@@ -271,11 +283,12 @@ def add_training(u_id):
             error_msg = "One or more fields were empty. Please be sure to fill in all fields."
         user = hrqueries.get_userinfo(u_id)
         trainings = hrqueries.get_possible_trainings()
+        rply_requests = messages.check_reply_requests()
         return render_template("add-training.html", user=user, \
-            trainings=trainings, notification="", error_msg=error_msg)
+            trainings=trainings, notification="", error_msg=error_msg, rply_requests=rply_requests)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return abort(403)
+            abort(403)
         if not ('training_id' in request.form and len(request.form['date']) != 0):
             session['validation_error'] = True
             return redirect("/add-training/" + str(u_id))
@@ -297,11 +310,12 @@ def add_loaned_tool(u_id):
             error_msg = "One or more fields were empty. Please be sure to fill in all fields."
         user = hrqueries.get_userinfo(u_id)
         tools = hrqueries.get_available_tools()
+        rply_requests = messages.check_reply_requests()
         return render_template("add-loan.html", user=user, 
-            tools=tools, error_msg=error_msg)
+            tools=tools, error_msg=error_msg, rply_requests=rply_requests)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return abort(403)
+            abort(403)
         if not ('tool_id' in request.form and len(request.form['date']) != 0):
             session['validation_error'] = True
             return redirect("/add-loan/" + str(u_id))
@@ -313,18 +327,25 @@ def add_loaned_tool(u_id):
 def edituser(u_id):
     """Render edit-user page"""
     if not users.is_coordinator():
-        return abort(403)
+        abort(403)
     if request.method == "GET":
         user = hrqueries.get_userinfo(u_id)
         qualifications = hrqueries.get_qualifiations(u_id)
         activity = hrqueries.get_current_activity_level(u_id)
+        rply_requests = messages.check_reply_requests()
         return render_template("edit-user.html", user=user, 
             qualifications=qualifications, activity=activity)
-    return render_template("edit-user.html")
+    rply_requests = messages.check_reply_requests()
+    return render_template("edit-user.html", rply_requests=rply_requests)
 
 @app.route("/view-activities/<int:set_offset>", methods=["GET","POST"])
 def supervisor_view_activities(set_offset):
-    """View messages as supervisor"""
+    """View reported activities as a supervisor"""
+    
+    if not users.is_coordinator():
+        abort(403)
+    # Check if user wants to filter messages by volunteer name
+    
     if 'sender' in request.args: 
         sender = request.args['sender']
         if sender != 'showall':
@@ -339,59 +360,67 @@ def supervisor_view_activities(set_offset):
         filter_msg = ""
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return abort(403)
+            abort(403)
         if 'sender' in request.form:
             if request.form['sender'] == 'showall':
                 filter = 'showall'
             else:
                 u_id = request.form['sender']
                 filter=u_id
-                filter_msg = f'Showing messages for {users.get_name(u_id)}'
-    if not users.is_coordinator():
-        return abort(403)
+                filter_msg = f'Showing messages for {users.get_name(u_id)}'            
     limit = 5
     offset = set_offset * 5
+    
+    request_filter = False
     if 'query' in request.args and len(request.args["query"]) != 0:
         query = request.args["query"]
         active_query = True
     else:
         query = ""
         active_query = False
-    if filter == 'showall':
+    if 'request-filter-on' in request.form:
+        fetched_messages = messages.fetch_reply_request_messages(limit, offset, query)
+        count_messages = len(fetched_messages)
+        request_filter = True
+    elif filter == 'showall':
         fetched_messages = messages.fetch_all_messages(limit,offset, query)
         count_messages = messages.fetch_message_count(query)
     else: 
         fetched_messages = messages.fetch_volunteer_messages(u_id, limit, offset, query)
         count_messages = messages.fetch_volunteer_message_count(u_id, query)
+    
     fetch_message_senders = messages.fetch_message_senders()
+    
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
     no_messages = bool(len(fetched_messages) == 0)
-    # for message in fetched_messages:
-    #     print(message[2].strftime('%d.%m.%Y - %H:%M:%S'))
+    
+    rply_requests = messages.check_reply_requests()
     return render_template("message-view.html", messages=fetched_messages, 
         nomessages=no_messages, show_next=show_next, show_previous=show_previous, 
             offset=set_offset, msg_count=count_messages, active_query=active_query, 
                 query=query, users=fetch_message_senders, 
-                show=filter, show_msg=filter_msg)
+                show=filter, show_msg=filter_msg, rply_requests=rply_requests, request_filter=request_filter)
 
 @app.route("/reply-msg/<int:m_id>")
 def reply_msg(m_id):
     """Render reply to a message view"""
     message = messages.fetch_selected_message(m_id)
     error_msg = ""
+    rply_requests = messages.check_reply_requests()
     if session.get("validation_error", 0):
-        session["validation_error"]=False
+        session["validation_error"] = False
         error_msg = "Reply must be at least 10 characters long."
-    return render_template("reply-msg.html", id=m_id, message=message, error_msg=error_msg)
+    return render_template("reply-msg.html", id=m_id, message=message, \
+        error_msg=error_msg, rply_requests=rply_requests)
 
 @app.route("/submit-reply/<int:m_id>", methods=["POST"])
 def submit_reply(m_id):
     """Submit reply"""
     if session["csrf_token"] != request.form["csrf_token"]:
-        return abort(403)
+        abort(403)
     if len(request.form["content"]) < 10:
-        session["validation_error"]=True
+        session["validation_error"] = True
         return redirect("/reply-msg/" + str(m_id))
     volunteer_id = messages.get_op_id(m_id)
     sender_id = users.get_user_id()
@@ -410,11 +439,12 @@ def submit_reply(m_id):
 def add_new_training():
     if request.method == "GET":
         current_trainings = hrqueries.get_current_trainings()
+        rply_requests = messages.check_reply_requests()
         return render_template("add-training-module.html", trainings=current_trainings, show=False, 
-            message="", error=False)
+            message="", error=False, rply_requests=rply_requests)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return abort(403)
+            abort(403)
         if not ('training' in request.form and 'description' in request.form):
             error_handlers.error("missing_values")
         new_training = request.form["training"]
@@ -430,27 +460,32 @@ def add_new_training():
 def training_submission_handling():
     current_trainings = hrqueries.get_current_trainings()
     error = session.get("error", 0)
+    rply_requests = messages.check_reply_requests()
     if error:
         return render_template("add-training-module.html", 
                 message="Please fill in all fields.", error=True, show=True, 
-                    trainings=current_trainings)
+                    trainings=current_trainings, rply_requests=rply_requests)
     return render_template("add-training-module.html", show=True, error=False, 
-            message="New module successfully added.", trainings=current_trainings)
+            message="New module successfully added.", trainings=current_trainings, \
+            rply_requests=rply_requests)
 
 @app.route("/training-active/<int:isactive>/<int:t_id>")
 def training_active(isactive: int, t_id: int):
     active = bool(isactive == 1)
     hrqueries.training_set_activity(active, t_id)
-    return redirect("/add-training-module")
+    rply_requests = messages.check_reply_requests()
+    return redirect("/add-training-module", rply_requests=rply_requests)
 
 @app.route("/add-tool", methods=["POST", "GET"])
 def add_new_tool():
     if request.method == "GET":
         tools = hrqueries.get_all_tools()
-        return render_template("add-tool.html", show=False, tools=tools)
+        rply_requests = messages.check_reply_requests()
+        return render_template("add-tool.html", show=False, tools=tools, \
+            rply_requests=rply_requests)
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
-            return abort(403)
+            abort(403)
         if len(request.form["tool"]) == 0 or len(request.form["serialnumber"])== 0:
             session["error"] = True
             return redirect("/tool-submission")
@@ -468,18 +503,20 @@ def tool_active(isactive: int, t_id: int):
 def tool_submission():
     tools = hrqueries.get_all_tools()
     error = session.get("error", 0)
+    rply_requests = messages.check_reply_requests()
     if error:
         return render_template("add-tool.html", tools=tools, show=True, 
-            error=True, message="Please fill in both fields to submit a new tool.")
+            error=True, message="Please fill in both fields to submit a new tool.", \
+                rply_requests=rply_requests)
     return render_template("add-tool.html", tools=tools, show=True, 
-            error=False, message="New tool added successfully.")
+            error=False, message="New tool added successfully.", rply_requests=rply_requests)
 
 #VOLUNTEER ROUTES
 @app.route("/volunteer-view/<int:set_offset>")
 def volunteerview(set_offset):
     """Render volunteer's view"""
     if not users.is_volunteer():
-        return abort(403)
+        abort(403)
     error_msg=""
     success_msg=""
     if session.get('success'):
@@ -507,10 +544,8 @@ def volunteerview(set_offset):
 @app.route("/submit-message-volunteer/<int:u_id>", methods=["POST"])
 def submit_message_volunteer(u_id):
     """This function stores a new message."""
-    if session["csrf_token"] != request.form["csrf_token"]:
-            return abort(403)
-    if not users.is_volunteer():
-        return abort(403)
+    if session["csrf_token"] != request.form["csrf_token"] or not users.is_volunteer():
+            abort(403)
     if len(request.form['date']) == 0 or len(request.form['doneactivity']) == 0 \
         or len(request.form['content']) < 10 or len(request.form['title']) == 0:
         session["validation_error"] = True

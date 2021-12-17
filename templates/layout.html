@@ -32,7 +32,7 @@
                     <a class="nav-link" href="/view-coordinators">View coordinators</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-activities/0">Browse activities</a>
+                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}<span class="align-top text-danger">!</span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
@@ -76,7 +76,7 @@
                     <a class="nav-link" href="/view-volunteers">View volunteers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-activities/0">Browse activities</a>
+                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}<span class="align-top text-danger">!</span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"

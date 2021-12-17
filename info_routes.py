@@ -6,12 +6,14 @@ import error_handlers, messages
 @app.route("/docs/aboutus")
 def about_us():
     """Render About Us view"""
-    return render_template("docs/aboutus.html")
+    rply_requests = messages.check_reply_requests()
+    return render_template("docs/aboutus.html", rply_requests=rply_requests)
 
 @app.route("/docs/feedback")
 def feedback():
     """Render feedback view"""
-    return render_template("docs/feedback.html")
+    rply_requests = messages.check_reply_requests()
+    return render_template("docs/feedback.html", rply_requests=rply_requests)
 
 @app.route("/submit-feedback", methods=["POST"])
 def submit_feedback():
@@ -27,4 +29,5 @@ def submit_feedback():
 
 @app.route("/success")
 def success():
-    return render_template("success.html")
+    rply_requests = messages.check_reply_requests()
+    return render_template("success.html", rply_requests=rply_requests)

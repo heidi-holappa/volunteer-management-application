@@ -13,62 +13,93 @@
         <div class="col-sm-8">
             <h1>Volunteer activity</h1>
             <p>On this page you can read submissions from volunteers and reply those submissions. Volunteers can then
-                see your replies. You can search for messages with strings. Search is not case sensitive. Please not
-                that the search provides all results with a match. Because of that replies and posts before them might
-                not be related to each other while browsing through search results.</p>
+                see your replies. You can search for volunteer messages with strings. Search is not case sensitive. Please note
+                that the search provides only messages by volunteers, not replies to them.</p>
 
-
-            <h2>Submissions: </h2>
-            {% if active_query is sameas False %}
-            <form action="/view-activities/0" method="GET">
-                <table class="table">
-                    <tr>
-                        <td><input class="form-control" autocomplete="off" type="text" name="query"
-                                placeholder="Search by content">
-                        </td>
-                        <td>
-                            <input class="btn btn-primary" type="submit" value="Submit">
-                            <input type="hidden" name="sender" value="{{ show }}">
-                        </td>
-                    </tr>
-                </table>
-            </form>
-            {% else %}
-            <form action="/view-activities/0" method='GET'>
-                <input class="btn btn-primary" id="addnew" name="logout" type="submit" value="End search" />
-                <input type="hidden" name="sender" value="{{ show }}">
-            </form>
-            {% endif %}
-
-            <div>
-                {% if query != "" %}
-                <b>Current search:</b> {{ query }}
-                {% endif %}
-            </div>
-
-
-            {% if nomessages is sameas false %}
-            {% if query == "" %}
-                <div>
+            {% if rply_requests is sameas true %}
+            <div class="alert alert-warning">
+                <div class="mb-3">
+                    {% if request_filter is sameas true %}
+                    You are now viewing the messages that include a reply request. Press cancel to view all messages. 
+                    {% else %}
+                    <b>Action needed: </b> One or more volunteers have requested a reply to their reported activity. You can find reply requests by browsing messages or by using this filter.
+                    {% endif %}
+                </div>
+                <div class="form-group mb-3 text-start">
                     <form action="/view-activities/0" method="POST">
                         <div class="form-group mb-3">
-                            <label for="sender">Filter by volunteer:</label>
-                            <select class="form-select form-control-sm" name='sender' id='sender'>
-                                <option value="showall" selected>{% if show == 'showall' %}Show all{% else %}{{ show_msg }}{% endif %}</option>
-                                {% for user in users %}
-                                <option value="{{ user.user_id }}">{{ user.firstname }} {{ user.lastname }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group mb-3 text-end">
                             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                            <input class="btn btn-primary" id="filter" name="filter" type="submit" value="Filter"/>
-                            {% if show != 'showall' %}<a href="/view-activities/0" class="btn btn-primary">Cancel</a>{% endif %}
+                            <input type="hidden" name="request-filter-on" value="request-filter-on">
+                            <input class="btn btn-primary" id="filter-requests" name="filter-requests" type="submit" value="Filter"/>
+                            {% if request_filter is sameas true %}<a href="/view-activities/0" class="btn btn-primary">Cancel</a>{% endif %}
                         </div>
                     </form>
                 </div>
+            </div>
             {% endif %}
 
+
+            <h2>Submissions: </h2>
+            
+            {% if request_filter != true %}
+
+                {% if active_query is sameas False %}
+                <form action="/view-activities/0" method="GET">
+                    <table class="table">
+                        <tr>
+                            <td><input class="form-control" autocomplete="off" type="text" name="query"
+                                    placeholder="Search by content">
+                            </td>
+                            <td>
+                                <input class="btn btn-primary" type="submit" value="Submit">
+                                <input type="hidden" name="sender" value="{{ show }}">
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                {% else %}
+                <form action="/view-activities/0" method='GET'>
+                    <input class="btn btn-primary" id="addnew" name="logout" type="submit" value="End search" />
+                    <input type="hidden" name="sender" value="{{ show }}">
+                </form>
+                {% endif %}
+
+                <div>
+                    {% if query != "" %}
+                    <b>Current search:</b> {{ query }}
+                    {% endif %}
+                </div>
+
+            {% endif %}
+
+            {% if nomessages is sameas false %}
+            
+            
+            {% if request_filter != true %}
+                {% if query == "" %}
+                    <div>
+                        <form action="/view-activities/0" method="POST">
+                            <div class="form-group mb-3">
+                                <label for="sender">Filter by volunteer:</label>
+                                <select class="form-select form-control-sm" name='sender' id='sender'>
+                                    <option value="showall" selected>{% if show == 'showall' %}Show all{% else %}{{ show_msg }}{% endif %}</option>
+                                    {% for user in users %}
+                                    <option value="{{ user.user_id }}">{{ user.firstname }} {{ user.lastname }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group mb-3 text-end">
+                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                                <input class="btn btn-primary" id="filter" name="filter" type="submit" value="Filter"/>
+                                {% if show != 'showall' %}<a href="/view-activities/0" class="btn btn-primary">Cancel</a>{% endif %}
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            
+            
             <div class="row">
                 <div class="col-sm-4 text-start">
                     {% if show_previous is sameas true %}
@@ -92,6 +123,7 @@
                     {% endif %}
                 </div>
             </div>            
+            
             <table class="table">
                 {% for message in messages %}
                 {% if message.role=='volunteer' %}
