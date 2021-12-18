@@ -8,6 +8,7 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <style></style>
 </head>
 
@@ -31,7 +32,7 @@
                     <a class="nav-link" href="/view-coordinators">View coordinators</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}<span class="align-top text-danger">!</span>{% endif %}</a>
+                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %} </i><span class="align-top text-warning"><i class="bi bi-info-circle-fill"></i></span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
@@ -75,7 +76,7 @@
                     <a class="nav-link" href="/view-volunteers">View volunteers</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}<span class="align-top text-danger">!</span>{% endif %}</a>
+                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}<span class="align-top text-danger"><b>!</b></span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"

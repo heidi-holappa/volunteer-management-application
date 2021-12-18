@@ -13,53 +13,183 @@
     <h1>Reporting</h1>
     <p>On this page admins can view data on the helpline activites</p>
     <h2>Activities and messages</h2>
-    <p>Volunteers report activities they have carried out. Admins and coordinators can reply to reported activities. Total number of messages includes both volunteer activities and replies to them.</p>
-    <ul>
-        <li>Activities reported by volunteers: {{ data["messages"][0][0] }}</li>
-        <li>Total number of messages sent: {{ data["messages"][0][1] }}</li>
-    </ul>
+    <div class="mb-3">Volunteers report activities they have carried out. Admins and coordinators can reply to reported
+        activities. Total number of messages includes both volunteer activities and replies to them.</div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["messages"][0][0] }}</span>
+                    <br>
+                    Activities reported by volunteers
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["messages"][0][1] }}</span>
+                    <br>
+                    Total number of messages sent
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <h2>Active user accounts</h2>
     <p>A total number of <b>active</b> useraccounts per role:</p>
-    <ul>
-        <li>Administrator accounts: {{ data["active_users"][0][1] }} </li>
-        <li>Coordinator accounts: {{ data["active_users"][1][1] }} </li>
-        <li>Volunteer accounts: {{ data["active_users"][2][1] }}</li>
-    </ul>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["active_users"][0][1] }}</span>
+                    <br>
+                    Administrator accounts
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["active_users"][1][1] }}</span>
+                    <br>
+                    Coordinator accounts
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["active_users"][2][1] }}</span>
+                    <br>
+                    Volunteer accounts
+                </div>
+            </div>
+        </div>
+    </div>
 
     <h2>Training modules</h2>
-    <p>Below you can view the number of training modules currently available to volunteers, total number of training modules and data on how many times each training has been completed.</p>
-    <ul>
-        <li>Number of training modules availabe for volunteers: {{ data["trainings"][0][1] }} </li>
-        <li>Number of training modules not currently available to volunteers: {{ data["trainings"][0][0] - data["trainings"][0][1] }} </li>
-        <li>Number of times a training has been completed: </li>
-        <ul>
+    <p>Below you can view the number of training modules currently available to volunteers, number of inactive training
+        modules and data on how many times each training has been completed.</p>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["trainings"][0][1] }}</span>
+                    <br>
+                    Training modules availabe for volunteers
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["trainings"][0][0] - data["trainings"][0][1] }}</span>
+                    <br>
+                    Inactive training modules
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        Number of times a training has been completed:
+    </div>
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Training</th>
+                <th scope="col">N</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for item in data["training_participation"] %}
-            <li>{{ item[0] }}: {{ item[1] }}</li>
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+            </tr>
             {% endfor %}
-        </ul>
-    </ul>
+        </tbody>
+    </table>
 
     <h2>Tools</h2>
-    <p> </p>
-    <ul>
-        <li>Number of tools available for volunteers: {{ data["equipment"][0][1] - data["loans"][0][1] }} </li>
-        <li>Availability by type: </li>
-        <ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["loans"][0][1] }}</span>
+                    <br>
+                    Tools currently loaned to volunteers
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["equipment"][0][1] - data["loans"][0][1] }}</span>
+                    <br>
+                    Tools available for loan
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        Availability by type:
+    </div>
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Tool</th>
+                <th scope="col">Currently available</th>
+                <th scope="col">Total amount</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for item in data["active_loans"] %}
-            <li>{{ item[0] }}: {{ item[1] - item[2] }}/{{ item[1] }}</li>
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] - item[2] }}</td>
+                <td>{{ item[1] }}</td>
+            </tr>
             {% endfor %}
-        </ul>
-        <li>Number of tools currently loaned to volunteers: {{ data["loans"][0][1] }} </li>
-        <li>Total number of loans (including past and current loans): {{ data["loans"][0][0] }} </li>
-        <li>Number of loans per tool (note: there can be more than one of each tool): </li>
-        <ul>
+        </tbody>
+    </table>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="alert alert-info">
+                    <span class="display-1">{{ data["loans"][0][0] }}</span>
+                    <br>
+                    Total number of past and current loans
+                </div>
+            </div>
+            <div class="col-sm-6">
+                
+            </div>
+        </div>
+    </div>
+
+    <div>
+        Number of loans per tool-type (includes past and current loans)
+    </div>
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Tool-type</th>
+                <th scope="col">Loans</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for item in data["loans_by_type"] %}
-            <li>{{ item[0] }}: {{ item[1] }}</li>
+            <tr>
+                <td>{{ item[0] }}</td>
+                <td>{{ item[1] }}</td>
+            </tr>
             {% endfor %}
-        </ul>
-    </ul>
+        </tbody>
+    </table>
 
 </div>
 
 <div class="container">
-{% endblock %}
+    {% endblock %}

@@ -45,31 +45,6 @@ def fetch_paginated_threads(thread_ids: tuple):
     result = db.session.execute(sql, {"thread_ids":thread_ids})
     return result.fetchall()
 
-# def fetch_all_messages(limit: int, offset: int, query: str):
-#     """Fetch and return messages"""
-#     if len(query) == 0:
-#         sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
-#             messages.title, messages.content, messages.reply_request, tasks.task, \
-#             users.username, users.role, users.lastname, users.firstname \
-#             FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-#             ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-#             ON (messages.task_id = tasks.task_id) \
-#             WHERE LOWER(messages.content) LIKE LOWER(:query) \
-#             ORDER BY activity_date DESC, thread_id, msg_id ASC \
-#             LIMIT :limit OFFSET :offset"
-#     else:
-#         sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
-#             messages.title, messages.content, messages.reply_request, tasks.task, \
-#             users.username, users.role, users.lastname, users.firstname \
-#             FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-#             ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-#             ON (messages.task_id = tasks.task_id) \
-#             WHERE LOWER(messages.content) LIKE LOWER(:query) AND volunteer_id = sender_id \
-#             ORDER BY activity_date DESC, thread_id, msg_id ASC \
-#             LIMIT :limit OFFSET :offset"
-#     result = db.session.execute(sql, {"limit":limit, "offset":offset, "query":"%"+query+"%"})
-#     return result.fetchall()
-
 def fetch_reply_request_messages(limit: int, offset: int):
     """Fetch and return messages"""
     sql = "SELECT messages.msg_id, messages.thread_id, messages.activity_date, \
