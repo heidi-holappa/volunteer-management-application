@@ -51,6 +51,9 @@ Busy evening in the chat. Most contacts dealt with anxiety and depressive though
 Busy afternoon in the phone. Most callers were elementary aged children. Most had nothing particular they wished to talked about and just wanted someone to be with them for a while and to listen. 
 I spoke with a 15-17 year old girl for three hours. She had been going through a rough time in her life. Her parents had divorced and she felt pressure to tip toe in order to not make either parent feel like she was favoring the other. 
 
+General
+"This was my first time. It was quite exciting! It'd be good to talk to a coordinator about this experience. Could you give me a call? "
+
 /* Some generic replies - coordinators */
 Wow, sounds like you had quite a challenging evening. Call me if you want to talk about it. Thanks for all your hard work!
 Thanks for all your hard work! We really appreciate it. 

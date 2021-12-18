@@ -368,8 +368,9 @@ def supervisor_view_activities(set_offset):
     
     if not users.is_coordinator():
         abort(403)
-    # Check if user wants to filter messages by volunteer name
     
+    # Check if user wants to filter messages by volunteer name
+
     if "sender" in request.args: 
         sender = request.args["sender"]
         if sender != "showall":
@@ -382,6 +383,7 @@ def supervisor_view_activities(set_offset):
     else:
         filter = "showall"
         filter_msg = ""
+    
     if request.method == "POST":
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
@@ -389,9 +391,10 @@ def supervisor_view_activities(set_offset):
             if request.form["sender"] == "showall":
                 filter = "showall"
             else:
-                u_id = request.form["sender"]
+                u_id = int(request.form["sender"])
                 filter=u_id
                 filter_msg = f"Showing messages for {users.get_name(u_id)}"            
+    
     limit = 5
     offset = set_offset * 5
     
@@ -402,24 +405,30 @@ def supervisor_view_activities(set_offset):
     else:
         query = ""
         active_query = False
+
     if "request-filter-on" in request.form:
-        fetched_messages = messages.fetch_reply_request_messages(limit, offset, query)
+        fetched_messages = messages.fetch_reply_request_messages(limit, offset)
         count_messages = len(fetched_messages)
         request_filter = True
     elif filter == "showall":
-        fetched_messages = messages.fetch_all_messages(limit,offset, query)
-        count_messages = messages.fetch_message_count(query)
+        fetch_thread_ids = messages.fetch_thread_ids(limit, offset, query)
+        thread_ids = tuple(value[0] for value in fetch_thread_ids)
+        count_messages = messages.fetch_thread_count(query)
+        if len(thread_ids) != 0:
+            fetched_messages = messages.fetch_paginated_threads(thread_ids)
+        else:
+            fetched_messages = []
     else: 
-        sender = request.args["sender"]
-        u_id = int(sender)
-        fetched_messages = messages.fetch_volunteer_messages(u_id, limit, offset, query)
-        count_messages = messages.fetch_volunteer_message_count(u_id, query)
+        fetched_messages = messages.fetch_volunteer_threads(u_id, limit, offset, query)
+        count_messages = messages.fetch_volunteer_thread_count(u_id, query)
     
     fetch_message_senders = messages.fetch_message_senders()
     
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
     no_messages = bool(len(fetched_messages) == 0)
+
+    messages.test_list()
     
     rply_requests = messages.check_reply_requests()
     return render_template("message-view.html", messages=fetched_messages, 
@@ -455,6 +464,7 @@ def submit_reply(m_id):
     msg_sent_date = messages.get_op_date(m_id)
     new_reply = [thread_id, volunteer_id, sender_id, task_id, msg_sent, content, msg_sent_date]    
     messages.submit_reply(new_reply)
+    flash("Reply posted successfully", "success")
     return redirect("/view-activities/0")
 
 @app.route("/add-training-module", methods=["GET", "POST"])
@@ -543,7 +553,13 @@ def volunteerview(set_offset):
     u_id = users.get_user_id()
     user = hrqueries.get_userinfo(u_id)
     activities = hrqueries.get_activities(u_id)
-    volunteer_messages = messages.fetch_volunteer_messages(u_id, limit, offset, query)
+    threads = messages.fetch_volunteer_threads(u_id, limit, offset, query)
+    print(threads)
+    thread_ids = tuple(value[0] for value in threads)
+    if len(thread_ids) != 0:
+        volunteer_messages = messages.fetch_volunteer_thread_msgs(thread_ids)
+    else:
+        volunteer_messages = []
     count_messages = messages.fetch_message_count_by_user(u_id)
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)

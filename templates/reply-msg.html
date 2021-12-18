@@ -14,44 +14,27 @@
     <div class="row">
         <div class="col-sm-8">
             <h1>Write a reply</h1>
-            {% if error_msg != "" %}
             {% block flashed_messages %}{{ super() }}{% endblock %}
-            <div class="alert alert-danger">
-                <b>Submission failed: </b>{{ error_msg }}
-            </div>
-            {% endif %}
             <br>
+            <div class="alert alert-primary" role="alert">
+                <b>Original message by: </b> {{ message.firstname }} {{ message.lastname }} <br>
+                <b>Content: </b> <br> <br>
+                {{ message.content }}
+            </div>
 
             <form action="/submit-reply/{{ id }}" method="POST">
-                <table>
-                    <tr>
-                        <td colspan="2">
-                            <div class="alert alert-secondary" role="alert">
-                                <b>Original message by: </b> {{ message.firstname }} {{ message.lastname }} <br>
-                                <b>Content: </b> <br> <br>
-                                {{ message.content }}
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <input type="hidden" id="task_id" name="task_id" value="{{ message.task_id }}">
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <textarea class="form-control" id="content" placeholder="Write a reply" type="text"
-                                name="content" rows="4" cols="50" ></textarea>
-                                <!-- required minlength="10" -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" align="right">
-                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
-                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                        </td>
-                    </tr>
-                </table>
-            </form>
+                <div class="form-group mb-3">
+                    <input type="hidden" id="task_id" name="task_id" value="{{ message.task_id }}">
+                    <textarea class="form-control" id="content" placeholder="Write a reply" type="text"
+                                name="content" rows="4" cols="50" required minlength="10"></textarea>
 
+                </div>
+                <div class="form-group mb-3 text-end">
+                    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+
+                </div>
+            </form>
 
         </div>
     </div>

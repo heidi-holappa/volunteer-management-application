@@ -90,38 +90,36 @@
 
             {% for message in messages %}
 
-            {% if message.role=="volunteer" %}
-            <div class="alert alert-primary">
-                <b>{{ message.title }}</b><br>
-                <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
-                <b>Activity: </b>{{ message.task }}<br>
-                {% if message.reply_request is sameas true %}
-                <span class="text-danger">You have requested a reply</span><br>
+                {% if message.thread_id == message.msg_id %}
+                <div class="alert alert-primary">
+                    <b>{{ message.title }}</b><br>
+                    <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
+                    <b>Activity: </b>{{ message.task }}<br>
+                    {% if message.reply_request is sameas true %}
+                    <span class="text-danger">You have requested a reply</span><br>
+                    {% endif %}
+                    <br>
+                    <b>Content: </b>{{ message.content }}
+                    {% set thread_id = message.thread_id %}
+                    {% for message in messages %}
+                        {% if message.thread_id == thread_id and message.thread_id != message.msg_id %}
+                        <div class="alert alert-dark">
+                            <b>Reply </b><br>
+                            <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
+                            <b>Sender: </b> {{ message.username }}<br>
+                            <br>
+                            <b>Content: </b>{{ message.content }}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
                 {% endif %}
-                <br>
-                <b>Content: </b>{{ message.content }}
-            </div>
-            {% else %}
-            <div class="alert alert-dark">
-                <b>Reply </b><br>
-                <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
-                <b>Sender: </b> {{ message.username }}<br>
-                <br>
-                <b>Content: </b>{{ message.content }}
-            </div>
-            {% endif %}
+            
             {% endfor %}
 
-            {% else %}
             {% endif %}
 
-            <div class="alert alert-warning" role="alert">
-                <b>To-Do: </b>
-                <ul>
-                    <li><b>Fix bug: </b>Message can be sent multiple times in Heroku by cliking submit-button more than
-                        once.</li>
-                </ul>
-            </div>
+
 
 
         </div>

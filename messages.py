@@ -1,54 +1,87 @@
 from db import db
 
-def fetch_all_messages(limit: int, offset: int, query: str):
-    """Fetch and return messages"""
-    if len(query) == 0:
-        sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
-            messages.title, messages.content, messages.reply_request, tasks.task, \
-            users.username, users.role, users.lastname, users.firstname \
-            FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-            ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-            ON (messages.task_id = tasks.task_id) \
-            WHERE LOWER(messages.content) LIKE LOWER(:query) \
-            ORDER BY activity_date DESC, thread_id, msg_id ASC \
-            LIMIT :limit OFFSET :offset"
-    else:
-        sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
-            messages.title, messages.content, messages.reply_request, tasks.task, \
-            users.username, users.role, users.lastname, users.firstname \
-            FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-            ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-            ON (messages.task_id = tasks.task_id) \
-            WHERE LOWER(messages.content) LIKE LOWER(:query) AND volunteer_id = sender_id \
-            ORDER BY activity_date DESC, thread_id, msg_id ASC \
-            LIMIT :limit OFFSET :offset"
+def test_list():
+    sql = "SELECT msg_id FROM tsohaproject.messages \
+        WHERE thread_id IN :ids"
+    ids = (1,2,3,4)
+    result = db.session.execute(sql, {"ids":ids})
+    print(result.fetchall())
+
+def fetch_thread_ids(limit: int, offset: int, query: str):
+    """Return thread_ids for limited number of message-threads"""
+    sql = "SELECT thread_id \
+        FROM tsohaproject.messages \
+        WHERE LOWER(messages.content) LIKE LOWER(:query) AND \
+        sender_id=volunteer_id \
+        GROUP BY thread_id, activity_date, msg_id \
+        ORDER BY activity_date DESC, thread_id, msg_id ASC \
+        LIMIT :limit OFFSET :offset"
     result = db.session.execute(sql, {"limit":limit, "offset":offset, "query":"%"+query+"%"})
     return result.fetchall()
 
-def fetch_reply_request_messages(limit: int, offset: int, query: str):
+def fetch_thread_count(query):
+    sql = "SELECT COUNT(DISTINCT(thread_id)) \
+        FROM tsohaproject.messages \
+        WHERE LOWER(messages.content) LIKE LOWER(:query)"
+    result = db.session.execute(sql, {"query":"%"+query+"%"})
+    return result.fetchone()[0]
+
+def fetch_request_count():
+    sql = "SELECT COUNT(reply_request) \
+        FROM tsohaproject.messages \
+        WHERE reply_request='true'"
+    result = db.session.execute(sql)
+    return result.fetchone()[0]
+
+def fetch_paginated_threads(thread_ids: tuple):
+    sql = "SELECT messages.msg_id, messages.thread_id, messages.activity_date, \
+            messages.send_date, messages.title, messages.content, messages.reply_request, \
+            tasks.task, users.username, users.role, users.lastname, users.firstname \
+            FROM tsohaproject.users INNER JOIN tsohaproject.messages \
+            ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
+            ON (messages.task_id = tasks.task_id) \
+            WHERE thread_id IN :thread_ids \
+            ORDER BY activity_date DESC, thread_id, msg_id ASC"
+    result = db.session.execute(sql, {"thread_ids":thread_ids})
+    return result.fetchall()
+
+# def fetch_all_messages(limit: int, offset: int, query: str):
+#     """Fetch and return messages"""
+#     if len(query) == 0:
+#         sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
+#             messages.title, messages.content, messages.reply_request, tasks.task, \
+#             users.username, users.role, users.lastname, users.firstname \
+#             FROM tsohaproject.users INNER JOIN tsohaproject.messages \
+#             ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
+#             ON (messages.task_id = tasks.task_id) \
+#             WHERE LOWER(messages.content) LIKE LOWER(:query) \
+#             ORDER BY activity_date DESC, thread_id, msg_id ASC \
+#             LIMIT :limit OFFSET :offset"
+#     else:
+#         sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
+#             messages.title, messages.content, messages.reply_request, tasks.task, \
+#             users.username, users.role, users.lastname, users.firstname \
+#             FROM tsohaproject.users INNER JOIN tsohaproject.messages \
+#             ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
+#             ON (messages.task_id = tasks.task_id) \
+#             WHERE LOWER(messages.content) LIKE LOWER(:query) AND volunteer_id = sender_id \
+#             ORDER BY activity_date DESC, thread_id, msg_id ASC \
+#             LIMIT :limit OFFSET :offset"
+#     result = db.session.execute(sql, {"limit":limit, "offset":offset, "query":"%"+query+"%"})
+#     return result.fetchall()
+
+def fetch_reply_request_messages(limit: int, offset: int):
     """Fetch and return messages"""
-    if len(query) == 0:
-        sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
-            messages.title, messages.content, messages.reply_request, tasks.task, \
-            users.username, users.role, users.lastname, users.firstname \
-            FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-            ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-            ON (messages.task_id = tasks.task_id) \
-            WHERE LOWER(messages.content) LIKE LOWER(:query) AND reply_request='True' \
-            ORDER BY reply_request DESC, activity_date DESC, thread_id, msg_id ASC \
-            LIMIT :limit OFFSET :offset"
-    else:
-        sql = "SELECT messages.msg_id, messages.activity_date, messages.send_date, \
-            messages.title, messages.content, messages.reply_request, tasks.task, \
-            users.username, users.role, users.lastname, users.firstname \
-            FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-            ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-            ON (messages.task_id = tasks.task_id) \
-            WHERE LOWER(messages.content) LIKE LOWER(:query) AND volunteer_id = sender_id \
-            AND AND reply_request='True' \
-            ORDER BY reply_request DESC, activity_date DESC, thread_id, msg_id ASC \
-            LIMIT :limit OFFSET :offset"
-    result = db.session.execute(sql, {"limit":limit, "offset":offset, "query":"%"+query+"%"})
+    sql = "SELECT messages.msg_id, messages.thread_id, messages.activity_date, \
+        messages.send_date, messages.title, messages.content, messages.reply_request, \
+        tasks.task, users.username, users.role, users.lastname, users.firstname \
+        FROM tsohaproject.users INNER JOIN tsohaproject.messages \
+        ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
+        ON (messages.task_id = tasks.task_id) \
+        WHERE reply_request='True' \
+        ORDER BY reply_request DESC, activity_date DESC, thread_id, msg_id ASC \
+        LIMIT :limit OFFSET :offset"
+    result = db.session.execute(sql, {"limit":limit, "offset":offset})
     return result.fetchall()
 
 def fetch_message_count(query):
@@ -58,10 +91,10 @@ def fetch_message_count(query):
     count = result.fetchone()[0]
     return count
 
-def fetch_volunteer_message_count(u_id, query):
+def fetch_volunteer_thread_count(u_id, query):
     sql = "SELECT COUNT(*) FROM tsohaproject.messages \
         WHERE LOWER(messages.content) LIKE LOWER(:query) \
-        AND volunteer_id=:id"
+        AND volunteer_id=:id AND volunteer_id=sender_id"
     result = db.session.execute(sql, {"query":"%"+query+"%", "id":u_id})
     count = result.fetchone()[0]
     return count
@@ -72,19 +105,33 @@ def fetch_message_count_by_user(u_id):
     result = db.session.execute(sql, {"u_id":u_id})
     return result.fetchone()[0]
 
-def fetch_volunteer_messages(u_id: int, limit: int, offset: int, query: str):
-    sql = "SELECT users.username, users.lastname, users.firstname, users.role, \
-        messages.activity_date, messages.title, messages.content, tasks.task, \
-        messages.reply_request, messages.msg_id, messages.send_date \
+def fetch_volunteer_threads(u_id: int, limit: int, offset: int, query: str):
+    sql = "SELECT messages.thread_id \
         FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
         ON users.user_id = messages.sender_id \
         LEFT JOIN tsohaproject.tasks \
         ON (messages.task_id = tasks.task_id) \
-        WHERE messages.volunteer_id=:id AND LOWER(messages.content) LIKE LOWER(:query)\
-        ORDER BY reply_request DESC, activity_date DESC, thread_id, msg_id ASC \
+        WHERE messages.volunteer_id=:id AND LOWER(messages.content) LIKE LOWER(:query) \
+        AND volunteer_id=sender_id \
+        ORDER BY activity_date DESC, thread_id, msg_id ASC \
         LIMIT :limit OFFSET :offset"
     result = db.session.execute(sql, {"id":u_id, "limit":limit, "offset":offset, \
         "query":"%"+query+"%"})
+    return result.fetchall()
+
+
+def fetch_volunteer_thread_msgs(threads: tuple):
+    sql = "SELECT users.username, users.lastname, users.firstname, users.role, \
+        messages.activity_date, messages.title, messages.content, tasks.task, \
+        messages.reply_request, messages.msg_id, messages.thread_id, \
+        messages.send_date \
+        FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
+        ON users.user_id = messages.sender_id \
+        LEFT JOIN tsohaproject.tasks \
+        ON (messages.task_id = tasks.task_id) \
+        WHERE thread_id IN :threads \
+        ORDER BY activity_date DESC, thread_id, msg_id ASC"
+    result = db.session.execute(sql, {"threads":threads})
     return result.fetchall()
 
 def new_message(message: dict):
