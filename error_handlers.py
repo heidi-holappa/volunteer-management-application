@@ -21,20 +21,6 @@ def forbidden(e):
     return render_template("error.html", error="The content you tried to access is forbidden", 
     error_time=datetime.now(timezone.utc), details=e, instructions=instructions)
 
-def error(description):
-    """Render Error view"""
-    message = "This is a general error message. Something caused an error, but there is not \
-        enough information to tell what. Feedback on the error would be appreciated! \
-            We apologize for the inconvenience."
-    if description == 'notauthorized':
-        message = 'You have tried to access a page that you are not authorized to view. \
-            Please make sure you are logged in. If the problem continues, \
-                please leave feedback on the issue. Feedback form can be found in the footer.'
-    if description == 'missing_value':
-        message = 'One or more fields were left empty. Please fill in all fields carefully.'
-    log_action(f"Landed on errorpage. Errormessage received: {message}")
-    return render_template("error.html", error=message, details="", instructions="")
-
 def log_action(content: str):
     """Creates a log-event in the database."""
     u_id = users.get_user_id()
