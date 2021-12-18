@@ -419,7 +419,9 @@ def supervisor_view_activities(set_offset):
         else:
             fetched_messages = []
     else: 
-        fetched_messages = messages.fetch_volunteer_threads(u_id, limit, offset, query)
+        fetch_thread_ids = messages.fetch_volunteer_threads(u_id, limit, offset, query)
+        thread_ids = tuple(value[0] for value in fetch_thread_ids)
+        fetched_messages = messages.fetch_volunteer_thread_msgs(thread_ids)
         count_messages = messages.fetch_volunteer_thread_count(u_id, query)
     
     fetch_message_senders = messages.fetch_message_senders()
@@ -427,8 +429,6 @@ def supervisor_view_activities(set_offset):
     show_next = bool(count_messages > limit * (set_offset+1))
     show_previous = bool(set_offset > 0)
     no_messages = bool(len(fetched_messages) == 0)
-
-    messages.test_list()
     
     rply_requests = messages.check_reply_requests()
     return render_template("message-view.html", messages=fetched_messages, 
@@ -553,8 +553,7 @@ def volunteerview(set_offset):
     u_id = users.get_user_id()
     user = hrqueries.get_userinfo(u_id)
     activities = hrqueries.get_activities(u_id)
-    threads = messages.fetch_volunteer_threads(u_id, limit, offset, query)
-    print(threads)
+    threads = messages.fetch_volunteer_threads(u_id, limit, offset, query)  
     thread_ids = tuple(value[0] for value in threads)
     if len(thread_ids) != 0:
         volunteer_messages = messages.fetch_volunteer_thread_msgs(thread_ids)

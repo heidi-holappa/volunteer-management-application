@@ -141,7 +141,6 @@ def get_qualifiations(u_id):
         FROM tsohaproject.tasks"
     result = db.session.execute(sql, {"id":u_id})
     qualifications = result.fetchall()
-    print(qualifications)
     return qualifications
 
 def get_additionaltrainings(u_id):

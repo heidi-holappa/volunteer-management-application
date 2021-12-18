@@ -1,12 +1,5 @@
 from db import db
 
-def test_list():
-    sql = "SELECT msg_id FROM tsohaproject.messages \
-        WHERE thread_id IN :ids"
-    ids = (1,2,3,4)
-    result = db.session.execute(sql, {"ids":ids})
-    print(result.fetchall())
-
 def fetch_thread_ids(limit: int, offset: int, query: str):
     """Return thread_ids for limited number of message-threads"""
     sql = "SELECT thread_id \
