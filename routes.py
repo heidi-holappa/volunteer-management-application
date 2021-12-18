@@ -203,7 +203,7 @@ def update_user(u_id):
 
     if "qualification" in request.values:
         qualifications = request.form.getlist("qualification")
-        hrqueries.add_qualifications(qualifications, newinfo[0])
+        hrqueries.add_qualifications(qualifications, newinfo["user_id"])
     
     
     
@@ -410,6 +410,8 @@ def supervisor_view_activities(set_offset):
         fetched_messages = messages.fetch_all_messages(limit,offset, query)
         count_messages = messages.fetch_message_count(query)
     else: 
+        sender = request.args["sender"]
+        u_id = int(sender)
         fetched_messages = messages.fetch_volunteer_messages(u_id, limit, offset, query)
         count_messages = messages.fetch_volunteer_message_count(u_id, query)
     
@@ -487,8 +489,7 @@ def training_submission_handling():
 def training_active(isactive: int, t_id: int):
     active = bool(isactive == 1)
     hrqueries.training_set_activity(active, t_id)
-    rply_requests = messages.check_reply_requests()
-    return redirect("/add-training-module", rply_requests=rply_requests)
+    return redirect("/add-training-module")
 
 @app.route("/add-tool", methods=["POST", "GET"])
 def add_new_tool():

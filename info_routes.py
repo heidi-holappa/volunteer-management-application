@@ -1,7 +1,7 @@
 from datetime import date
 from app import app
 from flask import flash, render_template, redirect, request, session, abort
-import error_handlers, messages, users
+import messages, users
 
 @app.route("/docs/aboutus")
 def about_us():
