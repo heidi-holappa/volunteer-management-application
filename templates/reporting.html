@@ -2,8 +2,8 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if session.role == 'coordinator' %}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -15,25 +15,25 @@
     <h2>Activities and messages</h2>
     <p>Volunteers report activities they have carried out. Admins and coordinators can reply to reported activities. Total number of messages includes both volunteer activities and replies to them.</p>
     <ul>
-        <li>Activities reported by volunteers: {{ data['messages'][0][0] }}</li>
-        <li>Total number of messages sent: {{ data['messages'][0][1] }}</li>
+        <li>Activities reported by volunteers: {{ data["messages"][0][0] }}</li>
+        <li>Total number of messages sent: {{ data["messages"][0][1] }}</li>
     </ul>
     <h2>Active user accounts</h2>
     <p>A total number of <b>active</b> useraccounts per role:</p>
     <ul>
-        <li>Administrator accounts: {{ data['active_users'][0][1] }} </li>
-        <li>Coordinator accounts: {{ data['active_users'][1][1] }} </li>
-        <li>Volunteer accounts: {{ data['active_users'][2][1] }}</li>
+        <li>Administrator accounts: {{ data["active_users"][0][1] }} </li>
+        <li>Coordinator accounts: {{ data["active_users"][1][1] }} </li>
+        <li>Volunteer accounts: {{ data["active_users"][2][1] }}</li>
     </ul>
 
     <h2>Training modules</h2>
     <p>Below you can view the number of training modules currently available to volunteers, total number of training modules and data on how many times each training has been completed.</p>
     <ul>
-        <li>Number of training modules availabe for volunteers: {{ data['trainings'][0][1] }} </li>
-        <li>Number of training modules not currently available to volunteers: {{ data['trainings'][0][0] - data['trainings'][0][1] }} </li>
+        <li>Number of training modules availabe for volunteers: {{ data["trainings"][0][1] }} </li>
+        <li>Number of training modules not currently available to volunteers: {{ data["trainings"][0][0] - data["trainings"][0][1] }} </li>
         <li>Number of times a training has been completed: </li>
         <ul>
-            {% for item in data['training_participation'] %}
+            {% for item in data["training_participation"] %}
             <li>{{ item[0] }}: {{ item[1] }}</li>
             {% endfor %}
         </ul>
@@ -42,18 +42,18 @@
     <h2>Tools</h2>
     <p> </p>
     <ul>
-        <li>Number of tools available for volunteers: {{ data['equipment'][0][1] - data['loans'][0][1] }} </li>
+        <li>Number of tools available for volunteers: {{ data["equipment"][0][1] - data["loans"][0][1] }} </li>
         <li>Availability by type: </li>
         <ul>
-            {% for item in data['active_loans'] %}
+            {% for item in data["active_loans"] %}
             <li>{{ item[0] }}: {{ item[1] - item[2] }}/{{ item[1] }}</li>
             {% endfor %}
         </ul>
-        <li>Number of tools currently loaned to volunteers: {{ data['loans'][0][1] }} </li>
-        <li>Total number of loans (including past and current loans): {{ data['loans'][0][0] }} </li>
+        <li>Number of tools currently loaned to volunteers: {{ data["loans"][0][1] }} </li>
+        <li>Total number of loans (including past and current loans): {{ data["loans"][0][0] }} </li>
         <li>Number of loans per tool (note: there can be more than one of each tool): </li>
         <ul>
-            {% for item in data['loans_by_type'] %}
+            {% for item in data["loans_by_type"] %}
             <li>{{ item[0] }}: {{ item[1] }}</li>
             {% endfor %}
         </ul>

@@ -16,26 +16,27 @@
     <div class="row align-items-center g-lg-5 py-5">
         <div class="col-lg-7 text-center text-lg-start">
             <div>
-                {% if show is sameas true %}
+                <!-- {% if show is sameas true %}
                 <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-                {% endif %}
+                {% endif %} -->
+                {% block flashed_messages %}{{ super() }}{% endblock %}
             </div>
             <h1 class="display-4 fw-bold lh-1 mb-3">Create a new admin-level account.</h1>
             <p class="col-lg-10 fs-4">In this demo you can create an administrator level account for yourself. As an administrator you can
                 create and manage users and view user activities.</p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">
-            <form class="p-4 p-md-5 border rounded-3 bg-light" action="/auth/createadmin" method='POST'>
+            <form class="p-4 p-md-5 border rounded-3 bg-light" action="/auth/createadmin" method="POST">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" placeholder="Username" name='username'>
+                    <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username">
                     <label for="floatingInput">Select username</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name='password1'>
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password1">
                     <label for="floatingPassword">Select password</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name='password2'>
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password2">
                     <label for="floatingPassword">Re-enter password</label>
                 </div>
                 <div class="checkbox mb-3">

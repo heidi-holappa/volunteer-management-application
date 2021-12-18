@@ -119,6 +119,7 @@ ORDER BY messages.activity_date DESC
 export FLASK_ENV=development && flask run
 postgres
 psql
+\pset format wrapped 
 git ls-files | grep '\.py' | xargs wc -l
 
 /* Fixed message query */

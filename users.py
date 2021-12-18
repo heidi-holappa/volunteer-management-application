@@ -18,8 +18,6 @@ def login(username, password):
             session["user_id"] = user.user_id
             session["role"] = user.role
             session["csrf_token"] = secrets.token_hex(16)
-            session["validation_error"] = False
-            session["success"] = False
             return True
         else:
             return False
@@ -31,7 +29,7 @@ def create_admin(username: str, hash_value: str):
         sqlusers = "INSERT INTO tsohaproject.users (username,role,isactive) \
             VALUES (:username, :role, :isactive) RETURNING user_id"
         result = db.session.execute(sqlusers, \
-            {"username":username, "role":'admin', "isactive": True})
+            {"username":username, "role":"admin", "isactive": True})
         user_id = result.fetchone()[0]
         sqlpassword = "INSERT INTO tsohaproject.password (user_id, password) \
             VALUES (:user_id, :password)"
@@ -57,7 +55,7 @@ def is_volunteer_with_id(u_id):
     """Return true, if user with given id has role volunteer"""
     sql = "SELECT role FROM tsohaproject.users WHERE user_id=:id"
     result = db.session.execute(sql, {"id":u_id})
-    return bool(result.fetchone()[0] == 'volunteer')
+    return bool(result.fetchone()[0] == "volunteer")
 
 def get_user_id():
     """Return id of logged in user"""
@@ -85,50 +83,44 @@ def get_name(u_id):
         WHERE user_id=:id"
     result = db.session.execute(sql, {"id":u_id})
     get_result = result.fetchone()
-    return f'{get_result[0]} {get_result[1]}'
+    return f"{get_result[0]} {get_result[1]}"
 
 def logout():
     """Deletes user sessions"""
     del session["user_id"]
     del session["role"]
+    del session["csrf_token"]
 
 def password_valid(password1: str, password2: str):
-    if len(password1) < 8:
-        return [False, "Password must be atleast 8 characters long."]
-    if password1 != password2:
-        return [False, "Passwords do not match, try again."]
-    return [True, ""]
+    return bool(len(password1) < 8 and password1 != password2)
 
 def validate_userinfo(params: list, qualifications: list):
     for i in params:
         if i is None or len(str(i)) == 0:
-            return [False, "One of the fields was empty. \
-                    Please carefully fill in all fields."]
+            return False
     qualifications_exists = False
     for qualification in qualifications:
         if qualification != "":
             qualifications_exists = True
     if not qualifications_exists:
-        return [False, "Please select \
-                atleast one qualification."]
-    return [True, ""]
+        return False
+    return True
 
 def update_password(old: str, new: str, new_confirmed: str):
     validate_pw = password_valid(new, new_confirmed)
     if not validate_pw[0]:
-        validate_pw[1]= validate_pw[1] + ' [Issue regards new password]'
-        return validate_pw
+        return False
     u_id = get_user_id()
     sql = "SELECT password FROM tsohaproject.password \
         WHERE user_id=:id"
     old_fetched = db.session.execute(sql, {"id":u_id}).fetchone()[0]
     if check_password_hash(old, old_fetched):
-        return [False, "Current password was incorrect.Try again."]
+        return False
     hash_value = generate_password_hash(new)
     sql = "UPDATE tsohaproject.password SET password=:password WHERE user_id=:id"
     db.session.execute(sql, {"password":hash_value, "id":u_id})
     db.session.commit()
-    return [True, "Password updated successfully"]
+    return True
 
 def create_useraccount(params: list, qualifications: list, hash_value: str):
     """Try is used here because one of the tables (users) has an unique column (username)."""

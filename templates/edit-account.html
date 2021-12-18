@@ -3,9 +3,9 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
 
-{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% endif %}{% endblock%}
-{% block volunteer_nav %}{% if session.role == 'volunteer' %}{{ super() }}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% endif %}{% endblock%}
+{% block volunteer_nav %}{% if session.role == "volunteer" %}{{ super() }}{% endif %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
 
@@ -17,30 +17,31 @@
         <div class="row">
             <div class="col-sm-8">
                 <h1>Edit personal  information</h1>
-                {% if show_msg is sameas true %}
+                <!-- {% if show_msg is sameas true %}
                 <div class="alert alert-warning">
                     Update failed: {{ msg }}
                 </div>
-                {% endif %}
+                {% endif %} -->
+                {% block flashed_messages %}{{ super() }}{% endblock %}
                 <p>On this page user can edit their personal information.</p>
 
                 <div class="container">
                     <form action="/submit-edit-account" method="POST">
                         <div class="form-group mb-3">
                             <label for="lastname">Lastname: </label>
-                            <input class="form-control" id='lastname' type='text' name='lastname' value="{{ user.lastname }}">
+                            <input class="form-control" id="lastname" type="text" name="lastname" value="{{ user.lastname }}">
                         </div>
                         <div class="form-group mb-3">
                             <label for="firstname">First name: </label>
-                            <input class="form-control" id="firstname" type='text' name='firstname' value='{{ user.firstname }}' />
+                            <input class="form-control" id="firstname" type="text" name="firstname" value="{{ user.firstname }}" />
                         </div>
                         <div class="form-group mb-3">
                             <label for="email">Email: </label>
-                            <input class="form-control" id="email" type='text' name='email' value='{{ user.email }}' />
+                            <input class="form-control" id="email" type="text" name="email" value="{{ user.email }}" />
                         </div>
                         <div class="form-group mb-3">
                             <label for="phone">Phone: </label>
-                            <input class="form-control" id="phone" type='text' name='phone' value='{{ user.phone }}' />
+                            <input class="form-control" id="phone" type="text" name="phone" value="{{ user.phone }}" />
                         </div>
                         <div class="form-group mb-3">
                             If you want to change your password, type one below:

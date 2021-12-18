@@ -13,13 +13,14 @@
 {% block content %}
 
 <div class="container">
-        {% if show is sameas true %}
+        <!-- {% if show is sameas true %}
         {% if error is sameas true %}
         <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
         {% else %}
         <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
         {% endif %}
-        {% endif %}
+        {% endif %} -->
+        {% block flashed_messages %}{{ super() }}{% endblock %}
 </div>
 
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
@@ -29,13 +30,13 @@
             <p class="col-lg-10 fs-4">Please enter your username and password to sign in.</p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">
-            <form class="p-4 p-md-5 border rounded-3 bg-light" action="/auth/login" method='POST'>
+            <form class="p-4 p-md-5 border rounded-3 bg-light" action="/auth/login" method="POST">
                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="floatingInput" placeholder="Username" name='username'>
+                    <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username">
                     <label for="floatingInput">Enter username</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name='password'>
+                    <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
                     <label for="floatingPassword">Enter password</label>
                 </div>
                 <div class="checkbox mb-3">
@@ -43,7 +44,7 @@
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                 <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
                 <hr class="my-4">
-                <small class="text-muted">Don't have an account? Create one <a href="/register">here</a>!</small>
+                <small class="text-muted">Don"t have an account? Create one <a href="/register">here</a>!</small>
             </form>
         </div>
     </div>

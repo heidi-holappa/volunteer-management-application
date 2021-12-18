@@ -3,10 +3,10 @@
 {% block headername %}Volunteer Management App{% endblock %}
 
 
-{% block adminnav %}{% if (session.role == 'admin') %}{{ super() }}{% else %}{% endif %}{% endblock %}
-{% block coordinatornav %}{% if (session.role == 'coordinator') %}{{ super() }}{% else %}{% endif %}{% endblock %}
+{% block adminnav %}{% if (session.role == "admin") %}{{ super() }}{% else %}{% endif %}{% endblock %}
+{% block coordinatornav %}{% if (session.role == "coordinator") %}{{ super() }}{% else %}{% endif %}{% endblock %}
 {% block volunteer_nav %}
-    {% if (session.role == 'volunteer') %}
+    {% if (session.role == "volunteer") %}
         {{ super() }}
     {% else %}
     {% endif %}
@@ -45,6 +45,7 @@
             <div class="col-sm-3"></div>
             <div class="col-sm-6">
                 <h1>About Us</h1>
+                {% block flashed_messages %}{{ super() }}{% endblock %}
                 <p>Volunteer Management Application is a brain child of a reclusive Hemuli living near the southern coasts of Finland. They are sometimes seen at the Kumpula campus or at their office. Mostly they lurk at their home, studying and working intensively.</p>
             </div>
             <div class="col-sm-3"></div>

@@ -1,22 +1,19 @@
 from sqlalchemy.util.langhelpers import _SQLA_RE
 from db import db
 
-def update_userinfo(newinfo: list):
-    try:
-        sql = "UPDATE tsohaproject.users \
-            SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, \
-                email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, \
-                basictraining=:basictraning, isactive=:isactive \
-            WHERE user_id=:user_id"
-        db.session.execute(sql, {"role":newinfo[1], "lastname":newinfo[2], 
-            "firstname":newinfo[3], "username":newinfo[4], "email":newinfo[5], 
-            "phone":newinfo[6], "startdate":newinfo[7], "enddate":newinfo[8], 
-            "basictraning":newinfo[9], "isactive":newinfo[10], 
-            "user_id":newinfo[0]})
-        db.session.commit()
-        return True
-    except:
-        return False
+def update_userinfo(newinfo: dict):
+    sql = "UPDATE tsohaproject.users \
+        SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, \
+            email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, \
+            basictraining=:basictraning, isactive=:isactive \
+        WHERE user_id=:user_id"
+    db.session.execute(sql, {"role":newinfo["role"], "lastname":newinfo["lastname"], 
+        "firstname":newinfo["firstname"], "username":newinfo["username"], "email":newinfo["email"], 
+        "phone":newinfo["phone"], "startdate":newinfo["startdate"], "enddate":newinfo["enddate"], 
+        "basictraning":newinfo["basictraining"], "isactive":newinfo["isactive"], 
+        "user_id":newinfo["user_id"]})
+    db.session.commit()
+
 
 def add_qualifications(qualifications: list, user_id: int):
     for task_id in qualifications:
@@ -85,21 +82,21 @@ def get_report_data():
     msg_and_thread_count  = "SELECT COUNT(DISTINCT(thread_id)), COUNT(*) \
         FROM tsohaproject.messages"
     msg_count = db.session.execute(msg_and_thread_count)
-    result['messages'] = msg_count.fetchall()
+    result["messages"] = msg_count.fetchall()
     user_count = "SELECT role,  COUNT(*) FROM tsohaproject.users \
         WHERE users.isactive = 'True' GROUP BY role ORDER BY role ASC"
     user_count_result = db.session.execute(user_count)
-    result['active_users'] = user_count_result.fetchall()
+    result["active_users"] = user_count_result.fetchall()
     loans_sql = "SELECT COUNT(*), \
         (SELECT COUNT(*) FROM tsohaproject.loanedtools WHERE loaned='True') \
         FROM tsohaproject.loanedtools "
     loans = db.session.execute(loans_sql)
-    result['loans'] = loans.fetchall()
+    result["loans"] = loans.fetchall()
     equipment_sql = "SELECT COUNT(*), \
         (SELECT COUNT(*) FROM tsohaproject.tools WHERE active='True') \
         FROM tsohaproject.tools"
     equipment = db.session.execute(equipment_sql)
-    result['equipment'] = equipment.fetchall()
+    result["equipment"] = equipment.fetchall()
     trainings_sql = "SELECT COUNT(*), \
         (SELECT COUNT(*) FROM tsohaproject.additionaltrainings WHERE active='True') \
         FROM tsohaproject.additionaltrainings"
@@ -110,9 +107,9 @@ def get_report_data():
         GROUP BY tool \
         ORDER BY c DESC"
     loans_by_type = db.session.execute(loans_by_type_sql)
-    result['loans_by_type'] = loans_by_type.fetchall()
+    result["loans_by_type"] = loans_by_type.fetchall()
     trainings = db.session.execute(trainings_sql)
-    result['trainings'] = trainings.fetchall()
+    result["trainings"] = trainings.fetchall()
     training_participation_sql = "SELECT training, COUNT(user_id) AS c \
         FROM tsohaproject.additionaltrainings \
         LEFT JOIN tsohaproject.trainingparticipation \
@@ -121,7 +118,7 @@ def get_report_data():
         GROUP BY training \
         ORDER BY c DESC"
     training_participation = db.session.execute(training_participation_sql)
-    result['training_participation'] = training_participation.fetchall()
+    result["training_participation"] = training_participation.fetchall()
     active_loans_sql = "SELECT tools.tool, COUNT(tools.tool), \
         COALESCE(SUM(CASE WHEN loanedtools.loaned='True' THEN 1 ELSE 0 END)) \
         FROM tsohaproject.tools LEFT JOIN tsohaproject.loanedtools \
@@ -129,7 +126,7 @@ def get_report_data():
         GROUP BY tool \
         ORDER BY tool ASC"
     active_loans = db.session.execute(active_loans_sql)
-    result['active_loans'] = active_loans.fetchall()
+    result["active_loans"] = active_loans.fetchall()
     return result
     
 def get_qualifiations(u_id):
@@ -297,3 +294,15 @@ def log_mark(log: list):
         VALUES (:user_id, :timestamp, :description)"
     db.session.execute(sql, {"user_id":log[0], "timestamp":log[1], "description":log[2]})
     db.session.commit()
+
+def account_updated(newinfo: list):
+    sql = "SELECT user_id, lastname, firstname, email, phone \
+        FROM tsohaproject.users \
+        WHERE user_id=:u_id"
+    result = db.session.execute(sql, {"u_id":newinfo[0]})
+    oldinfo = result.fetchone()
+    updated = False
+    for index, item in enumerate(newinfo):
+        if newinfo[index] != oldinfo[index]:
+            updated = True
+    return updated

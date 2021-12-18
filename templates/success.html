@@ -2,10 +2,10 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
 
-{% block adminnav %}{% if (session.role == 'admin') %}{{ super() }}{% else %}{% endif %}{% endblock %}
-{% block coordinatornav %}{% if (session.role == 'coordinator') %}{{ super() }}{% else %}{% endif %}{% endblock %}
+{% block adminnav %}{% if (session.role == "admin") %}{{ super() }}{% else %}{% endif %}{% endblock %}
+{% block coordinatornav %}{% if (session.role == "coordinator") %}{{ super() }}{% else %}{% endif %}{% endblock %}
 {% block volunteer_nav %}
-    {% if (session.role == 'volunteer') %}
+    {% if (session.role == "volunteer") %}
         {{ super() }}
     {% else %}
     {% endif %}

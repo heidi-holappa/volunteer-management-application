@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
-{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -15,59 +15,60 @@
                 <div>
                     <h1>Add new user account</h1>
                     <p>In this view you can create new user accounts. Once a user account is created you can log in with this new account to test different functonalities in different roles.<br><br><b>Note:</b>An admin can create all roles in this demo. A coordinator can create only volunteers.</p>
-                    {% if show is sameas true %}
+                    {% block flashed_messages %}{{ super() }}{% endblock %}
+                    <!-- {% if show is sameas true %}
                     <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-                    {% endif %}
+                    {% endif %} -->
                 </div>
 
                 <form action="/add-user" method="POST">
                     <table>
                         <tr>
                             <td>Last name:</td>
-                            <td><input class="form-control" id='lastname' placeholder="Enter last name" type='text'
-                                    name='lastname'
-                                    value='{% if show is sameas true %}{{ filled[0] }}{% endif %}'></td>
+                            <td><input class="form-control" id="lastname" placeholder="Enter last name" type="text"
+                                    name="lastname"
+                                    value="{% if show is sameas true %}{{ filled[0] }}{% endif %}"></td>
                         </tr>
                         <tr>
                             <td>First name:</td>
-                            <td><input class="form-control" id="firstname" placeholder="Enter first name" type='text'
-                                    name='firstname'
-                                    value='{% if show is sameas true %}{{ filled[1] }}{% endif %}' /></td>
+                            <td><input class="form-control" id="firstname" placeholder="Enter first name" type="text"
+                                    name="firstname"
+                                    value="{% if show is sameas true %}{{ filled[1] }}{% endif %}" /></td>
                         </tr>
                         <tr>
                             <td>Email:</td>
-                            <td><input class="form-control" id="email" placeholder="Enter e-mail address" type='text'
-                                    name='email'
-                                    value='{% if show is sameas true %}{{ filled[2] }}{% endif %}' /></td>
+                            <td><input class="form-control" id="email" placeholder="Enter e-mail address" type="text"
+                                    name="email"
+                                    value="{% if show is sameas true %}{{ filled[2] }}{% endif %}" /></td>
                         </tr>
                         <tr>
                             <td>Start date:</td>
-                            <td><input class="form-control" id="startdate" placeholder="Enter start date" type='date'
-                                    name='startdate'
-                                    value='{% if show is sameas true %}{{ filled[3] }}{% endif %}' /></td>
+                            <td><input class="form-control" id="startdate" placeholder="Enter start date" type="date"
+                                    name="startdate"
+                                    value="{% if show is sameas true %}{{ filled[3] }}{% endif %}" /></td>
                         </tr>
                         <tr>
                             <td>Username: </td>
-                            <td><input class="form-control" id="username" placeholder="Enter username" type='text'
-                                    name='username'
-                                    value='{% if show is sameas true %}{{ filled[5] }}{% endif %}' /></td>
+                            <td><input class="form-control" id="username" placeholder="Enter username" type="text"
+                                    name="username"
+                                    value="{% if show is sameas true %}{{ filled[5] }}{% endif %}" /></td>
                         </tr>
                         <tr>
                             <td>Password: </td>
-                            <td><input class="form-control" id="password1" placeholder="Enter password" type='password'
-                                    name='password' /></td>
+                            <td><input class="form-control" id="password1" placeholder="Enter password" type="password"
+                                    name="password" /></td>
                         </tr>
                         <tr>
                             <td>Re-type password: </td>
-                            <td><input class="form-control" id="password2" placeholder="Enter password" type='password'
-                                    name='password2' /></td>
+                            <td><input class="form-control" id="password2" placeholder="Enter password" type="password"
+                                    name="password2" /></td>
                         </tr>
                         <tr>
                             <td>Select role:</td>
                             <td>
-                                <select class="form-select" name='role'>
+                                <select class="form-select" name="role">
                                     <option value="" selected disabled>Choose role</option>
-                                    {% if session.role == 'admin' %}
+                                    {% if session.role == "admin" %}
                                     <option value="admin">Administrator</option>
                                     <option value="coordinator">Coordinator</option>
                                     {% endif %}
@@ -114,7 +115,7 @@
 
                 </form>
                 <br>
-                <form action="/view-volunteers" method='GET'><input class="btn btn-primary" id="addnew" name="cancel"
+                <form action="/view-volunteers" method="GET"><input class="btn btn-primary" id="addnew" name="cancel"
                         type="submit" value="Cancel" /></form>
                 <br>
             </div>

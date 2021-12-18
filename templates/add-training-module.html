@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
-{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% else %}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% else %}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% else %}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -12,13 +12,14 @@
     <h1>Training modules</h1>
     <p>On this page you can add and manage training modules. Use the form below to submit new training modules. Training
         needs to have a name and a description.</p>
-    {% if show is sameas true %}
+    <!-- {% if show is sameas true %}
     {% if error is sameas true %}
     <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
     {% else %}
     <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
     {% endif %}
-    {% endif %}
+    {% endif %} -->
+    {% block flashed_messages %}{{ super() }}{% endblock %}
 </div>
 
 <div class="container">
@@ -34,7 +35,7 @@
         </div>
         <div class="form-group mb-3">
             <label for="add-training-module">Add description</label>
-            <textarea rows='4' class="form-control" id="add-training-module" name="description"
+            <textarea rows="4" class="form-control" id="add-training-module" name="description"
                 placeholder="Add a short description for the training module"></textarea>
         </div>
         <div align=right class="mb-3">

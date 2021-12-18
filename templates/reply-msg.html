@@ -2,8 +2,8 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -15,6 +15,7 @@
         <div class="col-sm-8">
             <h1>Write a reply</h1>
             {% if error_msg != "" %}
+            {% block flashed_messages %}{{ super() }}{% endblock %}
             <div class="alert alert-danger">
                 <b>Submission failed: </b>{{ error_msg }}
             </div>
@@ -37,8 +38,9 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <textarea class="form-control" id='content' placeholder="Write a reply" type='text'
-                                name='content' rows="4" cols="50" required minlength="10"></textarea>
+                            <textarea class="form-control" id="content" placeholder="Write a reply" type="text"
+                                name="content" rows="4" cols="50" ></textarea>
+                                <!-- required minlength="10" -->
                         </td>
                     </tr>
                     <tr>

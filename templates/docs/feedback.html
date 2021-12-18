@@ -1,14 +1,11 @@
 {% extends "layout.html" %}
-{% block title %}About Us{% endblock %}
+{% block title %}Feedback{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block adminnav %}{% if (session.role == 'admin') %}{{ super() }}{% endif %}{% endblock %}
-{% block coordinatornav %}{% if (session.role == 'coordinator') %}{{ super() }}{% endif %}{% endblock %}
-{% block volunteer_nav %}
-{% if (session.role == 'volunteer') %}
-{{ super() }}
-{% endif %}
-{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock %}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% endif %}{% endblock %}
+{% block volunteer_nav %}{% if session.role == "volunteer" %}{{ super() }}{% endif %}{% endblock%}
+
 {% block custom_navitems %}
 {% if session.user_id == null %}
 <li class="nav-item">
@@ -35,34 +32,21 @@
 
 {% block content %}
 <div class="container" style="margin-top:30px">
-    <div class="row align-items-center">
-        <div class="col-sm">
-            <h1>Feedback</h1>
-            <br>
-            We'd love to hear your thoughts on this app. All feedback is very much appreciated!
-            <br>
-            <form action="/submit-feedback" method="POST">
-                <table>
-                    <tr>
-                        <td>What would you like to say?</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><textarea class="form-control" id='content'
-                                placeholder="Write your feedback here." type='text' name='content' rows="4"
-                                cols="50"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" align="right">
-                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
-                        </td>
-                    </tr>
-                </table>
-
-            </form>
-        </div>
+    <h1>Feedback</h1>
+    <div class="mb-3">
+        We"d love to hear your thoughts on this app. All feedback is very much appreciated!
     </div>
+    {% block flashed_messages %}{{ super() }}{% endblock %}
+    <form action="/submit-feedback" method="POST">
+        <div class="form-group mb-3">
+            <label for="content">What would you like to say?</label>
+            <textarea class="form-control" id="date" placeholder="Write your feedback here" type="text" name="content"
+                rows="4" cols="50"></textarea>
+        </div>
+        <div class="form-group mb-3 text-end">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+        </div>
+    </form>
 </div>
-
 {% endblock %}

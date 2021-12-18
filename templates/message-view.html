@@ -2,8 +2,8 @@
 {% block title %}Index{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
-{% block adminnav %}{% if session.role == 'admin' %}{{ super() }}{% endif %}{% endblock%}
-{% block coordinatornav %}{% if session.role == 'coordinator' %}{{ super() }}{% endif %}{% endblock%}
+{% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
+{% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% endif %}{% endblock%}
 {% block volunteer_nav %}{% endblock%}
 {% block custom_navitems%}{% endblock %}
 
@@ -38,6 +38,8 @@
             </div>
             {% endif %}
 
+            {% block flashed_messages %}{{ super() }}{% endblock %}
+
 
             <h2>Submissions: </h2>
             
@@ -58,7 +60,7 @@
                     </table>
                 </form>
                 {% else %}
-                <form action="/view-activities/0" method='GET'>
+                <form action="/view-activities/0" method="GET">
                     <input class="btn btn-primary" id="addnew" name="logout" type="submit" value="End search" />
                     <input type="hidden" name="sender" value="{{ show }}">
                 </form>
@@ -81,8 +83,8 @@
                         <form action="/view-activities/0" method="POST">
                             <div class="form-group mb-3">
                                 <label for="sender">Filter by volunteer:</label>
-                                <select class="form-select form-control-sm" name='sender' id='sender'>
-                                    <option value="showall" selected>{% if show == 'showall' %}Show all{% else %}{{ show_msg }}{% endif %}</option>
+                                <select class="form-select form-control-sm" name="sender" id="sender">
+                                    <option value="showall" selected>{% if show == "showall" %}Show all{% else %}{{ show_msg }}{% endif %}</option>
                                     {% for user in users %}
                                     <option value="{{ user.user_id }}">{{ user.firstname }} {{ user.lastname }}</option>
                                     {% endfor %}
@@ -91,7 +93,7 @@
                             <div class="form-group mb-3 text-end">
                                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                 <input class="btn btn-primary" id="filter" name="filter" type="submit" value="Filter"/>
-                                {% if show != 'showall' %}<a href="/view-activities/0" class="btn btn-primary">Cancel</a>{% endif %}
+                                {% if show != "showall" %}<a href="/view-activities/0" class="btn btn-primary">Cancel</a>{% endif %}
                             </div>
                         </form>
                     </div>
@@ -103,7 +105,7 @@
             <div class="row">
                 <div class="col-sm-4 text-start">
                     {% if show_previous is sameas true %}
-                    <form action="/view-activities/{{ offset - 1 }}" method='GET'>
+                    <form action="/view-activities/{{ offset - 1 }}" method="GET">
                         <input type="hidden" name="query" value="{{ query }}">
                         <input type="hidden" name="sender" value="{{ show }}">
                         <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
@@ -115,7 +117,7 @@
                 </div>
                 <div class="col-sm-4 text-end">
                     {% if show_next is sameas true %}
-                    <form action="/view-activities/{{ offset + 1 }}" method='GET'>
+                    <form action="/view-activities/{{ offset + 1 }}" method="GET">
                         <input type="hidden" name="query" value="{{ query }}">
                         <input type="hidden" name="sender" value="{{ show }}">
                         <input class="btn btn-link" id="next" name="next" type="submit" value="Next" />
@@ -126,18 +128,18 @@
             
             <table class="table">
                 {% for message in messages %}
-                {% if message.role=='volunteer' %}
+                {% if message.role=="volunteer" %}
                 <tr class="table-primary">
                     <td colspan="2">
                         <div>
                             <b>{{ message.title }} </b><br><br>
                             <b>Sent by: </b> {{ message.firstname }} {{ message.lastname }} <br>
                             <b>Task: </b> {{ message.task }} <br>
-                            <b>Date of activity: </b> {{ message.activity_date.strftime('%d.%m.%Y') }} <br>
+                            <b>Date of activity: </b> {{ message.activity_date.strftime("%d.%m.%Y") }} <br>
                             {% if message.reply_request is sameas true %}
                             <span class="text-danger">{{ message.firstname}} has requested a reply</span><br>
                             {% endif %}
-                            <b>Message sent: </b> {{ message.send_date.strftime('%d.%m.%Y %H:%M:%S') }} <br>
+                            <b>Message sent: </b> {{ message.send_date.strftime("%d.%m.%Y %H:%M:%S") }} <br>
                             <br>
                             {{ message.content }}
                             <br><br>
@@ -151,7 +153,7 @@
                     <td>
                         <div class="text-left">
                             <b>Reply by: </b> {{ message.username }} <br>
-                            <b>Sent: </b> {{ message.send_date.strftime('%d.%m.%Y %H:%M:%S') }} <br>
+                            <b>Sent: </b> {{ message.send_date.strftime("%d.%m.%Y %H:%M:%S") }} <br>
                             <br>
                             {{ message.content }}
                         </div>
@@ -168,7 +170,7 @@
             <div class="row">
                 <div class="col-sm-6 text-start">
                     {% if show_previous is sameas true %}
-                    <form action="/view-activities/{{ offset - 1 }}" method='GET'>
+                    <form action="/view-activities/{{ offset - 1 }}" method="GET">
                         <input type="hidden" name="query" value="{{ query }}">
                         <input class="btn btn-link" id="previous" name="previous" type="submit" value="Previous" />
                     </form>
@@ -177,7 +179,7 @@
                 </div>
                 <div class="col-sm-6 text-end">
                     {% if show_next is sameas true %}
-                    <form action="/view-activities/{{ offset + 1 }}" method='GET'>
+                    <form action="/view-activities/{{ offset + 1 }}" method="GET">
                         <input type="hidden" name="query" value="{{ query }}">
                         <input class="btn btn-link" id="previous" name="next" type="submit" value="Next" />
                     </form>
@@ -193,7 +195,7 @@
                         could be done? </li>
                     <li>Search needs further development. It now returns messages with hits, mixing messages from
                         different threads. User cannot know how information is related (or not). Perhaps should
-                        return threads with hits. Maybe first get thread_id's and then get threads with matches? How
+                        return threads with hits. Maybe first get thread_id"s and then get threads with matches? How
                         to make results understandable to user? </li>
                 </ul>
             </div>

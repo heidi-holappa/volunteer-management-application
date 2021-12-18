@@ -1,7 +1,7 @@
 from datetime import date
 from app import app
-from flask import render_template, request, session
-import error_handlers, messages
+from flask import flash, render_template, redirect, request, session, abort
+import error_handlers, messages, users
 
 @app.route("/docs/aboutus")
 def about_us():
@@ -18,13 +18,16 @@ def feedback():
 @app.route("/submit-feedback", methods=["POST"])
 def submit_feedback():
     """Handle feedback submissions and render thank you view"""
-    if session["csrf_token"] != request.form["csrf_token"]:
-            return error_handlers.error("notauthorized")
+    if users.get_user_id() != 0:
+        if session["csrf_token"] != request.form["csrf_token"]:
+                abort(403)
     content = request.form["content"]
     fb_date = date.today()
     if len(content) == 0:
-        return error_handlers.error('missing_value')
+        flash("The feedback must atleast one character.", "danger")
+        return redirect("/docs/feedback")
     messages.submit_feedback(fb_date, content)
+    flash("Feedback sent successfully", "success")
     return render_template("/docs/thank-you.html")
 
 @app.route("/success")
