@@ -15,9 +15,9 @@
 
     {% if session.role == 'admin' %}
     <div class="alert alert-info">
-        <b>Welcome to the Helpline-management -demo!</b><br>Below you can view active accounts with role 'volunteer.'
+        <b>Welcome to the Helpline-management -demo!</b><br>Below you can view active accounts with role {% if volunteer_view is sameas true %}volunteer{% else %}coordinator{% endif %}
         You can also
-        view active accounts with the role 'coordinator' for the navigation bar above.
+        view active accounts with the role {% if volunteer_view is sameas true %}coordinator{% else %}volunteer{% endif %} from the navigation bar above.
         As an admin you can create new users. Volunteers can report on activities done, coordinators can create and
         manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple
         reporting data on helpline performance.<br><br> As an admin or a coordinator you can also view activitities
