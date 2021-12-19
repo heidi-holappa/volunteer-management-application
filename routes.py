@@ -68,7 +68,7 @@ def createadmin():
         flash("Password too short. Password must have atleast 8 characters", "danger")
         errors = True
     hash_value = generate_password_hash(password)
-    if not users.create_admin(username, hash_value):
+    if not errors and not users.create_admin(username, hash_value):
         flash("Username was already taken. Select another username.", "danger")
         errors = True
     if errors:
