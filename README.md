@@ -17,7 +17,7 @@ This application is tailored for demonstration purposes and carries out the purp
  - User can create an admin account
  - As an admin user can then
    - create user accounts in different roles
-   - edit account information on users with role 'volunteer' and 'coordinator'
+   - view and edit account information on users with role 'volunteer' and 'coordinator'
    - loan equipment to volunteers or mark additional trainings as completed
    - read and reply to activity reports
    - add new equipment that can be loaned to volunteers
@@ -26,7 +26,7 @@ This application is tailored for demonstration purposes and carries out the purp
    - edit their personal information and change their password
 - User can login with a role 'coordinator' account they have created. Role 'coordinator' accounts can
    - create user accounts with role volunteer (not with role coordinator or admin)
-   - edit account information on users with role 'volunteer' (not with role coordinator)
+   - view and edit account information on users with role 'volunteer' (not with role coordinator)
    - loan equipment to volunteers or mark additional trainings as completed
    - read and reply to activity reports
    - add new equipment that can be loaned to volunteers
