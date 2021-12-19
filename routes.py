@@ -124,6 +124,7 @@ def search_coordinators():
 
 @app.route("/reporting", methods=["GET"])
 def reporting():
+    """Show simple reporting data"""
     if not users.is_admin():
         abort(403)
     report_data = hrqueries.get_report_data()
@@ -179,6 +180,8 @@ def submituser():
 @app.route("/update-user/<int:u_id>", methods=["POST"])
 def update_user(u_id):
     """Old userinfo is fetched from database and updated for those fields that can be updated."""
+    if not users.is_coordinator():
+        abort(403)
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 
@@ -306,6 +309,9 @@ def submit_edit_account():
 
 @app.route("/return-loan/<int:tool_id>", methods=["POST"])
 def return_loan(tool_id: int):
+    """Returns a loaned tool"""
+    if not users.is_coordinator():
+        abort(403)
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     user_id = hrqueries.loan_return(tool_id)
@@ -315,6 +321,7 @@ def return_loan(tool_id: int):
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
 def add_training(u_id):
+    """Add a completed training to a user"""
     if not users.is_coordinator():
         abort(403)
 
@@ -346,6 +353,7 @@ def add_training(u_id):
 
 @app.route("/add-loan/<int:u_id>", methods=["GET", "POST"])
 def add_loaned_tool(u_id):
+    """Add a loan"""
     if not users.is_coordinator():
         abort(403)
 
@@ -492,6 +500,7 @@ def submit_reply(m_id):
 
 @app.route("/add-training-module", methods=["GET", "POST"])
 def add_new_training():
+    """Add a new training module"""
     if not users.is_coordinator():
         abort(403)
     if request.method == "POST":
@@ -515,6 +524,7 @@ def add_new_training():
 
 @app.route("/training-submission")
 def training_submission_handling():
+    """Show available training modules"""
     if not users.is_coordinator():
         abort(403)
     current_trainings = hrqueries.get_current_trainings()
@@ -524,6 +534,7 @@ def training_submission_handling():
 
 @app.route("/training-active/<int:isactive>/<int:t_id>")
 def training_active(isactive: int, t_id: int):
+    """Change training activity"""
     if not users.is_coordinator():
         abort(403)
     active = bool(isactive == 1)
@@ -532,6 +543,7 @@ def training_active(isactive: int, t_id: int):
 
 @app.route("/add-tool", methods=["POST", "GET"])
 def add_new_tool():
+    """Add a new tool"""
     if not users.is_coordinator():
         abort(403)
     if request.method == "POST":
@@ -551,6 +563,7 @@ def add_new_tool():
 
 @app.route("/tool-active/<int:isactive>/<int:t_id>")
 def tool_active(isactive: int, t_id: int):
+    """Activate/deactivate tool"""
     if not users.is_coordinator():
         abort(403)
     active = bool(isactive == 1)
@@ -559,6 +572,7 @@ def tool_active(isactive: int, t_id: int):
 
 @app.route("/tool-submission")
 def tool_submission():
+    """Show available tools"""
     if not users.is_coordinator():
         abort(403)
     tools = hrqueries.get_all_tools()
@@ -573,6 +587,7 @@ def tool_submission():
 
 @app.route("/loaned-tools")
 def loaned_tools():
+    """Show all loaned tools"""
     if not users.is_coordinator():
         abort(403)
     loaned = hrqueries.get_all_loaned_tools()

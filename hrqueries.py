@@ -1,6 +1,7 @@
 from db import db
 
 def update_userinfo(newinfo: dict):
+    """Updates user information"""
     sql = "UPDATE tsohaproject.users \
         SET role=:role, lastname=:lastname, firstname=:firstname, username=:username, \
             email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, \
@@ -15,6 +16,7 @@ def update_userinfo(newinfo: dict):
 
 
 def add_qualifications(qualifications: list, user_id: int):
+    """Adds qualifications to a user"""
     for task_id in qualifications:
         if task_id != "":
             sql = "INSERT INTO tsohaproject.volunteerqualification (task_id, user_id) \
@@ -36,6 +38,7 @@ def get_active_user_list(role: str):
     return result.fetchall()
 
 def submit_account_edit(newinfo: list):
+    """Updates user account"""
     sql = "UPDATE tsohaproject.users SET \
         lastname=:lastname, \
         firstname=:firstname, \
@@ -224,6 +227,7 @@ def get_userinfo(u_id):
     return user
 
 def get_activities(u_id):
+    """Get available activities for a selected user"""
     sql = "SELECT tasks.task_id, tasks.task \
         FROM tsohaproject.users LEFT JOIN tsohaproject.volunteerqualification \
         ON users.user_id = volunteerqualification.user_id \
@@ -248,12 +252,14 @@ def get_current_activity_level(u_id):
     return activity
 
 def update_activity_level(a_date, u_id, a_id):
+    """Update user's activitylevel"""
     sql = "INSERT INTO tsohaproject.currentactivity (level_date, user_id, activity_id) \
         VALUES (:a_date, :u_id, :a_id)"
     db.session.execute(sql, {"a_date":a_date, "u_id":u_id, "a_id":a_id})
     db.session.commit()
 
 def loan_return(tool_id):
+    """Return a loaned tool"""
     sql_a = "UPDATE tsohaproject.tools SET loaned='FALSE' WHERE tool_id=:id"
     sql_b = "UPDATE tsohaproject.loanedtools SET loaned='FALSE' \
         WHERE tool_id=:id AND loaned='TRUE' RETURNING user_id"
@@ -273,12 +279,14 @@ def add_training_participation(training_info: list):
     db.session.commit()
 
 def log_mark(log: list):
+    """Create a log action"""
     sql = "INSERT INTO tsohaproject.applog (user_id, timestamp, description) \
         VALUES (:user_id, :timestamp, :description)"
     db.session.execute(sql, {"user_id":log[0], "timestamp":log[1], "description":log[2]})
     db.session.commit()
 
 def account_updated(newinfo: list):
+    """Review whether account information has changed"""
     sql = "SELECT user_id, lastname, firstname, email, phone \
         FROM tsohaproject.users \
         WHERE user_id=:u_id"
@@ -291,6 +299,7 @@ def account_updated(newinfo: list):
     return updated
 
 def get_all_loaned_tools():
+    """Return all loaned tools"""
     sql = "SELECT tools.tool, tools.tool_id, users.firstname, users.lastname, \
         loanedtools.loandate \
         FROM tsohaproject.tools LEFT JOIN tsohaproject.loanedtools \

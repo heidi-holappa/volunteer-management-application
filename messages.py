@@ -13,6 +13,7 @@ def fetch_thread_ids(limit: int, offset: int, query: str):
     return result.fetchall()
 
 def fetch_thread_count(query):
+    """Count the number of volunteer messages"""
     sql = "SELECT COUNT(DISTINCT(thread_id)) \
         FROM tsohaproject.messages \
         WHERE LOWER(messages.content) LIKE LOWER(:query)"
@@ -20,6 +21,7 @@ def fetch_thread_count(query):
     return result.fetchone()[0]
 
 def fetch_paginated_threads(thread_ids: tuple):
+    """Get selected volunteer messages"""
     sql = "SELECT messages.msg_id, messages.thread_id, messages.activity_date, \
             messages.send_date, messages.title, messages.content, messages.reply_request, \
             tasks.task, users.username, users.role, users.lastname, users.firstname \
@@ -46,6 +48,7 @@ def fetch_reply_request_messages(limit: int, offset: int):
     return result.fetchall()
 
 def fetch_volunteer_thread_count(u_id, query):
+    """Count volunteer's messages"""
     sql = "SELECT COUNT(*) FROM tsohaproject.messages \
         WHERE LOWER(messages.content) LIKE LOWER(:query) \
         AND volunteer_id=:id AND volunteer_id=sender_id"
@@ -54,12 +57,14 @@ def fetch_volunteer_thread_count(u_id, query):
     return count
 
 def fetch_message_count_by_user(u_id):
+    """Get number of messages related to a selected volunteer"""
     sql = "SELECT COUNT(*) FROM tsohaproject.messages \
         WHERE messages.volunteer_id=:u_id"
     result = db.session.execute(sql, {"u_id":u_id})
     return result.fetchone()[0]
 
 def fetch_volunteer_threads(u_id: int, limit: int, offset: int, query: str):
+    """Get volunteer messages with chosen limit and offset"""
     sql = "SELECT messages.thread_id \
         FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
         ON users.user_id = messages.sender_id \
@@ -75,6 +80,7 @@ def fetch_volunteer_threads(u_id: int, limit: int, offset: int, query: str):
 
 
 def fetch_volunteer_thread_msgs(threads: tuple):
+    """Get all messages from selected threads"""
     sql = "SELECT users.username, users.lastname, users.firstname, users.role, \
         messages.activity_date, messages.title, messages.content, tasks.task, \
         messages.reply_request, messages.msg_id, messages.thread_id, \
@@ -132,6 +138,7 @@ def submit_feedback(fb_date, content):
     db.session.commit()
 
 def submit_reply(new_reply: list):
+    """Submits a new reply"""
     sql = "INSERT INTO tsohaproject.messages \
             (thread_id, volunteer_id, sender_id, task_id, send_date, content, activity_date, reply_request) \
             VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, \

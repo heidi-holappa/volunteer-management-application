@@ -89,9 +89,11 @@ def logout():
     del session["csrf_token"]
 
 def password_valid(password1: str, password2: str):
+    """Check if password is valid"""
     return bool(len(password1) >= 8 and password1 == password2)
 
 def validate_userinfo(params: list, qualifications: list):
+    """Validate submitted user information"""
     for i in params:
         if i is None or len(str(i)) == 0:
             return False
@@ -104,6 +106,7 @@ def validate_userinfo(params: list, qualifications: list):
     return True
 
 def update_password(old: str, new: str, new_confirmed: str):
+    """Update user's password"""
     validate_pw = password_valid(new, new_confirmed)
     if not validate_pw:
         return False
