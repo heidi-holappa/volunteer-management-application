@@ -375,20 +375,19 @@ def add_loaned_tool(u_id):
         tools=tools, rply_requests=rply_requests)
 
 
-@app.route("/edit-user/<int:u_id>", methods=["GET", "POST"])
+@app.route("/edit-user/<int:u_id>")
 def edituser(u_id):
     """Render edit-user page"""
     if not users.is_coordinator():
         abort(403)
-    if request.method == "GET":
-        user = hrqueries.get_userinfo(u_id)
-        qualifications = hrqueries.get_qualifiations(u_id)
-        activity = hrqueries.get_current_activity_level(u_id)
-        rply_requests = messages.check_reply_requests()
-        return render_template("edit-user.html", user=user,
-            qualifications=qualifications, activity=activity)
+    user = hrqueries.get_userinfo(u_id)
+    qualifications = hrqueries.get_qualifiations(u_id)
+    activity = hrqueries.get_current_activity_level(u_id)
     rply_requests = messages.check_reply_requests()
-    return render_template("edit-user.html", rply_requests=rply_requests)
+    return render_template("edit-user.html", user=user,
+        qualifications=qualifications, activity=activity,
+        rply_requests=rply_requests)
+
 
 @app.route("/view-activities/<int:set_offset>", methods=["GET","POST"])
 def supervisor_view_activities(set_offset):
@@ -594,7 +593,9 @@ def loaned_tools():
     if not users.is_coordinator():
         abort(403)
     loaned = hrqueries.get_all_loaned_tools()
-    return render_template("loaned-tools.html", loaned_tools=loaned)
+    rply_requests = messages.check_reply_requests()
+    return render_template("loaned-tools.html", loaned_tools=loaned,
+        rply_requests=rply_requests)
 
 #VOLUNTEER ROUTES
 @app.route("/volunteer-view/<int:set_offset>")
