@@ -164,9 +164,9 @@ def submituser():
                 atleast 8 characters and that passwords match.", "danger")
             errors = True
         hash_value = generate_password_hash(password)
-        if not users.create_useraccount(params, qualifications, hash_value):
-            flash("An error has occured. This means that most likely the username \
-                was already taken.", "danger")
+        if not errors and not users.create_useraccount(params, qualifications, hash_value):
+            flash("Account creation failed. Username was already taken. \
+                Try again with another username.", "danger")
             errors = True
         if errors:
             return render_template("add-user.html", filled=params, show=True)
