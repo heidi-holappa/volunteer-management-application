@@ -77,7 +77,8 @@
 
             <div class="mb-3">
                 {% if query != "" %}
-                <b>Current search:</b> {{ query }}
+                You have a search in progress. <b>Current search:</b> <i>'{{ query }}'</i>. 
+                {% if show != 'showall' %}Please note you are only seeing search results from a selected volunteer. {{ show_msg }}{% endif %}
                 {% endif %}
             </div>
 
