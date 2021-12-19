@@ -15,14 +15,14 @@
 
     {% if session.role == 'admin' %}
     <div class="alert alert-info">
-        <b>Welcome to the Helpline-management -demo!</b><br>Below you can view active accounts with role
-        {% if volunteer_view is sameas true %}volunteer{% else %}coordinator{% endif %}
-        You can also view active accounts with the role
+        <b>Welcome to the Helpline-management -demo!</b><br>Below you can view active useraccounts with role
+        {% if volunteer_view is sameas true %}volunteer{% else %}coordinator{% endif %}.
+        You can also view active useraccounts with the role
         {% if volunteer_view is sameas true %}coordinator{% else %}volunteer{% endif %} from the navigation bar above.
         As an admin you can create new users with different roles. You can then log in with different roles to try out
         the features of the application. From the GitHub documention's section Features you
         will find a description of what different user roles can do. You can find a link to the documention from the
-        navigation menu 'Project info'
+        navigation menu 'Project info.'
     </div>
     {% endif %}
 
