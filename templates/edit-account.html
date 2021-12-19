@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Index{% endblock %}
+{% block title %}Edit account{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
 
 {% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
@@ -16,7 +16,7 @@
     <div class="container" style="margin-top:30px">
         <div class="row">
             <div class="col-sm-8">
-                <h1>Edit personal  information</h1>
+                <h1>Edit personal information</h1>
 
                 {% block flashed_messages %}{{ super() }}{% endblock %}
                 <p>On this page user can edit their personal information.</p>
@@ -25,11 +25,13 @@
                     <form action="/submit-edit-account" method="POST">
                         <div class="form-group mb-3">
                             <label for="lastname">Lastname: </label>
-                            <input class="form-control" id="lastname" type="text" name="lastname" value="{{ user.lastname }}">
+                            <input class="form-control" id="lastname" type="text" name="lastname"
+                                value="{{ user.lastname }}" required />
                         </div>
                         <div class="form-group mb-3">
                             <label for="firstname">First name: </label>
-                            <input class="form-control" id="firstname" type="text" name="firstname" value="{{ user.firstname }}" />
+                            <input class="form-control" id="firstname" type="text" name="firstname"
+                                value="{{ user.firstname }}" required />
                         </div>
                         <div class="form-group mb-3">
                             <label for="email">Email: </label>

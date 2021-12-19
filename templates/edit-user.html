@@ -20,14 +20,14 @@
                 <form action="/update-user/{{ user.user_id }}" method="POST">
                     <table class="table">
                         <tr>
-                            <td>Last name:</td>
+                            <td>Last name:<span class="text-danger">*</span></td>
                             <td><input class="form-control" id="lastname" type="text" name="lastname"
-                                    value="{{ user.lastname }}"></td>
+                                    value="{{ user.lastname }}" required /></td>
                         </tr>
                         <tr>
-                            <td>First name:</td>
+                            <td>First name:<span class="text-danger">*</span></td>
                             <td><input class="form-control" id="firstname" type="text" name="firstname"
-                                    value="{{ user.firstname }}" /></td>
+                                    value="{{ user.firstname }}" required /></td>
                         </tr>
                         <tr>
                             <td>Email:</td>
@@ -40,14 +40,14 @@
                                     value="{{ user.phone }}" /></td>
                         </tr>
                         <tr>
-                            <td>Start date:</td>
+                            <td>Start date:<span class="text-danger">*</span></td>
                             <td><input class="form-control" id="startdate" value="{{ user.startdate }}" type="date"
-                                    name="startdate" /></td>
+                                    name="startdate" required /></td>
                         </tr>
                         <tr>
-                            <td>Username: </td>
+                            <td>Username:<span class="text-danger">*</span></td>
                             <td><input class="form-control" id="username" value="{{ user.username }}" type="text"
-                                    name="username" /></td>
+                                    name="username" minlength="3" required /></td>
                         </tr>
                         {% if user.role == "volunteer" %}
                         <tr>
@@ -57,9 +57,9 @@
                             <td>
                                 <select class="form-select form-control-sm" name="activity">
                                     <option value="{{ activity.a_id }}">{{ activity.level }}</option>
-                                    <option value="3">two</option>
-                                    <option value="2">one</option>
-                                    <option value="1">break</option>
+                                    {% if activity.level != 'two' %}<option value="3">two</option>{% endif %}
+                                    {% if activity.level != 'one' %}<option value="2">one</option>{% endif %}
+                                    {% if activity.level != 'break' %}<option value="1">break</option>{% endif %}
                                 </select>
                             </td>
                         </tr>

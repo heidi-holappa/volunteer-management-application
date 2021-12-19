@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Add/Manage trainings{% endblock %}
 {% block headername %}Volunteer Portal{% endblock %}
 {% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% else %}{% endif %}{% endblock%}
 {% block coordinatornav %}{% if session.role == "coordinator" %}{{ super() }}{% else %}{% endif %}{% endblock%}
@@ -23,16 +23,16 @@
 <div class="container" style="margin-top:60px">
     <form action="/add-training-module" method="POST">
         <div class="form-group mb-3">
-            <label for="add-training-module">Name of training module</label>
+            <label for="add-training-module">Name of training module<span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="add-training-module" name="training"
-                placeholder="Type in the name of the training module">
+                placeholder="Type in the name of the training module" required />
         </div>
         <div class="form-group mb-3">
-            <label for="add-training-module">Add description</label>
+            <label for="add-training-module">Add description<span class="text-danger">*</span></label>
             <textarea rows="4" class="form-control" id="add-training-module" name="description"
-                placeholder="Add a short description for the training module"></textarea>
+                placeholder="Add a short description for the training module" minlength="10" required></textarea>
         </div>
-        <div align=right class="mb-3">
+        <div class="form-group mb-3 text-end">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>

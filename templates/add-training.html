@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Add training{% endblock %}
 {% block headername %}Volunteer Management App{% endblock %}
 
 {% block adminnav %}{% if session.role == "admin" %}{{ super() }}{% endif %}{% endblock%}
@@ -19,11 +19,11 @@
     <form action="/add-training/{{ user.user_id }}" method="POST">
 
         <div class="form-group mb-3">
-            <label for="date">Choose training completion date:</label>
+            <label for="date">Choose training completion date:<span class="text-danger">*</span></label>
             <input class="form-control" id="date" placeholder="Enter date of training" type="date" name="date" required />
         </div>
         <div class="form-group mb-3">
-            <label for="training-id">Select training:</label>
+            <label for="training-id">Select training:<span class="text-danger">*</span></label>
 
             <select class="form-select form-control-sm" name="training_id" id="training-id" required>
                 <option value="" selected disabled>Choose activity</option>
