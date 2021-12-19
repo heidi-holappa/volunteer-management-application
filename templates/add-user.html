@@ -14,9 +14,14 @@
 
                 <div>
                     <h1>Add new user account</h1>
-                    <p>In this view you can create new user accounts. Once a user account is created you can log in with
-                        this new account to test different functonalities in different roles.<br><br><b>Note:</b>An
-                        admin can create all roles in this demo. A coordinator can create only volunteers.</p>
+                    <div>In this view you can create new user accounts. Once a user account is created you can log in with
+                        this new account to test different functonalities in different roles.</div>
+                    {% if session.role == 'admin' %}
+                    <div class="alert alert-info">
+                        As an admin you can create new users in all different roles. A coordinator can only create volunteer accounts. Create a coordinator-account for yourself and try it out!
+                    </div>    
+                    {% endif %}
+
                     {% block flashed_messages %}{{ super() }}{% endblock %}
 
                 </div>

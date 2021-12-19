@@ -12,12 +12,27 @@
 <div class="container" style="margin-top:30px">
     <h1>User list: {% if volunteer_view is sameas true %}volunteers{% else %}coordinators{% endif %}</h1>
     {% block flashed_messages %}{{ super() }}{% endblock %}
-    <p>As an admin you can create new users. Volunteers can report on activities done, coordinators can create and
+
+    {% if session.role == 'admin' %}
+    <div class="alert alert-info">
+        <b>Welcome to the Helpline-management -demo!</b><br>Below you can view active accounts with role 'volunteer.'
+        You can also
+        view active accounts with the role 'coordinator' for the navigation bar above.
+        As an admin you can create new users. Volunteers can report on activities done, coordinators can create and
         manage volunteers, tools and trainings. Admins can create and manage volunteers and coordinators and view simple
-        reporting data on helpline performance.</p>
-    <br>
-    <p>As an admin or a coordinator you can also view activitities volunteers have reported on. You can post a reply to
-        a volunteer"s message.</p>
+        reporting data on helpline performance.<br><br> As an admin or a coordinator you can also view activitities
+        volunteers have reported on. You can post a reply to
+        a volunteer"s message.
+    </div>
+    {% endif %}
+
+    {% if session.role == 'coordinator' %}
+    <div class="alert alert-info">
+        <b>Welcome to the coordinator experience!</b><br>As a coordinator you can view and manage volunteer accounts,
+        but you can not see other coordinator accounts. You can also add tools, trainings and view reported activities.
+        You can not see report data on the application as an administrator can.
+    </div>
+    {% endif %}
 </div>
 <div class="container" style="margin-top:30px">
     <h2>Search users: </h2>
