@@ -1,4 +1,3 @@
-from sqlalchemy.util.langhelpers import _SQLA_RE
 from db import db
 
 def update_userinfo(newinfo: dict):
@@ -7,10 +6,10 @@ def update_userinfo(newinfo: dict):
             email=:email, phone=:phone, startdate=:startdate, enddate=:enddate, \
             basictraining=:basictraning, isactive=:isactive \
         WHERE user_id=:user_id"
-    db.session.execute(sql, {"role":newinfo["role"], "lastname":newinfo["lastname"], 
-        "firstname":newinfo["firstname"], "username":newinfo["username"], "email":newinfo["email"], 
-        "phone":newinfo["phone"], "startdate":newinfo["startdate"], "enddate":newinfo["enddate"], 
-        "basictraning":newinfo["basictraining"], "isactive":newinfo["isactive"], 
+    db.session.execute(sql, {"role":newinfo["role"], "lastname":newinfo["lastname"],
+        "firstname":newinfo["firstname"], "username":newinfo["username"], "email":newinfo["email"],
+        "phone":newinfo["phone"], "startdate":newinfo["startdate"], "enddate":newinfo["enddate"],
+        "basictraning":newinfo["basictraining"], "isactive":newinfo["isactive"],
         "user_id":newinfo["user_id"]})
     db.session.commit()
 
@@ -42,7 +41,7 @@ def submit_account_edit(newinfo: list):
         email=:email, \
         phone=:phone \
         WHERE user_id=:user_id"
-    db.session.execute(sql, {"user_id":newinfo[0], "lastname":newinfo[1], 
+    db.session.execute(sql, {"user_id":newinfo[0], "lastname":newinfo[1],
             "firstname":newinfo[2], "email":newinfo[3], "phone":newinfo[4]})
     db.session.commit()
 
@@ -58,22 +57,6 @@ def search_userlist(u_query: str, role: str):
         AND LOWER(lastname || ' ' || firstname || ' ' || email) LIKE LOWER(:query) \
         GROUP BY users.user_id;"
     result = db.session.execute(sql, {"query":'%' + u_query + '%', "role":role})
-    return result.fetchall()
-
-
-def get_limited_volunteerinfo():
-    """Return limited userinformation on  active users from table users"""
-    sql = "SELECT user_id, role, lastname, firstname, username, email \
-        FROM tsohaproject.users WHERE isactive = TRUE"
-    result = db.session.execute(sql)
-    return result.fetchall()
-
-def get_active_volunteerinfo():
-    """Return active userinformation from table users"""
-    sql = "SELECT user_id, role, lastname, firstname, username, \
-        email, phone, startdate, basictraining \
-        FROM tsohaproject.users WHERE isactive = TRUE"
-    result = db.session.execute(sql)
     return result.fetchall()
 
 def get_report_data():
@@ -128,7 +111,7 @@ def get_report_data():
     active_loans = db.session.execute(active_loans_sql)
     result["active_loans"] = active_loans.fetchall()
     return result
-    
+
 def get_qualifiations(u_id):
     """Return qualifications"""
     sql = "SELECT tasks.task, tasks.task_id, CASE \
@@ -215,7 +198,7 @@ def add_loan(loaned_tool):
     """Add loan to database"""
     sql_a = "INSERT INTO tsohaproject.loanedtools (user_id, tool_id, loandate, loaned) \
         VALUES (:user_id, :tool_id, :loandate, 'TRUE')"
-    db.session.execute(sql_a, {"user_id":loaned_tool[1], "tool_id":loaned_tool[0], 
+    db.session.execute(sql_a, {"user_id":loaned_tool[1], "tool_id":loaned_tool[0],
         "loandate":loaned_tool[2]})
     sql_b = "UPDATE tsohaproject.tools SET loaned='TRUE' WHERE tool_id=:id"
     db.session.execute(sql_b, {"id":loaned_tool[0]})
@@ -264,7 +247,8 @@ def get_current_activity_level(u_id):
     return activity
 
 def update_activity_level(a_date, u_id, a_id):
-    sql = "INSERT INTO tsohaproject.currentactivity (level_date, user_id, activity_id) VALUES (:a_date, :u_id, :a_id)"
+    sql = "INSERT INTO tsohaproject.currentactivity (level_date, user_id, activity_id) \
+        VALUES (:a_date, :u_id, :a_id)"
     db.session.execute(sql, {"a_date":a_date, "u_id":u_id, "a_id":a_id})
     db.session.commit()
 
@@ -283,10 +267,9 @@ def add_training_participation(training_info: list):
     sql = "INSERT INTO tsohaproject.trainingparticipation \
         (training_id, user_id, training_date) \
             VALUES (:training_id, :user_id, :training_date)"
-    db.session.execute(sql, {"training_id":training_info[0], 
+    db.session.execute(sql, {"training_id":training_info[0],
     "user_id":training_info[1], "training_date":training_info[2]})
     db.session.commit()
-    return
 
 def log_mark(log: list):
     sql = "INSERT INTO tsohaproject.applog (user_id, timestamp, description) \

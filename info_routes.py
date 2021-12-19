@@ -1,7 +1,8 @@
 from datetime import date
-from app import app
 from flask import flash, render_template, redirect, request, session, abort
-import messages, users
+from app import app
+import messages
+import users
 
 @app.route("/docs/aboutus")
 def about_us():
@@ -20,7 +21,7 @@ def submit_feedback():
     """Handle feedback submissions and render thank you view"""
     if users.get_user_id() != 0:
         if session["csrf_token"] != request.form["csrf_token"]:
-                abort(403)
+            abort(403)
     content = request.form["content"]
     fb_date = date.today()
     if len(content) == 0:

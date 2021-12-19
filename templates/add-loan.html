@@ -36,6 +36,7 @@
             </select>
         </div>
         <div class="mb-3 text-end">
+            <a href="/view-user/{{ user.user_id }}" class="btn btn-primary">Cancel</a>
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>

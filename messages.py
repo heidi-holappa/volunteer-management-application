@@ -19,13 +19,6 @@ def fetch_thread_count(query):
     result = db.session.execute(sql, {"query":"%"+query+"%"})
     return result.fetchone()[0]
 
-def fetch_request_count():
-    sql = "SELECT COUNT(reply_request) \
-        FROM tsohaproject.messages \
-        WHERE reply_request='true'"
-    result = db.session.execute(sql)
-    return result.fetchone()[0]
-
 def fetch_paginated_threads(thread_ids: tuple):
     sql = "SELECT messages.msg_id, messages.thread_id, messages.activity_date, \
             messages.send_date, messages.title, messages.content, messages.reply_request, \
@@ -51,13 +44,6 @@ def fetch_reply_request_messages(limit: int, offset: int):
         LIMIT :limit OFFSET :offset"
     result = db.session.execute(sql, {"limit":limit, "offset":offset})
     return result.fetchall()
-
-def fetch_message_count(query):
-    sql = "SELECT COUNT(*) FROM tsohaproject.messages \
-        WHERE LOWER(messages.content) LIKE LOWER(:query)"
-    result = db.session.execute(sql, {"query":"%"+query+"%"})
-    count = result.fetchone()[0]
-    return count
 
 def fetch_volunteer_thread_count(u_id, query):
     sql = "SELECT COUNT(*) FROM tsohaproject.messages \
@@ -109,24 +95,15 @@ def new_message(message: dict):
         VALUES (:volunteer_id, :sender_id, :task_id, :activity_date, :send_date, :title, \
             :content, :reply_request) \
         RETURNING msg_id"
-    result = db.session.execute(sql, {"volunteer_id":message["volunteer_id"], "sender_id":message["sender_id"], \
-        "task_id":message["task_id"], "activity_date":message["activity_date"], "send_date":message["msg_sent"], \
-        "title":message["title"] ,"content":message["content"], "reply_request":message["reply_request"]})
+    result = db.session.execute(sql, {"volunteer_id":message["volunteer_id"],
+        "sender_id":message["sender_id"], "task_id":message["task_id"],
+        "activity_date":message["activity_date"], "send_date":message["msg_sent"],
+        "title":message["title"] ,"content":message["content"],
+        "reply_request":message["reply_request"]})
     msg_id = result.fetchone()[0]
     sql_update = "UPDATE tsohaproject.messages SET thread_id=:msg_id WHERE msg_id=:msg_id"
     db.session.execute(sql_update, {"msg_id":msg_id})
     db.session.commit()
-
-def search_messages(query: str):
-    sql = "SELECT messages.msg_id, messages.activity_date, messages.title, messages.content, \
-        messages.reply_request, tasks.task, users.username, users.role, users.lastname, users.firstname \
-        FROM tsohaproject.users INNER JOIN tsohaproject.messages \
-        ON (users.user_id = messages.sender_id) LEFT JOIN tsohaproject.tasks \
-        ON (messages.task_id = tasks.task_id) \
-        WHERE LOWER(messages.content) LIKE LOWER(:query) \
-        ORDER BY messages.thread_id DESC, messages.activity_date ASC"
-    result = db.session.execute(sql, {"query":"%"+query+"%"})
-    return result.fetchall()
 
 def fetch_selected_message(m_id):
     """Fetches a selected message from the database"""
@@ -160,7 +137,7 @@ def submit_reply(new_reply: list):
             VALUES (:thread_id, :volunteer_id, :sender_id, :task_id, \
             :send_date, :content, :activity_date, 'False')"
     db.session.execute(sql, {"thread_id":new_reply[0], "volunteer_id":new_reply[1], \
-            "sender_id":new_reply[2], "task_id":new_reply[3], "send_date":new_reply[4], 
+            "sender_id":new_reply[2], "task_id":new_reply[3], "send_date":new_reply[4],
             "content":new_reply[5], "activity_date":new_reply[6]})
     db.session.commit()
 
