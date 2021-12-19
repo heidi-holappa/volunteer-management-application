@@ -2,8 +2,8 @@
 
 INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310', '1234-12345678', false);
 INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310', '2234-12345678', false);
-INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310', '3234-12345678', false);
-INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Nokia 3310', '4234-12345678', false);
+INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Lenovo ThinkPad', '3234-12345678', false);
+INSERT INTO tsohaproject.tools (tool, serialnumber, loaned) VALUES ('Lenovo ThinkPad', '4234-12345678', false);
 
 INSERT INTO tsohaproject.additionaltrainings (training, description, active) VALUES ('Mental Health', 'A basic training on adolescense and mental health.', 'True');
 INSERT INTO tsohaproject.additionaltrainings (training, description, active) VALUES ('LGBTQI', 'An overview of current LGBTQI themes in helpline contacts.', 'True');
@@ -24,8 +24,8 @@ INSERT INTO tsohaproject.activitylevel (level) VALUES ('two');
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Doe', 'John', 'johndoe','johndoe@doe.com', '+1-50-4565465','11-11-2021', '11-11-2021', true);
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Mustard', 'Roger', 'rogemus','rogermust@doe.com', '+1-54-44215325','12-7-2021', '11-11-2020', true);
 INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, basictraining, isactive) VALUES ('volunteer', 'Avery', 'Ada', 'adaave','adavery@very.com', '+1-40-3123285','11-10-2021', '10-11-2021', true);
-INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, isactive) VALUES ('coordinator', 'Elper', 'Harry', 'harelpe','h.elper@org.com', '+1-30-3567285', true);
-INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, isactive) VALUES ('admin', 'Chief', 'Master', 'maschie','john-117@org.com', '+1-30-3567285', true);
+INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, isactive) VALUES ('coordinator', 'Elper', 'Harry', 'harelpe','h.elper@org.com', '+1-30-3567285','11-10-2021', true);
+INSERT INTO tsohaproject.users (role, lastname, firstname, username, email, phone, startdate, isactive) VALUES ('admin', 'Chief', 'Master', 'maschie','john-117@org.com', '+1-30-3567285','11-10-2021', true);
 
 
 INSERT INTO tsohaproject.volunteerqualification (user_id, task_id) VALUES (1,1);

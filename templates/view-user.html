@@ -116,6 +116,7 @@
 
                                     <form action="/return-loan/{{ tool.tool_id }}" method="post">
                                         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                                        <input type="hidden" name="page" value="view-user">
                                         <input type="submit" value="Confirm" class="btn btn-primary">
                                     </form>
                                 </div>

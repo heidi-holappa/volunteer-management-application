@@ -25,21 +25,28 @@
         <div class="collapse navbar-collapse" id="navbarsExample03">
             <ul class="navbar-nav mr-auto">
                 {% block adminnav %}
-                <li class="nav-item">
-                    <a class="nav-link" href="/view-volunteers">View volunteers</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userviews" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        View users
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="userviews">
+                        <a class="dropdown-item" href="/view-volunteers">View volunteers</a>
+                        <a class="dropdown-item" href="/view-coordinators">View coordinators</a>
+                    </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-coordinators">View coordinators</a>
+                    <a class="nav-link" href="/loaned-tools">View loans</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %} </i><span class="align-top text-warning"><i class="bi bi-info-circle-fill"></i></span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                    <a class="nav-link dropdown-toggle" href="#" id="addviews" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
                         Add
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <div class="dropdown-menu" aria-labelledby="addviews">
                         <a class="dropdown-item" href="/add-user">Add user account</a>
                         <a class="dropdown-item" href="/add-training-module">Add training module</a>
                         <a class="dropdown-item" href="/add-tool">Add tool</a>
@@ -74,6 +81,9 @@
                 {% block coordinatornav %}
                 <li class="nav-item">
                     <a class="nav-link" href="/view-volunteers">View volunteers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/loaned-tools">View loans</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}<span class="align-top text-danger"><b>!</b></span>{% endif %}</a>

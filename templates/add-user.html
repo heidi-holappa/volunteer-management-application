@@ -27,13 +27,13 @@
                             <td>Last name:</td>
                             <td><input class="form-control" id="lastname" placeholder="Enter last name" type="text"
                                     name="lastname"
-                                    value="{% if show is sameas true %}{{ filled[0] }}{% endif %}"></td>
+                                    value="{% if show is sameas true %}{{ filled[0] }}{% endif %}" required /></td>
                         </tr>
                         <tr>
                             <td>First name:</td>
                             <td><input class="form-control" id="firstname" placeholder="Enter first name" type="text"
                                     name="firstname"
-                                    value="{% if show is sameas true %}{{ filled[1] }}{% endif %}" /></td>
+                                    value="{% if show is sameas true %}{{ filled[1] }}{% endif %}" required /></td>
                         </tr>
                         <tr>
                             <td>Email:</td>
@@ -45,23 +45,23 @@
                             <td>Start date:</td>
                             <td><input class="form-control" id="startdate" placeholder="Enter start date" type="date"
                                     name="startdate"
-                                    value="{% if show is sameas true %}{{ filled[3] }}{% endif %}" /></td>
+                                    value="{% if show is sameas true %}{{ filled[3] }}{% endif %}"  required/></td>
                         </tr>
                         <tr>
                             <td>Username: </td>
                             <td><input class="form-control" id="username" placeholder="Enter username" type="text"
                                     name="username"
-                                    value="{% if show is sameas true %}{{ filled[5] }}{% endif %}" /></td>
+                                    value="{% if show is sameas true %}{{ filled[5] }}{% endif %}"  required/></td>
                         </tr>
                         <tr>
                             <td>Password: </td>
                             <td><input class="form-control" id="password1" placeholder="Enter password" type="password"
-                                    name="password" /></td>
+                                    name="password"  required/></td>
                         </tr>
                         <tr>
                             <td>Re-type password: </td>
                             <td><input class="form-control" id="password2" placeholder="Enter password" type="password"
-                                    name="password2" /></td>
+                                    name="password2"  required/></td>
                         </tr>
                         <tr>
                             <td>Select role:</td>

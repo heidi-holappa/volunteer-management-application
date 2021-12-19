@@ -154,7 +154,7 @@ def submituser():
         userinfo_is_valid = users.validate_userinfo(params, qualifications)
         if not userinfo_is_valid:
             flash("Please fill in all required user info and choose at least one qualification", "danger")
-            return render_template("addnew.html", filled=params)
+            return render_template("add-user.html", filled=params)
         password = request.form["password"]
         password2 = request.form["password2"]
         valid_password = users.password_valid(password, password2)
@@ -300,6 +300,8 @@ def return_loan(tool_id: int):
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     user_id = hrqueries.loan_return(tool_id)
+    if request.form["page"] == 'loaned-tools':
+        return redirect("../loaned-tools/" + str(user_id))
     return redirect("../view-user/" + str(user_id))
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])
@@ -535,6 +537,13 @@ def tool_submission():
                 rply_requests=rply_requests)
     return render_template("add-tool.html", tools=tools, show=True, 
             error=False, message="New tool added successfully.", rply_requests=rply_requests)
+
+@app.route("/loaned-tools")
+def loaned_tools():
+    loaned_tools = hrqueries.get_all_loaned_tools()
+    return render_template("loaned-tools.html", loaned_tools=loaned_tools)
+    
+
 
 #VOLUNTEER ROUTES
 @app.route("/volunteer-view/<int:set_offset>")

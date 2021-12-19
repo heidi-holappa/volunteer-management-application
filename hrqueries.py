@@ -305,3 +305,14 @@ def account_updated(newinfo: list):
         if newinfo[index] != oldinfo[index]:
             updated = True
     return updated
+
+def get_all_loaned_tools():
+    sql = "SELECT tools.tool, tools.tool_id, users.firstname, users.lastname, \
+        loanedtools.loandate \
+        FROM tsohaproject.tools LEFT JOIN tsohaproject.loanedtools \
+        ON tools.tool_id=loanedtools.tool_id \
+        LEFT JOIN tsohaproject.users \
+        ON loanedtools.user_id=users.user_id \
+        WHERE tools.loaned='True'"
+    result = db.session.execute(sql)
+    return result.fetchall()
