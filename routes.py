@@ -67,14 +67,14 @@ def createadmin():
         error_handlers.log_action("Creating an admin account failed. Password too short.")
         flash("Password too short. Password must have atleast 8 characters", "danger")
         errors = True
-    if errors:
-        return redirect("/register")
     hash_value = generate_password_hash(password)
     if not users.create_admin(username, hash_value):
-        return render_template("register.html", show=True, \
-            message="Something went wrong. Most likely the username was already taken. Try again.")
-    return render_template("login.html", show=True, error=False, \
-        message="Registration completed. Please login with your account.")
+        flash("Username was already taken. Select another username.", "danger")
+        errors = True
+    if errors:
+        return redirect("/register")
+    flash("Registration completed. Please login with your account.", "success")
+    return render_template("login.html")
 
 #ADMIN/COORDINATOR ROUTES
 @app.route("/view-volunteers")
