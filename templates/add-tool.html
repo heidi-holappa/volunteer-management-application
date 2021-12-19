@@ -51,11 +51,16 @@
           <tr>
               <th scope="row">{{ tool.tool }}</th>
               <td>{{ tool.serialnumber }}</td>
-              <td>{{ tool.loaned }}</td>
-              <td>{{ tool.active }}</td>
-              <td>{% if tool.active is sameas true %}<a
+              <td>{% if tool.loaned is sameas True %}<span class="text-danger">{{ tool.loaned }}</span>{% else %}{{ tool.loaned }}{% endif %}</td>
+              <td>{% if tool.active is not sameas True %}<span class="text-danger">{{ tool.active }}</span>{% else %}{{ tool.active }}{% endif %}</td>
+              <td>
+                {% if tool.loaned is not sameas True %}
+                {% if tool.active is sameas true %}<a
                       href="/tool-active/0/{{ tool.tool_id }}">Deactivate</a>{% else %}<a
-                      href="/tool-active/1/{{ tool.tool_id }}">Activate</a>{% endif %}</td>
+                      href="/tool-active/1/{{ tool.tool_id }}">Activate</a>{% endif %}
+                {% endif %}
+                    
+                </td>
           </tr>
           {% endfor %}
 
