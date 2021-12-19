@@ -154,18 +154,18 @@ def submituser():
         userinfo_is_valid = users.validate_userinfo(params, qualifications)
         if not userinfo_is_valid:
             flash("Please fill in all required user info and choose at least one qualification", "danger")
-            return render_template("add-user.html", filled=params)
+            return render_template("add-user.html", filled=params, show=True)
         password = request.form["password"]
         password2 = request.form["password2"]
         valid_password = users.password_valid(password, password2)
         if not valid_password:
             flash("Password not valid. Please make sure the password has atleast 8 characters and that passwords match.", "danger")
-            render_template("add-user.html", filled=params)
+            render_template("add-user.html", filled=params, show=True)
         hash_value = generate_password_hash(password)
         if not users.create_useraccount(params, qualifications, hash_value):
             flash("An error has occured. This means that most likely the username \
                 was already taken.", "danger")
-            return render_template("add-user.html", filled=params)
+            return render_template("add-user.html", filled=params, show=True)
         flash("User created successfully.", "success")
         return redirect("/view-volunteers")
 

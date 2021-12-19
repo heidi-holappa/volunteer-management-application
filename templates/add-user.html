@@ -14,108 +14,94 @@
 
                 <div>
                     <h1>Add new user account</h1>
-                    <p>In this view you can create new user accounts. Once a user account is created you can log in with this new account to test different functonalities in different roles.<br><br><b>Note:</b>An admin can create all roles in this demo. A coordinator can create only volunteers.</p>
+                    <p>In this view you can create new user accounts. Once a user account is created you can log in with
+                        this new account to test different functonalities in different roles.<br><br><b>Note:</b>An
+                        admin can create all roles in this demo. A coordinator can create only volunteers.</p>
                     {% block flashed_messages %}{{ super() }}{% endblock %}
 
                 </div>
 
                 <form action="/add-user" method="POST">
-                    <table>
-                        <tr>
-                            <td>Last name:<span class="text-danger">*</span></td>
-                            <td><input class="form-control" id="lastname" placeholder="Enter last name" type="text"
-                                    name="lastname"
-                                    value="{% if show is sameas true %}{{ filled[0] }}{% endif %}" required /></td>
-                        </tr>
-                        <tr>
-                            <td>First name:<span class="text-danger">*</span></td>
-                            <td><input class="form-control" id="firstname" placeholder="Enter first name" type="text"
-                                    name="firstname"
-                                    value="{% if show is sameas true %}{{ filled[1] }}{% endif %}" required /></td>
-                        </tr>
-                        <tr>
-                            <td>Email:</td>
-                            <td><input class="form-control" id="email" placeholder="Enter e-mail address" type="text"
-                                    name="email"
-                                    value="{% if show is sameas true %}{{ filled[2] }}{% endif %}" /></td>
-                        </tr>
-                        <tr>
-                            <td>Start date:<span class="text-danger">*</span></td>
-                            <td><input class="form-control" id="startdate" placeholder="Enter start date" type="date"
-                                    name="startdate"
-                                    value="{% if show is sameas true %}{{ filled[3] }}{% endif %}"  required/></td>
-                        </tr>
-                        <tr>
-                            <td>Username:<span class="text-danger">*</span></td>
-                            <td><input class="form-control" id="username" placeholder="Enter username" type="text"
-                                    name="username"
-                                    value="{% if show is sameas true %}{{ filled[5] }}{% endif %}"  required/></td>
-                        </tr>
-                        <tr>
-                            <td>Password:<span class="text-danger">*</span></td>
-                            <td><input class="form-control" id="password1" placeholder="Enter password" type="password"
-                                    name="password"  required/></td>
-                        </tr>
-                        <tr>
-                            <td>Re-type password:<span class="text-danger">*</span></td>
-                            <td><input class="form-control" id="password2" placeholder="Enter password" type="password"
-                                    name="password2"  required/></td>
-                        </tr>
-                        <tr>
-                            <td>Select role:<span class="text-danger">*</span></td>
-                            <td>
-                                <select class="form-select" name="role">
-                                    <option value="" selected disabled>Choose role</option>
-                                    {% if session.role == "admin" %}
-                                    <option value="admin">Administrator</option>
-                                    <option value="coordinator">Coordinator</option>
-                                    {% endif %}
-                                    <option value="volunteer">Volunteer</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Qualifications:<span class="text-danger">*</span></td>
-                            <td>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="1" name="qualification">
-                                    <label class="form-check-label" for="childphone">
-                                        Child helpline phone
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="2" name="qualification">
-                                    <label class="form-check-label" for="childchat">
-                                        Child helpline chat
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="3" name="qualification">
-                                    <label class="form-check-label" for="parentphone">
-                                        Parent helpline phone
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="4" name="qualification">
-                                    <label class="form-check-label" for="parentchat">
-                                        Parent helpline chat
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" class="text-end">
-                                <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
-                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                            </td>
-                        </tr>
-                    </table>
-
+                    <div class="forum-group mb-3">
+                        <label for="lastname">Lastname:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="lastname" placeholder="Enter last name" type="text"
+                            name="lastname" value="{% if show is sameas true %}{{ filled[0] }}{% endif %}" required />
+                    </div>
+                    <div class="forum-group mb-3">
+                        <label for="firstname">Firstname:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="firstname" placeholder="Enter first name" type="text"
+                            name="firstname" value="{% if show is sameas true %}{{ filled[1] }}{% endif %}" required />
+                    </div>
+                    <div class="forum-group mb-3">
+                        <label for="email">Email:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="email" placeholder="Enter e-mail address (It is recommended that you do not use real email addressess in this demo.)" type="text"
+                            name="email" value="{% if show is sameas true %}{{ filled[2] }}{% endif %}" />
+                    </div>
+                    <div class="forum-group mb-3">
+                        <label for="startdate">Startdate:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="startdate" placeholder="Enter start date" type="date"
+                            name="startdate" value="{% if show is sameas true %}{{ filled[3] }}{% endif %}" required />
+                    </div>
+                    <div class="forum-group mb-3">
+                        <label for="username">Username:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="username" placeholder="Enter username" type="text"
+                            name="username" value="{% if show is sameas true %}{{ filled[5] }}{% endif %}" minlength="3"
+                            required />
+                    </div>
+                    <div class="forum-group mb-3">
+                        <label for="password1">Password:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="password" placeholder="Enter password" type="password"
+                            name="password" minlength="8" required />
+                    </div>
+                    <div class="forum-group mb-3">
+                        <label for="password2">Re-type password:<span class="text-danger">*</span></label>
+                        <input class="form-control" id="password2" placeholder="Enter password" type="password"
+                            name="password2" minlength="8" required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="role">Select role:</label>
+                        <select class="form-select" name="role">
+                            <option value="" selected disabled>Choose role</option>
+                            {% if session.role == "admin" %}
+                            <option value="admin">Administrator</option>
+                            <option value="coordinator">Coordinator</option>
+                            {% endif %}
+                            <option value="volunteer">Volunteer</option>
+                        </select>
+                    </div>
+                    <div><b>Qualifications: </b></div>
+                    <div class="form-check">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" name="qualification">
+                            <label class="form-check-label" for="childphone">
+                                Child helpline phone
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="2" name="qualification">
+                            <label class="form-check-label" for="childchat">
+                                Child helpline chat
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="3" name="qualification">
+                            <label class="form-check-label" for="parentphone">
+                                Parent helpline phone
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="4" name="qualification">
+                            <label class="form-check-label" for="parentchat">
+                                Parent helpline chat
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 text-end">
+                        <a href="/view-volunteers" class="btn btn-primary">Cancel</a>
+                        <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    </div>
                 </form>
-                <br>
-                <form action="/view-volunteers" method="GET"><input class="btn btn-primary" id="addnew" name="cancel"
-                        type="submit" value="Cancel" /></form>
-                <br>
             </div>
         </div>
     </div>
