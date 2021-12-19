@@ -1,0 +1,28 @@
+/* Some generic activities - volunteers */
+
+PARENT HELPLINE
+
+PHONE
+
+It was a quiet night, only got a few calls. A mom of two young children called. She was exhausted. I did my best to listen and to encourage her to seek help.
+A busy night at the parent helpline. Answerred multiple chat contacts. Most memorable one was from a father who wanted to know, how to react to his son coming out to him. 
+A very quiet night at the parent helpline. Got no calls today.
+Got three calls. A mother who regretted becoming a mother called. She felt that she was unable to provide the kind of life she wanted to her children. She had not talked with her spouse about her feelings. The other calls were about coping with babies (feeding, sleeping etc.)
+A father of a young woman called. His daughter had moved to her own apartment and the father was worried about her life. She studied at the university, but the father was concerned that she wasn't performing well and that she could have some coping issues in life as well.'
+
+Child helpline:
+Busy evening in the chat. Most contacts dealt with anxiety and depressive thoughts.
+Busy afternoon in the phone. Most callers were elementary aged children. Most had nothing particular they wished to talked about and just wanted someone to be with them for a while and to listen. 
+I spoke with a 15-17 year old girl for three hours. She had been going through a rough time in her life. Her parents had divorced and she felt pressure to tip toe in order to not make either parent feel like she was favoring the other. 
+
+General
+"This was my first time. It was quite exciting! It'd be good to talk to a coordinator about this experience. Could you give me a call? "
+
+/* Some generic replies - coordinators */
+Wow, sounds like you had quite a challenging evening. Call me if you want to talk about it. Thanks for all your hard work!
+Thanks for all your hard work! We really appreciate it. 
+Keep up the good work! 
+
+
+/* Herokuapp URL  */
+https://helpline-management.herokuapp.com/

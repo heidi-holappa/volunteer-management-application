@@ -13,20 +13,14 @@
 {% block content %}
 
 <div class="container">
-        <!-- {% if show is sameas true %}
-        {% if error is sameas true %}
-        <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-        {% else %}
-        <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
-        {% endif %}
-        {% endif %} -->
-        {% block flashed_messages %}{{ super() }}{% endblock %}
+        
 </div>
 
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
     <div class="row align-items-center g-lg-5 py-5">
         <div class="col-lg-7 text-center text-lg-start">
             <h1 class="display-4 fw-bold lh-1 mb-3">Sign-in</h1>
+            {% block flashed_messages %}{{ super() }}{% endblock %}
             <p class="col-lg-10 fs-4">Please enter your username and password to sign in.</p>
         </div>
         <div class="col-md-10 mx-auto col-lg-5">

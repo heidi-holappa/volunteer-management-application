@@ -1,0 +1,13 @@
+RUN FLASK IN DEVELOPMENT SERVER MODE
+export FLASK_ENV=development && flask run
+
+POSTGRESQL EXECUTION
+postgres
+psql
+heroku psql
+
+POSTGRESQL TABLE FIT SCREEN
+\pset format wrapped 
+
+COUNT LINES OF CODE IN PYTHON FILES
+git ls-files | grep '\.py' | xargs wc -l
