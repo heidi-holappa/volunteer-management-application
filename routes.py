@@ -301,7 +301,7 @@ def return_loan(tool_id: int):
         abort(403)
     user_id = hrqueries.loan_return(tool_id)
     if request.form["page"] == 'loaned-tools':
-        return redirect("../loaned-tools/" + str(user_id))
+        return redirect("../loaned-tools")
     return redirect("../view-user/" + str(user_id))
 
 @app.route("/add-training/<int:u_id>", methods=["GET", "POST"])

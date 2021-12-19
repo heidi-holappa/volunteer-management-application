@@ -313,6 +313,6 @@ def get_all_loaned_tools():
         ON tools.tool_id=loanedtools.tool_id \
         LEFT JOIN tsohaproject.users \
         ON loanedtools.user_id=users.user_id \
-        WHERE tools.loaned='True'"
+        WHERE loanedtools.loaned='True'"
     result = db.session.execute(sql)
     return result.fetchall()
