@@ -16,9 +16,7 @@
                     <h1>Add new user account</h1>
                     <p>In this view you can create new user accounts. Once a user account is created you can log in with this new account to test different functonalities in different roles.<br><br><b>Note:</b>An admin can create all roles in this demo. A coordinator can create only volunteers.</p>
                     {% block flashed_messages %}{{ super() }}{% endblock %}
-                    <!-- {% if show is sameas true %}
-                    <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-                    {% endif %} -->
+
                 </div>
 
                 <form action="/add-user" method="POST">

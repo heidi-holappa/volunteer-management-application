@@ -17,11 +17,7 @@
         <div class="row">
             <div class="col-sm-8">
                 <h1>Edit personal  information</h1>
-                <!-- {% if show_msg is sameas true %}
-                <div class="alert alert-warning">
-                    Update failed: {{ msg }}
-                </div>
-                {% endif %} -->
+
                 {% block flashed_messages %}{{ super() }}{% endblock %}
                 <p>On this page user can edit their personal information.</p>
 

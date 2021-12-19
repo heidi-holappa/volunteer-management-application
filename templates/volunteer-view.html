@@ -18,16 +18,7 @@
             <p>Hello {{ user.firstname }}, welcome to the volunteer app!.</p>
 
             <p>Would you like to submit a new event?</p>
-            <!-- {% if error_msg != "" %}
-            <div class="alert alert-warning">
-                <b>Submission failed:</b> {{ error_msg }}
-            </div>
-            {% endif %}
-            {% if success_msg != "" %}
-            <div class="alert alert-success">
-                <b>Success: </b> {{ success_msg }}
-            </div>
-            {% endif %} -->
+
             {% block flashed_messages %}{{ super() }}{% endblock %}
 
             <form action="/submit-message-volunteer/{{ user.user_id }}" method="POST">

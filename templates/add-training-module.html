@@ -12,13 +12,7 @@
     <h1>Training modules</h1>
     <p>On this page you can add and manage training modules. Use the form below to submit new training modules. Training
         needs to have a name and a description.</p>
-    <!-- {% if show is sameas true %}
-    {% if error is sameas true %}
-    <div class="alert alert-danger" role="alert"><b>Error: </b> {{ message }}</div>
-    {% else %}
-    <div class="alert alert-success" role="alert"><b>Success: </b> {{ message }}</div>
-    {% endif %}
-    {% endif %} -->
+
     {% block flashed_messages %}{{ super() }}{% endblock %}
 </div>
 

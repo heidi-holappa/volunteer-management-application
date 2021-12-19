@@ -16,7 +16,9 @@
                 see your replies. You can search for volunteer message content with strings. Search is not case
                 sensitive.
                 You can also filter messages posted by a chosen volunteer. Volunteers can request a reply. If there are
-                active requests, you see a notification.</p>
+                active requests, you see a notification.<br><br><b>Note:</b> In this demo only users with role
+                'volunteer' can write volutneer-activity-reports. The idea is that volunteers carry out tasks and staff
+                can comment to the tasks performed.</p>
 
             {% if rply_requests is sameas true and active_query is sameas false %}
             <div class="alert alert-warning">
@@ -34,11 +36,11 @@
                             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                             <input type="hidden" name="request-filter-on" value="request-filter-on">
                             {% if request_filter is not sameas true %}
-                                <input class="btn btn-primary" id="filter-requests" name="filter-requests" type="submit"
-                                    value="See reply requests" />
+                            <input class="btn btn-primary" id="filter-requests" name="filter-requests" type="submit"
+                                value="See reply requests" />
                             {% endif %}
                             {% if request_filter is sameas true %}
-                                <a href="/view-activities/0" class="btn btn-primary">Cancel</a>
+                            <a href="/view-activities/0" class="btn btn-primary">Cancel</a>
                             {% endif %}
                         </div>
                     </form>
@@ -167,7 +169,8 @@
                 {% endif %}
                 {% endfor %}
                 <br>
-                <a href="../reply-msg/{{ message.msg_id }}" class="btn btn-primary">Write a reply to {{ message.firstname }}</a>
+                <a href="../reply-msg/{{ message.msg_id }}" class="btn btn-primary">Write a reply to
+                    {{ message.firstname }}</a>
                 <div class="text-end">#{{ message.thread_id }}</div>
             </div>
             {% endif %}

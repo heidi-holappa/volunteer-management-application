@@ -17,11 +17,7 @@
 <div class="container">
     {% block flashed_messages %}{{ super() }}{% endblock %}
     <form action="/add-training/{{ user.user_id }}" method="POST">
-        <!-- {% if error_msg != "" %}
-        <div class="alert alert-danger">
-            <b>Error: </b> {{ error_msg }}
-        </div>
-        {% endif %} -->
+
         <div class="form-group mb-3">
             <label for="date">Choose training completion date:</label>
             <input class="form-control" id="date" placeholder="Enter date of training" type="date" name="date" required />
