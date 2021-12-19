@@ -30,7 +30,8 @@ def get_active_user_list(role: str):
     FROM tsohaproject.users LEFT JOIN tsohaproject.messages \
     ON (users.user_id = messages.sender_id) \
     WHERE role=:role AND isactive='true' \
-    GROUP BY users.user_id;"
+    GROUP BY users.user_id \
+    ORDER BY users.lastname ASC"
     result = db.session.execute(sql, {"role":role})
     return result.fetchall()
 
