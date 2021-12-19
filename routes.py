@@ -447,7 +447,10 @@ def supervisor_view_activities(set_offset):
     else:
         fetch_thread_ids = messages.fetch_volunteer_threads(u_id, limit, offset, query)
         thread_ids = tuple(value[0] for value in fetch_thread_ids)
-        fetched_messages = messages.fetch_volunteer_thread_msgs(thread_ids)
+        if len(thread_ids) != 0:
+            fetched_messages = messages.fetch_volunteer_thread_msgs(thread_ids)
+        else:
+            fetched_messages = []
         count_messages = messages.fetch_volunteer_thread_count(u_id, query)
 
     fetch_message_senders = messages.fetch_message_senders()
