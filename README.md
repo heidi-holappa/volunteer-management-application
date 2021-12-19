@@ -46,7 +46,7 @@ This application is tailored for demonstration purposes and carries out the purp
 
 ## TECHNICAL OVERVIEW
 
- - An up to date of user techonologies can be found from the requirements.txt. 
+ - An up-to-date list of used techonologies can be found from the requirements.txt. 
  - With schema.sql you can quickly create a copy of the database schema
  - Documentation/demodata.sql contains data that you can use to populate the database. Note that user accounts created this way do not have a password.
  - Documentation/activity-report-examples.txt contains a few examples to submit as activity reports
