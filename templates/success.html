@@ -5,10 +5,10 @@
 {% block adminnav %}{% if (session.role == "admin") %}{{ super() }}{% else %}{% endif %}{% endblock %}
 {% block coordinatornav %}{% if (session.role == "coordinator") %}{{ super() }}{% else %}{% endif %}{% endblock %}
 {% block volunteer_nav %}
-    {% if (session.role == "volunteer") %}
-        {{ super() }}
-    {% else %}
-    {% endif %}
+{% if (session.role == "volunteer") %}
+{{ super() }}
+{% else %}
+{% endif %}
 {% endblock%}
 {% block custom_navitems %}
 {% if session.user_id == null %}

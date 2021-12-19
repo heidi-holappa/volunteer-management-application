@@ -80,9 +80,8 @@
                             <td>
                                 {% for qualification in qualifications %}
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" 
-                                        name="qualification" {% if qualification.isqualified is sameas true %} 
-                                        checked disabled value=""
+                                    <input class="form-check-input" type="checkbox" name="qualification"
+                                        {% if qualification.isqualified is sameas true %} checked disabled value=""
                                         {% else %} value="{{ qualification.task_id }}" {% endif %}>
                                     <label class="form-check-label" for="{{ qualification.task }}">
                                         {{ qualification.task }}
@@ -93,7 +92,8 @@
                         </tr>
                         <tr class="mb-3">
                             <td>Deactivate user account<br>
-                                <small class="text-muted"><b>Warning! </b>In this demo a deactivated account can not be restored.</small>
+                                <small class="text-muted"><b>Warning! </b>In this demo a deactivated account can not be
+                                    restored.</small>
 
                             </td>
                             <td>
@@ -102,7 +102,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <td><a href="/view-user/{{ user.user_id }}" method="GET" class="btn btn-primary">Cancel</a></td>
+                            <td><a href="/view-user/{{ user.user_id }}" method="GET" class="btn btn-primary">Cancel</a>
+                            </td>
                             <td class="text-end">
                                 <input class="btn btn-primary" id="submit" name="submit" type="submit" value="submit" />
                                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">

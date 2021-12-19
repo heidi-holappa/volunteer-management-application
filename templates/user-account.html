@@ -19,13 +19,16 @@
             {% block flashed_messages %}{{ super() }}{% endblock %}
             <p>On this page you can view your personal user account information. </p>
             {% if session.role == "admin" %}
-                <div class="alert alert-primary">
-                    <b>Note: </b>In this demo administrator accounts can be created by just creating a username and a password. Because of that, admin-accounts might look quite empty. You can fill in missing information by pressing "edit personal informaion." Volunteers and coordinators can also edit their personal information. Create an account with a different role and try it out! 
-                </div>
+            <div class="alert alert-primary">
+                <b>Note: </b>In this demo administrator accounts can be created by just creating a username and a
+                password. Because of that, admin-accounts might look quite empty. You can fill in missing information by
+                pressing "edit personal informaion." Volunteers and coordinators can also edit their personal
+                information. Create an account with a different role and try it out!
+            </div>
             {% endif %}
             <br>
-            <form action="/edit-account" method="GET"><input class="btn btn-primary" id="edit-user"
-                    name="edit-user" type="submit" value="Edit personal information" /></form>
+            <form action="/edit-account" method="GET"><input class="btn btn-primary" id="edit-user" name="edit-user"
+                    type="submit" value="Edit personal information" /></form>
 
             <table class="table">
                 <thead>

@@ -24,7 +24,8 @@
             <form action="/submit-message-volunteer/{{ user.user_id }}" method="POST">
                 <div class="form-group mb-3">
                     <label for="date">Choose date</label>
-                    <input class="form-control" id="date" placeholder="Enter date of activity" type="date" name="date" required/>
+                    <input class="form-control" id="date" placeholder="Enter date of activity" type="date" name="date"
+                        required />
                 </div>
                 <div class="form-group mb-3">
                     <label for="activity">Select activity</label>
@@ -37,17 +38,18 @@
                 </div>
                 <div class="form-group mb-3">
                     <label for="title">Title: </label>
-                    <input class="form-control" id="title" placeholder="Write title" type="text" name="title" required/>
+                    <input class="form-control" id="title" placeholder="Write title" type="text" name="title"
+                        required />
                 </div>
                 <div class="form-group mb-3">
                     <label for="content">Description: </label>
-                    <textarea class="form-control" id="content" placeholder="Write a summary of activity"
-                                type="text" name="content" rows="4" cols="50" minlength="10" required></textarea>
+                    <textarea class="form-control" id="content" placeholder="Write a summary of activity" type="text"
+                        name="content" rows="4" cols="50" minlength="10" required></textarea>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="request-reply" name="request-reply">
                     <label class="form-check-label" for="request-reply">
-                      I want a reply from a coordinator
+                        I want a reply from a coordinator
                     </label>
                 </div>
                 <div class="mb-3 text-end">
@@ -81,31 +83,31 @@
 
             {% for message in messages %}
 
-                {% if message.thread_id == message.msg_id %}
-                <div class="alert alert-primary">
-                    <b>{{ message.title }}</b><br>
+            {% if message.thread_id == message.msg_id %}
+            <div class="alert alert-primary">
+                <b>{{ message.title }}</b><br>
+                <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
+                <b>Activity: </b>{{ message.task }}<br>
+                {% if message.reply_request is sameas true %}
+                <span class="text-danger">You have requested a reply</span><br>
+                {% endif %}
+                <br>
+                <b>Content: </b>{{ message.content }}
+                {% set thread_id = message.thread_id %}
+                {% for message in messages %}
+                {% if message.thread_id == thread_id and message.thread_id != message.msg_id %}
+                <div class="alert alert-dark">
+                    <b>Reply </b><br>
                     <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
-                    <b>Activity: </b>{{ message.task }}<br>
-                    {% if message.reply_request is sameas true %}
-                    <span class="text-danger">You have requested a reply</span><br>
-                    {% endif %}
+                    <b>Sender: </b> {{ message.username }}<br>
                     <br>
                     <b>Content: </b>{{ message.content }}
-                    {% set thread_id = message.thread_id %}
-                    {% for message in messages %}
-                        {% if message.thread_id == thread_id and message.thread_id != message.msg_id %}
-                        <div class="alert alert-dark">
-                            <b>Reply </b><br>
-                            <b>Date: </b>{{ message.activity_date.strftime("%d.%m.%Y") }}<br>
-                            <b>Sender: </b> {{ message.username }}<br>
-                            <br>
-                            <b>Content: </b>{{ message.content }}
-                        </div>
-                        {% endif %}
-                    {% endfor %}
                 </div>
                 {% endif %}
-            
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% endfor %}
 
             {% endif %}

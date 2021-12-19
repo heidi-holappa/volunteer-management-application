@@ -14,8 +14,8 @@
     <p>On this page you can mark an equipment that has been loaned to the selected volunteer. A tool can only be loaned
         to
         one person at a time. When the loan is returned, the tool becomes available for loaning again.</p>
-        
-        {% block flashed_messages %}{{ super() }}{% endblock %}
+
+    {% block flashed_messages %}{{ super() }}{% endblock %}
 </div>
 
 
@@ -23,7 +23,8 @@
     <form action="/add-loan/{{ user.user_id }}" method="POST">
         <div class="form-group mb-3">
             <label for="date">Choose loan date:<span class="text-danger">*</span></label>
-            <input class="form-control" id="date" placeholder="Enter date of loaning" type="date" name="date" required/>
+            <input class="form-control" id="date" placeholder="Enter date of loaning" type="date" name="date"
+                required />
         </div>
         <div class="form-group mb-3">
             <label for="tool-id">Select tool to loan:<span class="text-danger">*</span></label>

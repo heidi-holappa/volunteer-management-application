@@ -39,11 +39,13 @@
                     <a class="nav-link" href="/loaned-tools">View loans</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %} </i><span class="align-top text-warning"><i class="bi bi-info-circle-fill"></i></span>{% endif %}</a>
+                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}
+                        </i><span class="align-top text-warning"><i
+                                class="bi bi-info-circle-fill"></i></span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="addviews" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="addviews" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
                         Add/Manage
                     </a>
                     <div class="dropdown-menu" aria-labelledby="addviews">
@@ -86,11 +88,13 @@
                     <a class="nav-link" href="/loaned-tools">View loans</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %} </i><span class="align-top text-warning"><i class="bi bi-info-circle-fill"></i></span>{% endif %}</a>
+                    <a class="nav-link" href="/view-activities/0">Browse activities{% if rply_requests is sameas true %}
+                        </i><span class="align-top text-warning"><i
+                                class="bi bi-info-circle-fill"></i></span>{% endif %}</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="add-something" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="add-something" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
                         Add
                     </a>
                     <div class="dropdown-menu" aria-labelledby="add-something">
@@ -156,20 +160,20 @@
 
     <div id="content">
         {% block content %}
-            {% block flashed_messages %}
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show", role="alert">
-                            <span><b>{{ category|capitalize }}:</b> {{ message }}</span>
-                            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"></span>
-                            </button>
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-            {% endblock %}
+        {% block flashed_messages %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" , role="alert">
+            <span><b>{{ category|capitalize }}:</b> {{ message }}</span>
+            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% endblock %}
         {% endblock %}
     </div>
 
